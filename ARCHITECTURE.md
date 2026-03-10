@@ -123,11 +123,12 @@ mdview/
 - [x] Auto-open browser on start
 - [x] Live reload indicator (green dot)
 
-### v0.3 — PWA
-- [ ] Service worker for offline support
-- [ ] PWA manifest for installable app
-- [ ] Mobile-optimized touch controls
-- [ ] Responsive layout
+### v0.3 — PWA (current)
+- [x] Service worker for offline caching (network-first, cache fallback)
+- [x] PWA manifest for installable app (standalone display, SVG icon)
+- [x] Apple mobile web app meta tags (iOS home screen)
+- [x] Mobile-optimized touch controls (from v0.1 lightbox)
+- [ ] Responsive layout improvements
 
 ### v0.4 — Distribution
 - [ ] PyPI package: `pip install mdview`
