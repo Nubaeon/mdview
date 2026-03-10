@@ -93,7 +93,7 @@ mdview/
 │   ├── cli.py           # CLI entry point
 │   ├── diagrams.py      # Diagram extraction + rendering
 │   ├── renderer.py      # Markdown → HTML/terminal
-│   └── server.py        # Live reload server (planned)
+│   └── server.py        # Live reload server (SSE + file watcher)
 ├── tests/
 │   ├── test_diagrams.py
 │   └── test_renderer.py
@@ -116,11 +116,12 @@ mdview/
 - [x] Terminal rendering via rich
 - [x] CLI: `mdview FILE.md`
 
-### v0.2 — Live Reload
-- [ ] `mdview serve FILE.md --watch` — local HTTP server
-- [ ] inotify/fswatch file watcher
-- [ ] WebSocket push for live reload
-- [ ] Auto-open browser on start
+### v0.2 — Live Reload (current)
+- [x] `mdview FILE.md --serve` — local HTTP server (threaded, stdlib)
+- [x] File watcher (mtime polling, 0.5s interval)
+- [x] SSE push for live reload (simpler than WebSocket, one-directional)
+- [x] Auto-open browser on start
+- [x] Live reload indicator (green dot)
 
 ### v0.3 — PWA
 - [ ] Service worker for offline support

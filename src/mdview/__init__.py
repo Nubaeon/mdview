@@ -14,6 +14,7 @@ __version__ = "0.1.0"
 
 from .diagrams import DiagramBlock, DiagramType, extract_diagram_blocks, render_svg
 from .renderer import render_file, render_html, render_terminal
+from .server import serve
 
 __all__ = [
     "DiagramBlock",
@@ -23,4 +24,5 @@ __all__ = [
     "render_file",
     "render_html",
     "render_terminal",
+    "serve",
 ]

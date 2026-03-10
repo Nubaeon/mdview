@@ -31,6 +31,17 @@ def main(argv: list[str] | None = None) -> None:
         help="Render in terminal (requires rich)",
     )
     parser.add_argument(
+        "--serve", "-s",
+        action="store_true",
+        help="Start live reload server (watches for changes)",
+    )
+    parser.add_argument(
+        "--port", "-p",
+        type=int,
+        default=8090,
+        help="Server port (default: 8090, --serve mode only)",
+    )
+    parser.add_argument(
         "--output", "-o",
         type=Path,
         default=None,
@@ -63,6 +74,16 @@ def main(argv: list[str] | None = None) -> None:
     if not args.file.exists():
         print(f"Error: {args.file} not found", file=sys.stderr)
         sys.exit(1)
+
+    if args.serve:
+        from .server import serve
+        serve(
+            args.file,
+            port=args.port,
+            open_browser=not args.no_open,
+            diagram_service=args.diagram_service,
+        )
+        return
 
     from .renderer import render_file
 
