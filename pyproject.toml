@@ -1,0 +1,53 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "mdview"
+version = "0.1.0"
+description = "Lightweight markdown + multi-diagram viewer with interactive pan/zoom"
+readme = "README.md"
+license = "MIT"
+requires-python = ">=3.10"
+authors = [
+    { name = "Nubaeon", email = "hello@nubaeon.com" },
+]
+keywords = ["markdown", "mermaid", "diagram", "viewer", "svgbob", "ditaa", "ascii-art"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Console",
+    "Environment :: Web Environment",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Documentation",
+    "Topic :: Text Processing :: Markup :: Markdown",
+    "Topic :: Multimedia :: Graphics",
+]
+
+[project.optional-dependencies]
+rich = ["rich>=13.0"]
+markdown = ["markdown>=3.5"]
+all = ["rich>=13.0", "markdown>=3.5"]
+
+[project.scripts]
+mdview = "mdview.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/Nubaeon/mdview"
+Repository = "https://github.com/Nubaeon/mdview"
+Issues = "https://github.com/Nubaeon/mdview/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/mdview"]
+
+[tool.ruff]
+target-version = "py310"
+line-length = 100
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I"]
