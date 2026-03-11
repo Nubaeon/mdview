@@ -555,19 +555,16 @@ def svg_background(width: int, height: int) -> str:
 
 
 def svg_arrowhead_defs() -> str:
-    """SVG <defs> with arrowhead markers."""
+    """SVG <defs> with arrowhead marker.
+
+    One marker, orient=auto-start-reverse: the polygon points right,
+    SVG auto-rotates it to match line direction. marker-end places it
+    at the end; marker-start flips it for reverse arrows.
+    """
     return """  <defs>
-    <marker id="ah-right" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto">
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <polygon points="0,1 10,5 0,9" class="arrow-head"/>
-    </marker>
-    <marker id="ah-left" viewBox="0 0 10 10" refX="1" refY="5" markerWidth="8" markerHeight="8" orient="auto">
-      <polygon points="10,1 0,5 10,9" class="arrow-head"/>
-    </marker>
-    <marker id="ah-down" viewBox="0 0 10 10" refX="5" refY="9" markerWidth="8" markerHeight="8" orient="auto">
-      <polygon points="1,0 5,10 9,0" class="arrow-head"/>
-    </marker>
-    <marker id="ah-up" viewBox="0 0 10 10" refX="5" refY="1" markerWidth="8" markerHeight="8" orient="auto">
-      <polygon points="1,10 5,0 9,10" class="arrow-head"/>
     </marker>
   </defs>"""
 
@@ -621,16 +618,14 @@ def svg_arrow(arrow: Arrow) -> list[str]:
     x1, y1 = to_svg(*start)
     x2, y2 = to_svg(*end)
 
-    # Determine marker
+    # Determine marker — single "arrowhead" marker with orient="auto-start-reverse"
+    # Forward arrows (right, down): marker-end places arrowhead at line endpoint
+    # Reverse arrows (left, up): marker-start places flipped arrowhead at line start
     marker = ""
-    if arrow.direction == "right":
-        marker = ' marker-end="url(#ah-right)"'
-    elif arrow.direction == "left":
-        marker = ' marker-start="url(#ah-left)"'
-    elif arrow.direction == "down":
-        marker = ' marker-end="url(#ah-down)"'
-    elif arrow.direction == "up":
-        marker = ' marker-start="url(#ah-up)"'
+    if arrow.direction in ("right", "down"):
+        marker = ' marker-end="url(#arrowhead)"'
+    elif arrow.direction in ("left", "up"):
+        marker = ' marker-start="url(#arrowhead)"'
 
     parts.append(
         f'  <line class="arrow-line" x1="{x1:.1f}" y1="{y1:.1f}" '
