@@ -144,8 +144,8 @@ Parsing approach:
 3. Detect activation boxes (thicker segments)
 4. Render: vertical lifelines, horizontal arrows with labels, actor boxes
 
-### Phase 5: State Machines / Node Graphs
-**Priority:** Medium — used for user journeys, process flows
+### Phase 5: State Machines / Node Graphs (DONE)
+**Status:** Integrated into `flowrender.py` via multi-segment arrow joining in `renderlib.py`
 
 What LLMs produce:
 ```
@@ -159,9 +159,10 @@ What LLMs produce:
 
 Parsing approach:
 1. Find boxes (reuse Phase 1)
-2. Find arrow paths (reuse Phase 2 arrow detection)
-3. Extract labels on arrows (text adjacent to arrow segments)
-4. Render: rounded boxes for states, curved arrows with labels
+2. Find arrow paths (reuse Phase 2 arrow detection) — now includes `^` as vertical scan entry
+3. Join multi-segment arrows at corner characters (└, ┘, ┌, ┐) via `_join_arrow_segments()`
+4. Detect arrowhead direction from `_find_arrowhead_direction()` to orient source→target
+5. Render: straight arrows as `<line>`, multi-segment as `<polyline>` with corner waypoints
 
 ### Phase 6: Wireframes / UI Mockups
 **Priority:** Lower — valuable but less common and more complex
@@ -294,9 +295,18 @@ All renderers share a CSS theme (dark/light via `prefers-color-scheme`):
 - ✅ 78 tests: detection, rendering, cross-type discrimination, edge cases
 - ✅ Fixed `has_horiz_border` to require 60% border chars (prevents gap false positives)
 - ✅ Updated RENDERER-EXPANSION.md status
+- **Commit:** `9213d0b`
+
+### T6: State machine support (DONE)
+- ✅ Multi-segment arrow joining (`_join_arrow_segments`, `_try_merge`) in renderlib
+- ✅ Arrowhead direction detection (`_find_arrowhead_direction`) for source→target orientation
+- ✅ Corner point insertion at segment junctions (└, ┘, ┌, ┐)
+- ✅ Polyline SVG rendering for multi-waypoint arrows (`_arrow_waypoints`)
+- ✅ Fixed vertical scan to detect `^` (ARROW_HEADS_UP) as entry point
+- ✅ 88 tests (10 new state machine tests)
 - **Commit:** (this commit)
 
-### T6: Standalone package consideration
+### T7: Standalone package consideration
 - Evaluate extracting renderer as standalone PyPI package (`aiart2svg` or similar)
 - Would be useful beyond mdview — any tool processing AI-generated markdown
 - Separate decision point: discuss with David

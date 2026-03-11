@@ -113,6 +113,21 @@ SEQUENCE_2_ACTOR = """\
     │<── Hey! ──│
     │           │"""
 
+STATE_MACHINE = """\
+  ┌──────┐          ┌────────┐          ┌─────────┐
+  │ Idle │─────────>│ Active │─────────>│ Expired │
+  └──────┘          └────────┘          └─────────┘
+     ^                   │
+     │      logout       │
+     └───────────────────┘"""
+
+STATE_MACHINE_SIMPLE = """\
+┌─────┐     ┌─────┐
+│ Off │────>│ On  │
+└─────┘     └─────┘
+  ^           │
+  └───────────┘"""
+
 FILE_TREE = """\
 src/
 ├── main.py
@@ -467,13 +482,14 @@ class TestSvgHelpers:
         assert 'marker-end="url(#arrowhead)"' in parts[0]
 
     def test_svg_arrow_reverse(self):
+        """Reverse arrows still use marker-end since points are source→target ordered."""
         arrow = Arrow(
             points=[(0, 10), (0, 0)],
             direction="left",
         )
         parts = svg_arrow(arrow)
         assert len(parts) >= 1
-        assert 'marker-start="url(#arrowhead)"' in parts[0]
+        assert 'marker-end="url(#arrowhead)"' in parts[0]
 
     def test_svg_arrowhead_defs(self):
         defs = svg_arrowhead_defs()
@@ -489,6 +505,93 @@ class TestSvgHelpers:
         parts = svg_arrow(arrow)
         assert len(parts) == 2
         assert "test label" in parts[1]
+
+
+# ── State Machine / Multi-Segment Arrow Tests ────────────────────────
+
+class TestStateMachineDetection:
+    """State machines are flow diagrams with back-edges (U-shaped arrows)."""
+
+    def test_state_machine_is_flow(self):
+        assert has_flow_structure(STATE_MACHINE) is True
+
+    def test_simple_state_machine_is_flow(self):
+        assert has_flow_structure(STATE_MACHINE_SIMPLE) is True
+
+
+class TestStateMachineArrows:
+    """Test multi-segment arrow joining for back-edges."""
+
+    def test_back_edge_detected(self):
+        """The U-shaped back-edge from Active→Idle should be one arrow."""
+        grid, _, _ = parse_grid(STATE_MACHINE)
+        boxes = find_boxes(grid)
+        arrows = find_arrows(grid, boxes)
+        assert len(arrows) == 3
+
+    def test_back_edge_direction(self):
+        """Back-edge direction should reflect the arrowhead (^=up)."""
+        grid, _, _ = parse_grid(STATE_MACHINE)
+        boxes = find_boxes(grid)
+        arrows = find_arrows(grid, boxes)
+        # Find the back-edge (the one with label)
+        back_edge = [a for a in arrows if a.label][0]
+        assert back_edge.direction == "up"
+
+    def test_back_edge_box_connections(self):
+        """Back-edge should connect Active (from) to Idle (to)."""
+        grid, _, _ = parse_grid(STATE_MACHINE)
+        boxes = find_boxes(grid)
+        arrows = find_arrows(grid, boxes)
+        back_edge = [a for a in arrows if a.label][0]
+        # from_box should be Active (box 1), to_box should be Idle (box 0)
+        assert back_edge.from_box == 1
+        assert back_edge.to_box == 0
+
+    def test_back_edge_label(self):
+        grid, _, _ = parse_grid(STATE_MACHINE)
+        boxes = find_boxes(grid)
+        arrows = find_arrows(grid, boxes)
+        back_edge = [a for a in arrows if a.label][0]
+        assert back_edge.label == "logout"
+
+    def test_forward_arrows_unaffected(self):
+        """Forward arrows should still be simple 2-waypoint lines."""
+        from mdview.renderlib import _arrow_waypoints
+        grid, _, _ = parse_grid(STATE_MACHINE)
+        boxes = find_boxes(grid)
+        arrows = find_arrows(grid, boxes)
+        forward = [a for a in arrows if not a.label]
+        for a in forward:
+            wps = _arrow_waypoints(a.points)
+            assert len(wps) == 2, f"Forward arrow has {len(wps)} waypoints, expected 2"
+
+    def test_polyline_rendering(self):
+        """Back-edge renders as SVG polyline (not line)."""
+        grid, _, _ = parse_grid(STATE_MACHINE)
+        boxes = find_boxes(grid)
+        arrows = find_arrows(grid, boxes)
+        back_edge = [a for a in arrows if a.label][0]
+        parts = svg_arrow(back_edge)
+        assert any("polyline" in p for p in parts), "Back-edge should render as polyline"
+
+    def test_full_render(self):
+        """Full state machine SVG should contain all elements."""
+        svg = render_flow_svg(STATE_MACHINE)
+        assert svg is not None
+        assert 'class="mdview-diagram"' in svg
+        assert "polyline" in svg  # back-edge
+        assert "Idle" in svg
+        assert "Active" in svg
+        assert "Expired" in svg
+        assert "logout" in svg
+
+    def test_simple_cycle(self):
+        """Simple 2-state cycle (Off→On→Off)."""
+        svg = render_flow_svg(STATE_MACHINE_SIMPLE)
+        assert svg is not None
+        assert "Off" in svg
+        assert "On" in svg
 
 
 # ── Cross-Type Discrimination Tests ─────────────────────────────────

@@ -291,7 +291,7 @@ def find_arrows(grid: list[list[str]], boxes: list[Box]) -> list[Arrow]:
                 continue
 
             ch = grid[r][c]
-            if ch in VERT_CHARS or ch in ARROW_HEADS_DOWN:
+            if ch in VERT_CHARS or ch in ARROW_HEADS_DOWN or ch in ARROW_HEADS_UP:
                 arrow = _trace_vert_arrow(grid, r, c, rows, used, boxes)
                 if arrow:
                     arrows.append(arrow)
@@ -300,6 +300,9 @@ def find_arrows(grid: list[list[str]], boxes: list[Box]) -> list[Arrow]:
                     r = arrow.points[-1][0] + 1
                     continue
             r += 1
+
+    # Join adjacent segments that form multi-segment (L-shaped, U-shaped) arrows
+    arrows = _join_arrow_segments(arrows, grid, boxes)
 
     return arrows
 
@@ -495,6 +498,169 @@ def _extract_text_near(
     return None
 
 
+# ── Multi-segment arrow joining ────────────────────────────────────
+
+def _join_arrow_segments(
+    arrows: list[Arrow], grid: list[list[str]], boxes: list[Box]
+) -> list[Arrow]:
+    """Join adjacent arrow segments into multi-segment (L/U-shaped) arrows.
+
+    After individual horizontal and vertical segments are detected, this function
+    finds pairs that share a corner character (└, ┘, ┌, ┐) at their endpoints
+    and merges them into a single arrow with multiple waypoints.
+
+    This handles back-edges in state machines like:
+        Active ──down──> corner ──left──> Idle
+    """
+    if len(arrows) < 2:
+        return arrows
+
+    joined: set[int] = set()
+    result: list[Arrow] = []
+
+    for i in range(len(arrows)):
+        if i in joined:
+            continue
+
+        current = arrows[i]
+        merged = True
+
+        while merged:
+            merged = False
+            for j in range(len(arrows)):
+                if j in joined or j == i:
+                    continue
+                if id(arrows[j]) == id(current):
+                    continue
+
+                other = arrows[j]
+                merged_arrow = _try_merge(current, other, grid, boxes)
+                if merged_arrow:
+                    current = merged_arrow
+                    joined.add(j)
+                    merged = True
+                    break
+
+        result.append(current)
+
+    return result
+
+
+def _find_arrowhead_direction(grid: list[list[str]], points: list[tuple[int, int]]) -> tuple[str | None, str]:
+    """Find which end of a point list has an arrowhead character.
+
+    Returns (end, direction) where end is 'start', 'end', or None,
+    and direction is the arrowhead direction.
+    """
+    if not points:
+        return None, "right"
+
+    start_ch = char_at(grid, points[0][0], points[0][1])
+    end_ch = char_at(grid, points[-1][0], points[-1][1])
+
+    if start_ch in ARROW_HEADS_RIGHT:
+        return "start", "right"
+    if start_ch in ARROW_HEADS_LEFT:
+        return "start", "left"
+    if start_ch in ARROW_HEADS_DOWN:
+        return "start", "down"
+    if start_ch in ARROW_HEADS_UP:
+        return "start", "up"
+
+    if end_ch in ARROW_HEADS_RIGHT:
+        return "end", "right"
+    if end_ch in ARROW_HEADS_LEFT:
+        return "end", "left"
+    if end_ch in ARROW_HEADS_DOWN:
+        return "end", "down"
+    if end_ch in ARROW_HEADS_UP:
+        return "end", "up"
+
+    return None, "right"
+
+
+def _try_merge(a: Arrow, b: Arrow, grid: list[list[str]], boxes: list[Box]) -> Arrow | None:
+    """Try to merge two arrows that meet at a corner point.
+
+    Returns merged arrow or None if they don't connect.
+    Points are ordered so the arrowhead end is last (matching svg_arrow convention).
+    """
+    if not a.points or not b.points:
+        return None
+
+    a_start = a.points[0]
+    a_end = a.points[-1]
+    b_start = b.points[0]
+    b_end = b.points[-1]
+
+    def adjacent(p1: tuple[int, int], p2: tuple[int, int]) -> bool:
+        return abs(p1[0] - p2[0]) <= 1 and abs(p1[1] - p2[1]) <= 1
+
+    def find_corner_between(p1: tuple[int, int], p2: tuple[int, int]) -> tuple[int, int] | None:
+        """Find corner character cell between two adjacent segment endpoints."""
+        for r in range(min(p1[0], p2[0]), max(p1[0], p2[0]) + 1):
+            for c in range(min(p1[1], p2[1]), max(p1[1], p2[1]) + 1):
+                if 0 <= r < len(grid) and 0 <= c < len(grid[0]):
+                    if grid[r][c] in CORNER_CHARS:
+                        return (r, c)
+        return None
+
+    # Try all 4 endpoint combinations, inserting corner point between segments
+    merged_points = None
+    pairs = [
+        (a_end, b_start, lambda c: a.points + [c] + b.points),
+        (a_end, b_end, lambda c: a.points + [c] + list(reversed(b.points))),
+        (a_start, b_start, lambda c: list(reversed(a.points)) + [c] + b.points),
+        (a_start, b_end, lambda c: b.points + [c] + a.points),
+    ]
+    for ep1, ep2, merge_fn in pairs:
+        if adjacent(ep1, ep2):
+            corner = find_corner_between(ep1, ep2)
+            if corner:
+                merged_points = merge_fn(corner)
+                break
+
+    if merged_points is None:
+        return None
+
+    # Find actual arrowhead in the merged points to determine direction
+    ah_end, ah_dir = _find_arrowhead_direction(grid, merged_points)
+
+    # Orient points so arrowhead is at the END (target)
+    # This matches svg_arrow convention: start=source, end=target
+    if ah_end == "start":
+        merged_points = list(reversed(merged_points))
+
+    direction = ah_dir
+
+    # Find box connections: start point = source (from_box), end point = target (to_box)
+    start_pt = merged_points[0]
+    end_pt = merged_points[-1]
+
+    from_box = _find_adjacent_box_any_side(boxes, start_pt[0], start_pt[1])
+    to_box = _find_adjacent_box_any_side(boxes, end_pt[0], end_pt[1])
+
+    # Merge labels
+    label = a.label or b.label
+
+    return Arrow(
+        points=merged_points,
+        direction=direction,
+        label=label,
+        from_box=from_box,
+        to_box=to_box,
+    )
+
+
+def _find_adjacent_box_any_side(boxes: list[Box], row: int, col: int) -> int | None:
+    """Find a box adjacent to a point on any side."""
+    for side in ("left", "right", "above", "below"):
+        result = _find_adjacent_box(boxes, row, col, side)
+        if result is not None:
+            return result
+    return None
+
+
 # ── SVG generation helpers ──────────────────────────────────────────
 
 # Character cell dimensions (shared across all renderers)
@@ -614,45 +780,89 @@ def svg_text(span: TextSpan, is_header: bool = False) -> str:
 
 
 def svg_arrow(arrow: Arrow) -> list[str]:
-    """Render an arrow as SVG line/path with arrowhead marker."""
+    """Render an arrow as SVG line or polyline with arrowhead marker.
+
+    Single-segment arrows render as <line>. Multi-segment (L/U-shaped)
+    arrows render as <polyline> with waypoints at each corner.
+    """
     if len(arrow.points) < 2:
         return []
 
     parts: list[str] = []
 
-    # Convert grid coords to SVG coords
     def to_svg(r: int, c: int) -> tuple[float, float]:
         return (PAD_X + c * CHAR_W + CHAR_W / 2, PAD_Y + r * CHAR_H + CHAR_H / 2)
 
-    start = arrow.points[0]
-    end = arrow.points[-1]
-    x1, y1 = to_svg(*start)
-    x2, y2 = to_svg(*end)
+    # Arrowhead marker: always marker-end since points are ordered source→target
+    marker = ' marker-end="url(#arrowhead)"'
 
-    # Determine marker — single "arrowhead" marker with orient="auto-start-reverse"
-    # Forward arrows (right, down): marker-end places arrowhead at line endpoint
-    # Reverse arrows (left, up): marker-start places flipped arrowhead at line start
-    marker = ""
-    if arrow.direction in ("right", "down"):
-        marker = ' marker-end="url(#arrowhead)"'
-    elif arrow.direction in ("left", "up"):
-        marker = ' marker-start="url(#arrowhead)"'
+    # Deduplicate consecutive waypoints and extract corners for polyline
+    waypoints = _arrow_waypoints(arrow.points)
+    svg_pts = [to_svg(r, c) for r, c in waypoints]
 
-    parts.append(
-        f'  <line class="arrow-line" x1="{x1:.1f}" y1="{y1:.1f}" '
-        f'x2="{x2:.1f}" y2="{y2:.1f}"{marker}/>'
-    )
+    if len(svg_pts) == 2:
+        # Simple straight line
+        (x1, y1), (x2, y2) = svg_pts
+        parts.append(
+            f'  <line class="arrow-line" x1="{x1:.1f}" y1="{y1:.1f}" '
+            f'x2="{x2:.1f}" y2="{y2:.1f}"{marker}/>'
+        )
+    else:
+        # Multi-segment: use polyline with corner waypoints
+        points_str = " ".join(f"{x:.1f},{y:.1f}" for x, y in svg_pts)
+        parts.append(
+            f'  <polyline class="arrow-line" points="{points_str}"{marker}/>'
+        )
 
     # Render label if present
     if arrow.label:
-        mid_x = (x1 + x2) / 2
-        mid_y = min(y1, y2) - 4  # above the arrow
+        if len(svg_pts) <= 2:
+            mid_x = (svg_pts[0][0] + svg_pts[1][0]) / 2
+            mid_y = min(svg_pts[0][1], svg_pts[1][1]) - 4
+        else:
+            # Find longest segment and place label at its midpoint
+            best_len = 0.0
+            best_mid = (svg_pts[0][0], svg_pts[0][1])
+            for k in range(len(svg_pts) - 1):
+                sx, sy = svg_pts[k]
+                ex, ey = svg_pts[k + 1]
+                seg_len = abs(ex - sx) + abs(ey - sy)
+                if seg_len > best_len:
+                    best_len = seg_len
+                    best_mid = ((sx + ex) / 2, (sy + ey) / 2)
+            mid_x, mid_y = best_mid
+            mid_y -= 4
         escaped = html.escape(arrow.label)
         parts.append(
             f'  <text class="arrow-label" x="{mid_x:.1f}" y="{mid_y:.1f}">{escaped}</text>'
         )
 
     return parts
+
+
+def _arrow_waypoints(points: list[tuple[int, int]]) -> list[tuple[int, int]]:
+    """Reduce a dense point list to corner waypoints for polyline rendering.
+
+    Keeps start, end, and any points where direction changes (corners).
+    For simple straight arrows, returns just [start, end].
+    """
+    if len(points) <= 2:
+        return points
+
+    result = [points[0]]
+
+    for i in range(1, len(points) - 1):
+        prev = points[i - 1]
+        curr = points[i]
+        nxt = points[i + 1]
+        # Direction change = corner point
+        dr_prev = (curr[0] - prev[0], curr[1] - prev[1])
+        dr_next = (nxt[0] - curr[0], nxt[1] - curr[1])
+        if dr_prev != dr_next:
+            result.append(curr)
+
+    result.append(points[-1])
+    return result
 
 
 def fallback_svg(source: str) -> str:
