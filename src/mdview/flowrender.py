@@ -60,12 +60,12 @@ def render_flow_svg(source: str) -> str:
     # Also extract free text (text outside boxes that isn't part of arrows)
     free_texts = _extract_free_text(grid, boxes, arrows)
 
-    # Build SVG
+    # Build SVG with tight bounding box
     parts: list[str] = [
-        rl.svg_open(width, height),
+        rl.svg_open_tight(boxes, height),
         rl.THEME_CSS,
         rl.svg_arrowhead_defs(),
-        rl.svg_background(width, height),
+        rl.svg_background_tight(boxes, height),
     ]
 
     # Render boxes
@@ -74,18 +74,21 @@ def render_flow_svg(source: str) -> str:
         for sep_row in box.separators:
             parts.append(rl.svg_separator(box, sep_row))
 
-    # Render arrows
+    # Render arrows (with box-snapped endpoints)
     for arrow in arrows:
-        parts.extend(rl.svg_arrow(arrow))
+        parts.extend(rl.svg_arrow(arrow, boxes))
 
-    # Render box text
+    # Render box text (centered within boxes)
     headers = rl.classify_headers(texts, boxes)
     for i, span in enumerate(texts):
-        parts.append(rl.svg_text(span, is_header=(i in headers)))
+        box = boxes[span.box_index] if 0 <= span.box_index < len(boxes) else None
+        parts.append(rl.svg_text(span, is_header=(i in headers), box=box))
 
-    # Render free text
+    # Render free text (filter out text that duplicates arrow labels)
+    arrow_labels = {a.label.lower() for a in arrows if a.label}
     for span in free_texts:
-        parts.append(rl.svg_text(span))
+        if span.text.strip().lower() not in arrow_labels:
+            parts.append(rl.svg_text(span))
 
     parts.append("</svg>")
     return "\n".join(parts)

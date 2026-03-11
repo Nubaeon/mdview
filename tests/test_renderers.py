@@ -503,8 +503,9 @@ class TestSvgHelpers:
             label="test label",
         )
         parts = svg_arrow(arrow)
-        assert len(parts) == 2
-        assert "test label" in parts[1]
+        assert len(parts) == 3  # line + label bg rect + label text
+        assert "arrow-label-bg" in parts[1]
+        assert "test label" in parts[2]
 
 
 # ── State Machine / Multi-Segment Arrow Tests ────────────────────────

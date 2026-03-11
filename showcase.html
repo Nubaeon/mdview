@@ -1,0 +1,401 @@
+<html><head><style>body{background:#1a1b26;color:#a9b1d6;font-family:system-ui;padding:40px;max-width:1200px;margin:0 auto}h1{color:#7aa2f7}h2{color:#9ece6a;margin-top:40px;border-bottom:1px solid #3b4261;padding-bottom:8px}.sample{margin:20px 0}</style></head><body><h1>mdview Native Renderer Showcase</h1><p>All diagrams rendered locally. Structure-first parsing, dark/light theme via CSS.</p><h2>Phase 1: Single Box</h2><div class="sample"><svg xmlns="http://www.w3.org/2000/svg" width="184" height="112" class="mdview-diagram">
+
+  <style>
+    .mdview-diagram { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', monospace; font-size: 13px; }
+    .mdview-diagram .box-border { stroke: #7aa2f7; stroke-width: 1.5; fill: none; }
+    .mdview-diagram .box-separator { stroke: #7aa2f7; stroke-width: 1; }
+    .mdview-diagram .box-text { fill: #a9b1d6; white-space: pre; }
+    .mdview-diagram .box-header { fill: #9ece6a; font-weight: 600; }
+    .mdview-diagram .arrow-line { stroke: #bb9af7; stroke-width: 1.5; fill: none; }
+    .mdview-diagram .arrow-head { fill: #bb9af7; stroke: none; }
+    .mdview-diagram .arrow-label { fill: #e0af68; font-size: 12px; text-anchor: middle; }
+    .mdview-diagram .arrow-label-bg { fill: #1a1b26; fill-opacity: 0.85; rx: 3; }
+    .mdview-diagram .bg { fill: #1a1b26; }
+    @media (prefers-color-scheme: light) {
+      .mdview-diagram .box-border { stroke: #2e7de9; }
+      .mdview-diagram .box-separator { stroke: #2e7de9; }
+      .mdview-diagram .box-text { fill: #343b58; }
+      .mdview-diagram .box-header { fill: #587539; }
+      .mdview-diagram .arrow-line { stroke: #7847bd; }
+      .mdview-diagram .arrow-head { fill: #7847bd; }
+      .mdview-diagram .arrow-label { fill: #8c6c3e; }
+      .mdview-diagram .arrow-label-bg { fill: #f8f8fc; fill-opacity: 0.85; }
+      .mdview-diagram .bg { fill: #f8f8fc; }
+    }
+  </style>
+  <rect class="bg" x="0" y="0" width="184" height="112" rx="6"/>
+  <rect class="box-border" x="12.0" y="8.0" width="151.2" height="80.0" rx="4"/>
+  <line class="box-separator" x1="12.0" y1="48.0" x2="163.2" y2="48.0"/>
+  <text class="box-header" x="91.8" y="26.0" text-anchor="middle" dominant-baseline="central">Service Layer</text>
+  <text class="box-text" x="91.8" y="58.0" text-anchor="middle" dominant-baseline="central">endpoint: /api</text>
+  <text class="box-text" x="91.8" y="74.0" text-anchor="middle" dominant-baseline="central">port: 8080</text>
+</svg></div><h2>Phase 1: Multiple Boxes</h2><div class="sample"><svg xmlns="http://www.w3.org/2000/svg" width="268" height="112" class="mdview-diagram">
+
+  <style>
+    .mdview-diagram { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', monospace; font-size: 13px; }
+    .mdview-diagram .box-border { stroke: #7aa2f7; stroke-width: 1.5; fill: none; }
+    .mdview-diagram .box-separator { stroke: #7aa2f7; stroke-width: 1; }
+    .mdview-diagram .box-text { fill: #a9b1d6; white-space: pre; }
+    .mdview-diagram .box-header { fill: #9ece6a; font-weight: 600; }
+    .mdview-diagram .arrow-line { stroke: #bb9af7; stroke-width: 1.5; fill: none; }
+    .mdview-diagram .arrow-head { fill: #bb9af7; stroke: none; }
+    .mdview-diagram .arrow-label { fill: #e0af68; font-size: 12px; text-anchor: middle; }
+    .mdview-diagram .arrow-label-bg { fill: #1a1b26; fill-opacity: 0.85; rx: 3; }
+    .mdview-diagram .bg { fill: #1a1b26; }
+    @media (prefers-color-scheme: light) {
+      .mdview-diagram .box-border { stroke: #2e7de9; }
+      .mdview-diagram .box-separator { stroke: #2e7de9; }
+      .mdview-diagram .box-text { fill: #343b58; }
+      .mdview-diagram .box-header { fill: #587539; }
+      .mdview-diagram .arrow-line { stroke: #7847bd; }
+      .mdview-diagram .arrow-head { fill: #7847bd; }
+      .mdview-diagram .arrow-label { fill: #8c6c3e; }
+      .mdview-diagram .arrow-label-bg { fill: #f8f8fc; fill-opacity: 0.85; }
+      .mdview-diagram .bg { fill: #f8f8fc; }
+    }
+  </style>
+  <rect class="bg" x="0" y="0" width="268" height="112" rx="6"/>
+  <rect class="box-border" x="12.0" y="8.0" width="100.8" height="80.0" rx="4"/>
+  <line class="box-separator" x1="12.0" y1="48.0" x2="112.8" y2="48.0"/>
+  <rect class="box-border" x="138.0" y="8.0" width="109.2" height="80.0" rx="4"/>
+  <line class="box-separator" x1="138.0" y1="48.0" x2="247.2" y2="48.0"/>
+  <text class="box-header" x="66.6" y="26.0" text-anchor="middle" dominant-baseline="central">Frontend</text>
+  <text class="box-text" x="66.6" y="58.0" text-anchor="middle" dominant-baseline="central">React</text>
+  <text class="box-text" x="66.6" y="74.0" text-anchor="middle" dominant-baseline="central">TypeScript</text>
+  <text class="box-header" x="196.8" y="26.0" text-anchor="middle" dominant-baseline="central">Backend</text>
+  <text class="box-text" x="196.8" y="58.0" text-anchor="middle" dominant-baseline="central">FastAPI</text>
+  <text class="box-text" x="196.8" y="74.0" text-anchor="middle" dominant-baseline="central">Python 3.12</text>
+</svg></div><h2>Phase 2: Simple Flow</h2><div class="sample"><svg xmlns="http://www.w3.org/2000/svg" width="368" height="64" class="mdview-diagram">
+
+  <style>
+    .mdview-diagram { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', monospace; font-size: 13px; }
+    .mdview-diagram .box-border { stroke: #7aa2f7; stroke-width: 1.5; fill: none; }
+    .mdview-diagram .box-separator { stroke: #7aa2f7; stroke-width: 1; }
+    .mdview-diagram .box-text { fill: #a9b1d6; white-space: pre; }
+    .mdview-diagram .box-header { fill: #9ece6a; font-weight: 600; }
+    .mdview-diagram .arrow-line { stroke: #bb9af7; stroke-width: 1.5; fill: none; }
+    .mdview-diagram .arrow-head { fill: #bb9af7; stroke: none; }
+    .mdview-diagram .arrow-label { fill: #e0af68; font-size: 12px; text-anchor: middle; }
+    .mdview-diagram .arrow-label-bg { fill: #1a1b26; fill-opacity: 0.85; rx: 3; }
+    .mdview-diagram .bg { fill: #1a1b26; }
+    @media (prefers-color-scheme: light) {
+      .mdview-diagram .box-border { stroke: #2e7de9; }
+      .mdview-diagram .box-separator { stroke: #2e7de9; }
+      .mdview-diagram .box-text { fill: #343b58; }
+      .mdview-diagram .box-header { fill: #587539; }
+      .mdview-diagram .arrow-line { stroke: #7847bd; }
+      .mdview-diagram .arrow-head { fill: #7847bd; }
+      .mdview-diagram .arrow-label { fill: #8c6c3e; }
+      .mdview-diagram .arrow-label-bg { fill: #f8f8fc; fill-opacity: 0.85; }
+      .mdview-diagram .bg { fill: #f8f8fc; }
+    }
+  </style>
+  <defs>
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <polygon points="0,1 10,5 0,9" class="arrow-head"/>
+    </marker>
+  </defs>
+  <rect class="bg" x="0" y="0" width="368" height="64" rx="6"/>
+  <rect class="box-border" x="12.0" y="8.0" width="67.2" height="32.0" rx="4"/>
+  <rect class="box-border" x="138.0" y="8.0" width="92.4" height="32.0" rx="4"/>
+  <rect class="box-border" x="289.2" y="8.0" width="58.8" height="32.0" rx="4"/>
+  <line class="arrow-line" x1="79.2" y1="24.0" x2="138.0" y2="24.0" marker-end="url(#arrowhead)"/>
+  <line class="arrow-line" x1="230.4" y1="24.0" x2="289.2" y2="24.0" marker-end="url(#arrowhead)"/>
+  <text class="box-header" x="49.8" y="26.0" text-anchor="middle" dominant-baseline="central">Input</text>
+  <text class="box-header" x="188.4" y="26.0" text-anchor="middle" dominant-baseline="central">Process</text>
+  <text class="box-header" x="322.8" y="26.0" text-anchor="middle" dominant-baseline="central">Done</text>
+</svg></div><h2>Phase 2: Labeled Flow</h2><div class="sample"><svg xmlns="http://www.w3.org/2000/svg" width="368" height="160" class="mdview-diagram">
+
+  <style>
+    .mdview-diagram { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', monospace; font-size: 13px; }
+    .mdview-diagram .box-border { stroke: #7aa2f7; stroke-width: 1.5; fill: none; }
+    .mdview-diagram .box-separator { stroke: #7aa2f7; stroke-width: 1; }
+    .mdview-diagram .box-text { fill: #a9b1d6; white-space: pre; }
+    .mdview-diagram .box-header { fill: #9ece6a; font-weight: 600; }
+    .mdview-diagram .arrow-line { stroke: #bb9af7; stroke-width: 1.5; fill: none; }
+    .mdview-diagram .arrow-head { fill: #bb9af7; stroke: none; }
+    .mdview-diagram .arrow-label { fill: #e0af68; font-size: 12px; text-anchor: middle; }
+    .mdview-diagram .arrow-label-bg { fill: #1a1b26; fill-opacity: 0.85; rx: 3; }
+    .mdview-diagram .bg { fill: #1a1b26; }
+    @media (prefers-color-scheme: light) {
+      .mdview-diagram .box-border { stroke: #2e7de9; }
+      .mdview-diagram .box-separator { stroke: #2e7de9; }
+      .mdview-diagram .box-text { fill: #343b58; }
+      .mdview-diagram .box-header { fill: #587539; }
+      .mdview-diagram .arrow-line { stroke: #7847bd; }
+      .mdview-diagram .arrow-head { fill: #7847bd; }
+      .mdview-diagram .arrow-label { fill: #8c6c3e; }
+      .mdview-diagram .arrow-label-bg { fill: #f8f8fc; fill-opacity: 0.85; }
+      .mdview-diagram .bg { fill: #f8f8fc; }
+    }
+  </style>
+  <defs>
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <polygon points="0,1 10,5 0,9" class="arrow-head"/>
+    </marker>
+  </defs>
+  <rect class="bg" x="0" y="0" width="368" height="160" rx="6"/>
+  <rect class="box-border" x="12.0" y="8.0" width="67.2" height="32.0" rx="4"/>
+  <rect class="box-border" x="138.0" y="8.0" width="92.4" height="32.0" rx="4"/>
+  <rect class="box-border" x="289.2" y="8.0" width="58.8" height="32.0" rx="4"/>
+  <rect class="box-border" x="138.0" y="104.0" width="92.4" height="32.0" rx="4"/>
+  <line class="arrow-line" x1="79.2" y1="24.0" x2="138.0" y2="24.0" marker-end="url(#arrowhead)"/>
+  <line class="arrow-line" x1="230.4" y1="24.0" x2="289.2" y2="24.0" marker-end="url(#arrowhead)"/>
+  <line class="arrow-line" x1="184.2" y1="40.0" x2="184.2" y2="104.0" marker-end="url(#arrowhead)"/>
+  <rect class="arrow-label-bg" x="162.2" y="57.0" width="44.0" height="16.0" rx="3"/>
+  <text class="arrow-label" x="184.2" y="66.0">error</text>
+  <text class="box-header" x="49.8" y="26.0" text-anchor="middle" dominant-baseline="central">Start</text>
+  <text class="box-header" x="188.4" y="26.0" text-anchor="middle" dominant-baseline="central">Validate</text>
+  <text class="box-header" x="322.8" y="26.0" text-anchor="middle" dominant-baseline="central">Save</text>
+  <text class="box-header" x="188.4" y="122.0" text-anchor="middle" dominant-baseline="central">Retry</text>
+</svg></div><h2>Phase 3: Unicode Table</h2><div class="sample"><svg xmlns="http://www.w3.org/2000/svg" width="301" height="128" class="mdview-diagram">
+
+  <style>
+    .mdview-diagram { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', monospace; font-size: 13px; }
+    .mdview-diagram .box-border { stroke: #7aa2f7; stroke-width: 1.5; fill: none; }
+    .mdview-diagram .box-separator { stroke: #7aa2f7; stroke-width: 1; }
+    .mdview-diagram .box-text { fill: #a9b1d6; white-space: pre; }
+    .mdview-diagram .box-header { fill: #9ece6a; font-weight: 600; }
+    .mdview-diagram .arrow-line { stroke: #bb9af7; stroke-width: 1.5; fill: none; }
+    .mdview-diagram .arrow-head { fill: #bb9af7; stroke: none; }
+    .mdview-diagram .arrow-label { fill: #e0af68; font-size: 12px; text-anchor: middle; }
+    .mdview-diagram .arrow-label-bg { fill: #1a1b26; fill-opacity: 0.85; rx: 3; }
+    .mdview-diagram .bg { fill: #1a1b26; }
+    @media (prefers-color-scheme: light) {
+      .mdview-diagram .box-border { stroke: #2e7de9; }
+      .mdview-diagram .box-separator { stroke: #2e7de9; }
+      .mdview-diagram .box-text { fill: #343b58; }
+      .mdview-diagram .box-header { fill: #587539; }
+      .mdview-diagram .arrow-line { stroke: #7847bd; }
+      .mdview-diagram .arrow-head { fill: #7847bd; }
+      .mdview-diagram .arrow-label { fill: #8c6c3e; }
+      .mdview-diagram .arrow-label-bg { fill: #f8f8fc; fill-opacity: 0.85; }
+      .mdview-diagram .bg { fill: #f8f8fc; }
+    }
+  </style>
+  <rect class="bg" x="0" y="0" width="301" height="128" rx="6"/>
+  <style>
+    .mdview-diagram .table-header-bg { fill: #24283b; }
+    .mdview-diagram .table-cell-bg { fill: none; }
+    .mdview-diagram .table-border { stroke: #7aa2f7; stroke-width: 1; fill: none; }
+    .mdview-diagram .table-header-text { fill: #9ece6a; font-weight: 600; white-space: pre; }
+    .mdview-diagram .table-cell-text { fill: #a9b1d6; white-space: pre; }
+    @media (prefers-color-scheme: light) {
+      .mdview-diagram .table-header-bg { fill: #e8e8f0; }
+      .mdview-diagram .table-border { stroke: #2e7de9; }
+      .mdview-diagram .table-header-text { fill: #587539; }
+      .mdview-diagram .table-cell-text { fill: #343b58; }
+    }
+  </style>
+  <rect class="table-border" x="12.0" y="8.0" width="268.8" height="96.0" rx="3"/>
+  <rect class="table-header-bg" x="13.0" y="9.0" width="266.8" height="38.0" rx="2"/>
+  <line class="table-border" x1="12.0" y1="48.0" x2="280.8" y2="48.0"/>
+  <line class="table-border" x1="125.4" y1="8.0" x2="125.4" y2="104.0"/>
+  <line class="table-border" x1="217.8" y1="8.0" x2="217.8" y2="104.0"/>
+  <text class="table-header-text" x="22.4" y="36.0">Component</text>
+  <text class="table-header-text" x="131.6" y="36.0">Status</text>
+  <text class="table-header-text" x="224.0" y="36.0">Owner</text>
+  <text class="table-cell-text" x="22.4" y="68.0">Frontend</text>
+  <text class="table-cell-text" x="22.4" y="84.0">Backend</text>
+  <text class="table-cell-text" x="22.4" y="100.0">Database</text>
+  <text class="table-cell-text" x="131.6" y="68.0">Active</text>
+  <text class="table-cell-text" x="131.6" y="84.0">Testing</text>
+  <text class="table-cell-text" x="131.6" y="100.0">Deployed</text>
+  <text class="table-cell-text" x="224.0" y="68.0">Alice</text>
+  <text class="table-cell-text" x="224.0" y="84.0">Bob</text>
+  <text class="table-cell-text" x="224.0" y="100.0">Carol</text>
+</svg></div><h2>Phase 3: ASCII Table</h2><div class="sample"><svg xmlns="http://www.w3.org/2000/svg" width="251" height="112" class="mdview-diagram">
+
+  <style>
+    .mdview-diagram { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', monospace; font-size: 13px; }
+    .mdview-diagram .box-border { stroke: #7aa2f7; stroke-width: 1.5; fill: none; }
+    .mdview-diagram .box-separator { stroke: #7aa2f7; stroke-width: 1; }
+    .mdview-diagram .box-text { fill: #a9b1d6; white-space: pre; }
+    .mdview-diagram .box-header { fill: #9ece6a; font-weight: 600; }
+    .mdview-diagram .arrow-line { stroke: #bb9af7; stroke-width: 1.5; fill: none; }
+    .mdview-diagram .arrow-head { fill: #bb9af7; stroke: none; }
+    .mdview-diagram .arrow-label { fill: #e0af68; font-size: 12px; text-anchor: middle; }
+    .mdview-diagram .arrow-label-bg { fill: #1a1b26; fill-opacity: 0.85; rx: 3; }
+    .mdview-diagram .bg { fill: #1a1b26; }
+    @media (prefers-color-scheme: light) {
+      .mdview-diagram .box-border { stroke: #2e7de9; }
+      .mdview-diagram .box-separator { stroke: #2e7de9; }
+      .mdview-diagram .box-text { fill: #343b58; }
+      .mdview-diagram .box-header { fill: #587539; }
+      .mdview-diagram .arrow-line { stroke: #7847bd; }
+      .mdview-diagram .arrow-head { fill: #7847bd; }
+      .mdview-diagram .arrow-label { fill: #8c6c3e; }
+      .mdview-diagram .arrow-label-bg { fill: #f8f8fc; fill-opacity: 0.85; }
+      .mdview-diagram .bg { fill: #f8f8fc; }
+    }
+  </style>
+  <rect class="bg" x="0" y="0" width="251" height="112" rx="6"/>
+  <style>
+    .mdview-diagram .table-header-bg { fill: #24283b; }
+    .mdview-diagram .table-cell-bg { fill: none; }
+    .mdview-diagram .table-border { stroke: #7aa2f7; stroke-width: 1; fill: none; }
+    .mdview-diagram .table-header-text { fill: #9ece6a; font-weight: 600; white-space: pre; }
+    .mdview-diagram .table-cell-text { fill: #a9b1d6; white-space: pre; }
+    @media (prefers-color-scheme: light) {
+      .mdview-diagram .table-header-bg { fill: #e8e8f0; }
+      .mdview-diagram .table-border { stroke: #2e7de9; }
+      .mdview-diagram .table-header-text { fill: #587539; }
+      .mdview-diagram .table-cell-text { fill: #343b58; }
+    }
+  </style>
+  <rect class="table-border" x="12.0" y="8.0" width="218.4" height="80.0" rx="3"/>
+  <rect class="table-header-bg" x="13.0" y="9.0" width="216.4" height="38.0" rx="2"/>
+  <line class="table-border" x1="12.0" y1="48.0" x2="230.4" y2="48.0"/>
+  <line class="table-border" x1="91.8" y1="8.0" x2="91.8" y2="88.0"/>
+  <line class="table-border" x1="167.4" y1="8.0" x2="167.4" y2="88.0"/>
+  <text class="table-header-text" x="22.4" y="36.0">Name</text>
+  <text class="table-header-text" x="98.0" y="36.0">Status</text>
+  <text class="table-header-text" x="173.6" y="36.0">Owner</text>
+  <text class="table-cell-text" x="22.4" y="68.0">Auth</text>
+  <text class="table-cell-text" x="22.4" y="84.0">Cache</text>
+  <text class="table-cell-text" x="98.0" y="68.0">Done</text>
+  <text class="table-cell-text" x="98.0" y="84.0">WIP</text>
+  <text class="table-cell-text" x="173.6" y="68.0">Alice</text>
+  <text class="table-cell-text" x="173.6" y="84.0">Bob</text>
+</svg></div><h2>Phase 4: Sequence Diagram</h2><div class="sample"><svg xmlns="http://www.w3.org/2000/svg" width="500" height="252" class="mdview-diagram">
+  <style>
+    .mdview-diagram { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', monospace; font-size: 13px; }
+    .mdview-diagram .bg { fill: #1a1b26; }
+    .mdview-diagram .actor-box { fill: #24283b; stroke: #7aa2f7; stroke-width: 1.5; }
+    .mdview-diagram .actor-text { fill: #9ece6a; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
+    .mdview-diagram .lifeline { stroke: #565f89; stroke-width: 1; stroke-dasharray: 6,4; }
+    .mdview-diagram .msg-line { stroke: #bb9af7; stroke-width: 1.5; fill: none; }
+    .mdview-diagram .msg-head { fill: #bb9af7; stroke: none; }
+    .mdview-diagram .msg-label { fill: #e0af68; font-size: 12px; text-anchor: middle; }
+    @media (prefers-color-scheme: light) {
+      .mdview-diagram .bg { fill: #f8f8fc; }
+      .mdview-diagram .actor-box { fill: #e8e8f0; stroke: #2e7de9; }
+      .mdview-diagram .actor-text { fill: #587539; }
+      .mdview-diagram .lifeline { stroke: #9ca0b0; }
+      .mdview-diagram .msg-line { stroke: #7847bd; }
+      .mdview-diagram .msg-head { fill: #7847bd; }
+      .mdview-diagram .msg-label { fill: #8c6c3e; }
+    }
+  </style>
+  <defs>
+    <marker id="seq-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <polygon points="0,1 10,5 0,9" class="msg-head"/>
+    </marker>
+  </defs>
+  <rect class="bg" x="0" y="0" width="500" height="252" rx="6"/>
+  <rect class="actor-box" x="40.0" y="20" width="100" height="30" rx="4"/>
+  <text class="actor-text" x="90.0" y="35.0">Client</text>
+  <rect class="actor-box" x="200.0" y="20" width="100" height="30" rx="4"/>
+  <text class="actor-text" x="250.0" y="35.0">Server</text>
+  <rect class="actor-box" x="360.0" y="20" width="100" height="30" rx="4"/>
+  <text class="actor-text" x="410.0" y="35.0">Database</text>
+  <rect class="actor-box" x="40.0" y="202" width="100" height="30" rx="4"/>
+  <text class="actor-text" x="90.0" y="217.0">Client</text>
+  <rect class="actor-box" x="200.0" y="202" width="100" height="30" rx="4"/>
+  <text class="actor-text" x="250.0" y="217.0">Server</text>
+  <rect class="actor-box" x="360.0" y="202" width="100" height="30" rx="4"/>
+  <text class="actor-text" x="410.0" y="217.0">Database</text>
+  <line class="lifeline" x1="90.0" y1="60" x2="90.0" y2="192"/>
+  <line class="lifeline" x1="250.0" y1="60" x2="250.0" y2="192"/>
+  <line class="lifeline" x1="410.0" y1="60" x2="410.0" y2="192"/>
+  <line class="msg-line" x1="90.0" y1="74.0" x2="250.0" y2="74.0" marker-end="url(#seq-arrow)"/>
+  <text class="msg-label" x="170.0" y="66.0">request</text>
+  <line class="msg-line" x1="250.0" y1="102.0" x2="410.0" y2="102.0" marker-end="url(#seq-arrow)"/>
+  <text class="msg-label" x="330.0" y="94.0">query</text>
+  <line class="msg-line" x1="410.0" y1="130.0" x2="250.0" y2="130.0" marker-start="url(#seq-arrow)"/>
+  <text class="msg-label" x="330.0" y="122.0">result</text>
+  <line class="msg-line" x1="250.0" y1="158.0" x2="90.0" y2="158.0" marker-start="url(#seq-arrow)"/>
+  <text class="msg-label" x="170.0" y="150.0">response</text>
+</svg></div><h2>Phase 5: State Machine</h2><div class="sample"><svg xmlns="http://www.w3.org/2000/svg" width="427" height="112" class="mdview-diagram">
+
+  <style>
+    .mdview-diagram { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', monospace; font-size: 13px; }
+    .mdview-diagram .box-border { stroke: #7aa2f7; stroke-width: 1.5; fill: none; }
+    .mdview-diagram .box-separator { stroke: #7aa2f7; stroke-width: 1; }
+    .mdview-diagram .box-text { fill: #a9b1d6; white-space: pre; }
+    .mdview-diagram .box-header { fill: #9ece6a; font-weight: 600; }
+    .mdview-diagram .arrow-line { stroke: #bb9af7; stroke-width: 1.5; fill: none; }
+    .mdview-diagram .arrow-head { fill: #bb9af7; stroke: none; }
+    .mdview-diagram .arrow-label { fill: #e0af68; font-size: 12px; text-anchor: middle; }
+    .mdview-diagram .arrow-label-bg { fill: #1a1b26; fill-opacity: 0.85; rx: 3; }
+    .mdview-diagram .bg { fill: #1a1b26; }
+    @media (prefers-color-scheme: light) {
+      .mdview-diagram .box-border { stroke: #2e7de9; }
+      .mdview-diagram .box-separator { stroke: #2e7de9; }
+      .mdview-diagram .box-text { fill: #343b58; }
+      .mdview-diagram .box-header { fill: #587539; }
+      .mdview-diagram .arrow-line { stroke: #7847bd; }
+      .mdview-diagram .arrow-head { fill: #7847bd; }
+      .mdview-diagram .arrow-label { fill: #8c6c3e; }
+      .mdview-diagram .arrow-label-bg { fill: #f8f8fc; fill-opacity: 0.85; }
+      .mdview-diagram .bg { fill: #f8f8fc; }
+    }
+  </style>
+  <defs>
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <polygon points="0,1 10,5 0,9" class="arrow-head"/>
+    </marker>
+  </defs>
+  <rect class="bg" x="0" y="0" width="427" height="112" rx="6"/>
+  <rect class="box-border" x="12.0" y="8.0" width="75.6" height="32.0" rx="4"/>
+  <rect class="box-border" x="163.2" y="8.0" width="75.6" height="32.0" rx="4"/>
+  <rect class="box-border" x="331.2" y="8.0" width="75.6" height="32.0" rx="4"/>
+  <line class="arrow-line" x1="87.6" y1="24.0" x2="163.2" y2="24.0" marker-end="url(#arrowhead)"/>
+  <rect class="arrow-label-bg" x="103.4" y="9.0" width="44.0" height="16.0" rx="3"/>
+  <text class="arrow-label" x="125.4" y="18.0">login</text>
+  <line class="arrow-line" x1="238.8" y1="24.0" x2="331.2" y2="24.0" marker-end="url(#arrowhead)"/>
+  <rect class="arrow-label-bg" x="252.2" y="9.0" width="65.6" height="16.0" rx="3"/>
+  <text class="arrow-label" x="285.0" y="18.0">activate</text>
+  <polyline class="arrow-line" points="369.0,40.0 369.0,96.0 49.8,96.0 49.8,40.0" marker-end="url(#arrowhead)"/>
+  <rect class="arrow-label-bg" x="183.8" y="83.0" width="51.2" height="16.0" rx="3"/>
+  <text class="arrow-label" x="209.4" y="92.0">logout</text>
+  <text class="box-header" x="54.0" y="26.0" text-anchor="middle" dominant-baseline="central">Idle</text>
+  <text class="box-header" x="205.2" y="26.0" text-anchor="middle" dominant-baseline="central">Pending</text>
+  <text class="box-header" x="373.2" y="26.0" text-anchor="middle" dominant-baseline="central">Active</text>
+</svg></div><h2>Phase 5: Simple State</h2><div class="sample"><svg xmlns="http://www.w3.org/2000/svg" width="234" height="112" class="mdview-diagram">
+
+  <style>
+    .mdview-diagram { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', monospace; font-size: 13px; }
+    .mdview-diagram .box-border { stroke: #7aa2f7; stroke-width: 1.5; fill: none; }
+    .mdview-diagram .box-separator { stroke: #7aa2f7; stroke-width: 1; }
+    .mdview-diagram .box-text { fill: #a9b1d6; white-space: pre; }
+    .mdview-diagram .box-header { fill: #9ece6a; font-weight: 600; }
+    .mdview-diagram .arrow-line { stroke: #bb9af7; stroke-width: 1.5; fill: none; }
+    .mdview-diagram .arrow-head { fill: #bb9af7; stroke: none; }
+    .mdview-diagram .arrow-label { fill: #e0af68; font-size: 12px; text-anchor: middle; }
+    .mdview-diagram .arrow-label-bg { fill: #1a1b26; fill-opacity: 0.85; rx: 3; }
+    .mdview-diagram .bg { fill: #1a1b26; }
+    @media (prefers-color-scheme: light) {
+      .mdview-diagram .box-border { stroke: #2e7de9; }
+      .mdview-diagram .box-separator { stroke: #2e7de9; }
+      .mdview-diagram .box-text { fill: #343b58; }
+      .mdview-diagram .box-header { fill: #587539; }
+      .mdview-diagram .arrow-line { stroke: #7847bd; }
+      .mdview-diagram .arrow-head { fill: #7847bd; }
+      .mdview-diagram .arrow-label { fill: #8c6c3e; }
+      .mdview-diagram .arrow-label-bg { fill: #f8f8fc; fill-opacity: 0.85; }
+      .mdview-diagram .bg { fill: #f8f8fc; }
+    }
+  </style>
+  <defs>
+    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5"
+            markerWidth="8" markerHeight="8" orient="auto-start-reverse">
+      <polygon points="0,1 10,5 0,9" class="arrow-head"/>
+    </marker>
+  </defs>
+  <rect class="bg" x="0" y="0" width="234" height="112" rx="6"/>
+  <rect class="box-border" x="12.0" y="8.0" width="67.2" height="32.0" rx="4"/>
+  <rect class="box-border" x="146.4" y="8.0" width="67.2" height="32.0" rx="4"/>
+  <line class="arrow-line" x1="79.2" y1="24.0" x2="146.4" y2="24.0" marker-end="url(#arrowhead)"/>
+  <rect class="arrow-label-bg" x="94.4" y="9.0" width="36.8" height="16.0" rx="3"/>
+  <text class="arrow-label" x="112.8" y="18.0">next</text>
+  <polyline class="arrow-line" points="180.0,40.0 180.0,96.0 45.6,96.0 45.6,40.0" marker-end="url(#arrowhead)"/>
+  <rect class="arrow-label-bg" x="90.8" y="83.0" width="44.0" height="16.0" rx="3"/>
+  <text class="arrow-label" x="112.8" y="92.0">reset</text>
+  <text class="box-header" x="49.8" y="26.0" text-anchor="middle" dominant-baseline="central">Ready</text>
+  <text class="box-header" x="184.2" y="26.0" text-anchor="middle" dominant-baseline="central">Go</text>
+</svg></div></body></html>

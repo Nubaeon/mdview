@@ -44,11 +44,11 @@ def render_box_svg(source: str) -> str:
 
     texts = rl.extract_box_texts(grid, boxes)
 
-    # Build SVG
+    # Build SVG with tight bounding box
     parts: list[str] = [
-        rl.svg_open(width, height),
+        rl.svg_open_tight(boxes, height),
         rl.THEME_CSS,
-        rl.svg_background(width, height),
+        rl.svg_background_tight(boxes, height),
     ]
 
     for box in boxes:
@@ -58,7 +58,8 @@ def render_box_svg(source: str) -> str:
 
     headers = rl.classify_headers(texts, boxes)
     for i, span in enumerate(texts):
-        parts.append(rl.svg_text(span, is_header=(i in headers)))
+        box = boxes[span.box_index] if 0 <= span.box_index < len(boxes) else None
+        parts.append(rl.svg_text(span, is_header=(i in headers), box=box))
 
     parts.append("</svg>")
     return "\n".join(parts)

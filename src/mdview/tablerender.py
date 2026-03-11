@@ -209,10 +209,12 @@ def _generate_table_svg(
     # Header background (if header separator exists)
     if table.header_sep is not None:
         hy = rl.PAD_Y + tbl_rows[0] * rl.CHAR_H
-        hh = (table.header_sep - tbl_rows[0]) * rl.CHAR_H
+        # Extend header bg to the separator line position
+        sep_y = rl.PAD_Y + table.header_sep * rl.CHAR_H + rl.CHAR_H * 0.5
+        hh = sep_y - hy
         parts.append(
             f'  <rect class="table-header-bg" x="{x1 + 1:.1f}" y="{hy + 1:.1f}" '
-            f'width="{tw - 2:.1f}" height="{hh - 1:.1f}" rx="2"/>'
+            f'width="{tw - 2:.1f}" height="{hh - 2:.1f}" rx="2"/>'
         )
 
     # Internal horizontal borders

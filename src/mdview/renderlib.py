@@ -70,6 +70,7 @@ class TextSpan:
     col: int
     text: str
     section: int = 0
+    box_index: int = -1  # index into boxes list, -1 for free text
 
 
 @dataclass
@@ -192,7 +193,7 @@ def has_horiz_border(grid: list[list[str]], row: int, left: int, right: int) -> 
     border_count = 0
     for c in range(left + 1, right):
         ch = grid[row][c]
-        if ch in HORIZ_CHARS:
+        if ch in HORIZ_CHARS or ch in TEE_CHARS:
             border_count += 1
         elif ch != ' ':
             return False
@@ -210,10 +211,10 @@ def has_vert_border(grid: list[list[str]], col: int, top: int, bottom: int) -> b
 # ── Text extraction ─────────────────────────────────────────────────
 
 def extract_box_texts(grid: list[list[str]], boxes: list[Box]) -> list[TextSpan]:
-    """Extract text content from inside boxes."""
+    """Extract text content from inside boxes (stripped of padding)."""
     texts: list[TextSpan] = []
 
-    for box in boxes:
+    for box_idx, box in enumerate(boxes):
         section_breaks = [box.top] + box.separators + [box.bottom]
 
         for section_idx in range(len(section_breaks) - 1):
@@ -225,13 +226,14 @@ def extract_box_texts(grid: list[list[str]], boxes: list[Box]) -> list[TextSpan]
                 for c in range(box.left + 1, box.right):
                     content += grid[r][c]
 
-                content = content.rstrip()
-                if content.strip():
+                content = content.strip()
+                if content:
                     texts.append(TextSpan(
                         row=r,
                         col=box.left + 1,
                         text=content,
                         section=section_idx,
+                        box_index=box_idx,
                     ))
 
     return texts
@@ -271,8 +273,8 @@ def find_arrows(grid: list[list[str]], boxes: list[Box]) -> list[Arrow]:
                 continue
 
             ch = grid[r][c]
-            # Start of horizontal segment: ─, ═, -, or arrow head
-            if ch in HORIZ_CHARS or ch in ARROW_HEADS_RIGHT:
+            # Start of horizontal segment: ─, ═, -, or arrow head (either direction)
+            if ch in HORIZ_CHARS or ch in ARROW_HEADS_RIGHT or ch in ARROW_HEADS_LEFT:
                 arrow = _trace_horiz_arrow(grid, r, c, cols, used, boxes)
                 if arrow:
                     arrows.append(arrow)
@@ -549,32 +551,29 @@ def _join_arrow_segments(
 def _find_arrowhead_direction(grid: list[list[str]], points: list[tuple[int, int]]) -> tuple[str | None, str]:
     """Find which end of a point list has an arrowhead character.
 
+    Scans all points (not just first/last) because after multi-segment merging,
+    the arrowhead may be in the interior of the point list.
+
     Returns (end, direction) where end is 'start', 'end', or None,
     and direction is the arrowhead direction.
     """
     if not points:
         return None, "right"
 
-    start_ch = char_at(grid, points[0][0], points[0][1])
-    end_ch = char_at(grid, points[-1][0], points[-1][1])
-
-    if start_ch in ARROW_HEADS_RIGHT:
-        return "start", "right"
-    if start_ch in ARROW_HEADS_LEFT:
-        return "start", "left"
-    if start_ch in ARROW_HEADS_DOWN:
-        return "start", "down"
-    if start_ch in ARROW_HEADS_UP:
-        return "start", "up"
-
-    if end_ch in ARROW_HEADS_RIGHT:
-        return "end", "right"
-    if end_ch in ARROW_HEADS_LEFT:
-        return "end", "left"
-    if end_ch in ARROW_HEADS_DOWN:
-        return "end", "down"
-    if end_ch in ARROW_HEADS_UP:
-        return "end", "up"
+    for idx, (r, c) in enumerate(points):
+        ch = char_at(grid, r, c)
+        direction = None
+        if ch in ARROW_HEADS_RIGHT:
+            direction = "right"
+        elif ch in ARROW_HEADS_LEFT:
+            direction = "left"
+        elif ch in ARROW_HEADS_DOWN:
+            direction = "down"
+        elif ch in ARROW_HEADS_UP:
+            direction = "up"
+        if direction:
+            end = "start" if idx < len(points) / 2 else "end"
+            return end, direction
 
     return None, "right"
 
@@ -680,6 +679,7 @@ THEME_CSS = """
     .mdview-diagram .arrow-line { stroke: #bb9af7; stroke-width: 1.5; fill: none; }
     .mdview-diagram .arrow-head { fill: #bb9af7; stroke: none; }
     .mdview-diagram .arrow-label { fill: #e0af68; font-size: 12px; text-anchor: middle; }
+    .mdview-diagram .arrow-label-bg { fill: #1a1b26; fill-opacity: 0.85; rx: 3; }
     .mdview-diagram .bg { fill: #1a1b26; }
     @media (prefers-color-scheme: light) {
       .mdview-diagram .box-border { stroke: #2e7de9; }
@@ -689,6 +689,7 @@ THEME_CSS = """
       .mdview-diagram .arrow-line { stroke: #7847bd; }
       .mdview-diagram .arrow-head { fill: #7847bd; }
       .mdview-diagram .arrow-label { fill: #8c6c3e; }
+      .mdview-diagram .arrow-label-bg { fill: #f8f8fc; fill-opacity: 0.85; }
       .mdview-diagram .bg { fill: #f8f8fc; }
     }
   </style>"""
@@ -724,9 +725,35 @@ def svg_open(width: int, height: int) -> str:
     )
 
 
+def svg_open_tight(boxes: list[Box], height: int) -> str:
+    """SVG opening tag with tight width based on content bounds."""
+    if boxes:
+        max_right = max(b.right for b in boxes)
+        svg_w = (max_right + 1) * CHAR_W + PAD_X * 2
+    else:
+        svg_w = PAD_X * 2
+    svg_h = height * CHAR_H + PAD_Y * 2
+    return (
+        f'<svg xmlns="http://www.w3.org/2000/svg" '
+        f'width="{svg_w:.0f}" height="{svg_h:.0f}" '
+        f'class="mdview-diagram">'
+    )
+
+
 def svg_background(width: int, height: int) -> str:
     """Background rectangle."""
     svg_w = width * CHAR_W + PAD_X * 2
+    svg_h = height * CHAR_H + PAD_Y * 2
+    return f'  <rect class="bg" x="0" y="0" width="{svg_w:.0f}" height="{svg_h:.0f}" rx="6"/>'
+
+
+def svg_background_tight(boxes: list[Box], height: int) -> str:
+    """Background rectangle with tight width based on content bounds."""
+    if boxes:
+        max_right = max(b.right for b in boxes)
+        svg_w = (max_right + 1) * CHAR_W + PAD_X * 2
+    else:
+        svg_w = PAD_X * 2
     svg_h = height * CHAR_H + PAD_Y * 2
     return f'  <rect class="bg" x="0" y="0" width="{svg_w:.0f}" height="{svg_h:.0f}" rx="6"/>'
 
@@ -770,20 +797,58 @@ def svg_separator(box: Box, sep_row: int) -> str:
     )
 
 
-def svg_text(span: TextSpan, is_header: bool = False) -> str:
-    """Render a text span as SVG text element."""
-    tx = PAD_X + span.col * CHAR_W
-    ty = PAD_Y + span.row * CHAR_H + CHAR_H * 0.75
+def svg_text(span: TextSpan, is_header: bool = False, box: Box | None = None) -> str:
+    """Render a text span as SVG text element, centered within box if provided."""
     css_class = "box-header" if is_header else "box-text"
     escaped = html.escape(span.text)
+
+    if box is not None:
+        # Center text horizontally within the box
+        cx = PAD_X + (box.left + box.right) / 2 * CHAR_W + CHAR_W / 2
+
+        # Compute section bounds for vertical centering
+        section_breaks = [box.top] + box.separators + [box.bottom]
+        if span.section < len(section_breaks) - 1:
+            sec_top = section_breaks[span.section]
+            sec_bot = section_breaks[span.section + 1]
+        else:
+            sec_top = box.top
+            sec_bot = box.bottom
+
+        # Section visual bounds
+        sec_top_y = PAD_Y + sec_top * CHAR_H
+        sec_bot_y = PAD_Y + sec_bot * CHAR_H
+        sec_center_y = (sec_top_y + sec_bot_y) / 2
+
+        # Content rows in this section
+        content_count = sec_bot - sec_top - 1
+        if content_count <= 0:
+            content_count = 1
+        relative_pos = span.row - (sec_top + 1)
+        center_row = (content_count - 1) / 2
+        offset = relative_pos - center_row
+        # +2px visual nudge: dominant-baseline="central" centers on em-box
+        # but text with mostly uppercase/ascenders looks better slightly lower
+        ty = sec_center_y + offset * CHAR_H + 2
+
+        return (
+            f'  <text class="{css_class}" x="{cx:.1f}" y="{ty:.1f}" '
+            f'text-anchor="middle" dominant-baseline="central">{escaped}</text>'
+        )
+
+    tx = PAD_X + span.col * CHAR_W
+    ty = PAD_Y + span.row * CHAR_H + CHAR_H * 0.75
     return f'  <text class="{css_class}" x="{tx:.1f}" y="{ty:.1f}">{escaped}</text>'
 
 
-def svg_arrow(arrow: Arrow) -> list[str]:
+def svg_arrow(arrow: Arrow, boxes: list[Box] | None = None) -> list[str]:
     """Render an arrow as SVG line or polyline with arrowhead marker.
 
     Single-segment arrows render as <line>. Multi-segment (L/U-shaped)
     arrows render as <polyline> with waypoints at each corner.
+
+    When boxes are provided, endpoints are snapped to box edge centers
+    for proper visual alignment.
     """
     if len(arrow.points) < 2:
         return []
@@ -793,12 +858,79 @@ def svg_arrow(arrow: Arrow) -> list[str]:
     def to_svg(r: int, c: int) -> tuple[float, float]:
         return (PAD_X + c * CHAR_W + CHAR_W / 2, PAD_Y + r * CHAR_H + CHAR_H / 2)
 
+    def box_edge_svg(box: Box, side: str) -> tuple[float, float]:
+        """Get SVG coordinate for the midpoint of a box edge."""
+        bx = PAD_X + box.left * CHAR_W
+        by = PAD_Y + box.top * CHAR_H
+        bw = (box.right - box.left) * CHAR_W
+        bh = (box.bottom - box.top) * CHAR_H
+        if side == "right":
+            return (bx + bw, by + bh / 2)
+        elif side == "left":
+            return (bx, by + bh / 2)
+        elif side == "bottom":
+            return (bx + bw / 2, by + bh)
+        else:  # top
+            return (bx + bw / 2, by)
+
     # Arrowhead marker: always marker-end since points are ordered source→target
     marker = ' marker-end="url(#arrowhead)"'
 
     # Deduplicate consecutive waypoints and extract corners for polyline
     waypoints = _arrow_waypoints(arrow.points)
     svg_pts = [to_svg(r, c) for r, c in waypoints]
+
+    # Snap start/end to box edge centers when connected
+    # For multi-segment arrows, use per-segment direction (not overall arrow.direction)
+    is_multi = len(waypoints) > 2
+
+    if boxes and arrow.from_box is not None and len(svg_pts) >= 2:
+        fb = boxes[arrow.from_box]
+        if is_multi and len(waypoints) >= 2:
+            # Use first segment direction for from_box exit side
+            dr = waypoints[1][0] - waypoints[0][0]
+            dc = waypoints[1][1] - waypoints[0][1]
+            if abs(dc) > abs(dr):
+                svg_pts[0] = box_edge_svg(fb, "right" if dc > 0 else "left")
+            else:
+                svg_pts[0] = box_edge_svg(fb, "bottom" if dr > 0 else "top")
+        elif arrow.direction in ("right", "left"):
+            svg_pts[0] = box_edge_svg(fb, "right") if arrow.direction == "right" else box_edge_svg(fb, "left")
+        else:
+            svg_pts[0] = box_edge_svg(fb, "bottom") if arrow.direction == "down" else box_edge_svg(fb, "top")
+
+    if boxes and arrow.to_box is not None and len(svg_pts) >= 2:
+        tb = boxes[arrow.to_box]
+        if is_multi and len(waypoints) >= 2:
+            # Use last segment direction for to_box entry side
+            dr = waypoints[-1][0] - waypoints[-2][0]
+            dc = waypoints[-1][1] - waypoints[-2][1]
+            if abs(dc) > abs(dr):
+                svg_pts[-1] = box_edge_svg(tb, "left" if dc > 0 else "right")
+            else:
+                svg_pts[-1] = box_edge_svg(tb, "top" if dr > 0 else "bottom")
+        elif arrow.direction in ("right", "left"):
+            svg_pts[-1] = box_edge_svg(tb, "left") if arrow.direction == "right" else box_edge_svg(tb, "right")
+        else:
+            svg_pts[-1] = box_edge_svg(tb, "top") if arrow.direction == "down" else box_edge_svg(tb, "bottom")
+
+    # After snapping endpoints to box edges, align adjacent waypoints so
+    # vertical segments stay vertical and horizontal segments stay horizontal
+    if is_multi and len(svg_pts) > 2:
+        # Align first segment: if mostly vertical, match x; if mostly horizontal, match y
+        dx0 = abs(svg_pts[1][0] - svg_pts[0][0])
+        dy0 = abs(svg_pts[1][1] - svg_pts[0][1])
+        if dy0 > dx0:  # vertical segment
+            svg_pts[1] = (svg_pts[0][0], svg_pts[1][1])
+        else:  # horizontal segment
+            svg_pts[1] = (svg_pts[1][0], svg_pts[0][1])
+        # Align last segment
+        dxn = abs(svg_pts[-1][0] - svg_pts[-2][0])
+        dyn = abs(svg_pts[-1][1] - svg_pts[-2][1])
+        if dyn > dxn:  # vertical segment
+            svg_pts[-2] = (svg_pts[-1][0], svg_pts[-2][1])
+        else:  # horizontal segment
+            svg_pts[-2] = (svg_pts[-2][0], svg_pts[-1][1])
 
     if len(svg_pts) == 2:
         # Simple straight line
@@ -818,7 +950,7 @@ def svg_arrow(arrow: Arrow) -> list[str]:
     if arrow.label:
         if len(svg_pts) <= 2:
             mid_x = (svg_pts[0][0] + svg_pts[1][0]) / 2
-            mid_y = min(svg_pts[0][1], svg_pts[1][1]) - 4
+            mid_y = (svg_pts[0][1] + svg_pts[1][1]) / 2 - 6
         else:
             # Find longest segment and place label at its midpoint
             best_len = 0.0
@@ -833,6 +965,14 @@ def svg_arrow(arrow: Arrow) -> list[str]:
             mid_x, mid_y = best_mid
             mid_y -= 4
         escaped = html.escape(arrow.label)
+        # Semi-transparent background pill behind label
+        label_w = len(arrow.label) * 7.2 + 8  # ~7.2px per char at 12px mono + padding
+        label_h = 16
+        parts.append(
+            f'  <rect class="arrow-label-bg" x="{mid_x - label_w / 2:.1f}" '
+            f'y="{mid_y - label_h / 2 - 1:.1f}" '
+            f'width="{label_w:.1f}" height="{label_h:.1f}" rx="3"/>'
+        )
         parts.append(
             f'  <text class="arrow-label" x="{mid_x:.1f}" y="{mid_y:.1f}">{escaped}</text>'
         )
