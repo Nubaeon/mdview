@@ -17,6 +17,7 @@ from .diagrams import DiagramBlock, DiagramType, extract_diagram_blocks, render_
 from .flowrender import has_flow_structure, render_flow_svg
 from .renderer import render_file, render_html, render_terminal
 from .server import serve
+from .tablerender import has_table_structure, render_table_svg
 
 __all__ = [
     "DiagramBlock",

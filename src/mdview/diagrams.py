@@ -201,11 +201,15 @@ def render_svg(
         # Try native renderers for structure-recognized diagrams (no HTTP needed)
         if diagram_type == DiagramType.ASCII_AUTO:
             from .flowrender import has_flow_structure, render_flow_svg
+            from .tablerender import has_table_structure, render_table_svg
             from .boxrender import has_box_structure, render_box_svg
-            # Flow first (more specific: boxes + arrows)
+            # Most specific first: flow (boxes + arrows)
             if has_flow_structure(diagram):
                 return render_flow_svg(diagram)
-            # Then plain boxes
+            # Tables (grid intersections)
+            if has_table_structure(diagram):
+                return render_table_svg(diagram)
+            # Plain boxes (most permissive structural match)
             if has_box_structure(diagram):
                 return render_box_svg(diagram)
         return _render_kroki(diagram, "svgbob", service_url)
