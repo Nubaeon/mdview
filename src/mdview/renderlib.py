@@ -181,11 +181,22 @@ def _trace_vert(grid: list[list[str]], col: int, start_row: int, max_row: int) -
 
 
 def has_horiz_border(grid: list[list[str]], row: int, left: int, right: int) -> bool:
-    """Check if row has a continuous horizontal border between left and right."""
+    """Check if row has a continuous horizontal border between left and right.
+
+    Requires at least 60% of characters to be actual border chars (not just spaces).
+    This prevents gaps between separate boxes from being treated as borders.
+    """
+    span = right - left - 1
+    if span <= 0:
+        return False
+    border_count = 0
     for c in range(left + 1, right):
-        if grid[row][c] not in (HORIZ_CHARS | frozenset(' ')):
+        ch = grid[row][c]
+        if ch in HORIZ_CHARS:
+            border_count += 1
+        elif ch != ' ':
             return False
-    return True
+    return border_count / span >= 0.6
 
 
 def has_vert_border(grid: list[list[str]], col: int, top: int, bottom: int) -> bool:

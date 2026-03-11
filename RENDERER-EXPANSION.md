@@ -46,7 +46,7 @@ don't pattern-match characters.
 ## Diagram Types (Priority Order)
 
 ### Phase 1: Boxes (DONE)
-**Status:** `boxrender.py` — shipped and integrated
+**Status:** `boxrender.py` — shipped and integrated, uses shared `renderlib.py`
 
 Handles:
 - Single and multi-section boxes (┌─┐│└─┘ and +---+|+---+)
@@ -64,8 +64,8 @@ Handles:
 └─────────────────┘
 ```
 
-### Phase 2: Boxes + Arrows (Flowcharts)
-**Priority:** Highest — most common AI-generated diagram after boxes
+### Phase 2: Boxes + Arrows (Flowcharts) (DONE)
+**Status:** `flowrender.py` — shipped. Horizontal + vertical arrows, auto-rotating arrowheads.
 
 What LLMs produce:
 ```
@@ -92,8 +92,8 @@ Key challenge: Arrow character `v` vs the letter `v`. Resolution: `v` is an arro
 **only** when it appears at the end of a vertical line of `│` characters, or standalone
 between two vertically-aligned boxes. In all other contexts, it's text.
 
-### Phase 3: Tables
-**Priority:** High — LLMs generate ASCII tables constantly
+### Phase 3: Tables (DONE)
+**Status:** `tablerender.py` — shipped. Unicode + ASCII borders, header detection, cell extraction.
 
 What LLMs produce:
 ```
@@ -124,8 +124,8 @@ Parsing approach:
 Differentiation from boxes: Tables have **column alignment** — multiple vertical borders
 at consistent column positions across rows. Boxes are free-positioned.
 
-### Phase 4: Sequence Diagrams
-**Priority:** Medium — common in API and protocol documentation
+### Phase 4: Sequence Diagrams (DONE)
+**Status:** `sequencerender.py` — shipped. 2-4+ actors, cross-lane messages, bidirectional arrows.
 
 What LLMs produce:
 ```
@@ -267,38 +267,34 @@ All renderers share a CSS theme (dark/light via `prefers-color-scheme`):
 
 ## Transaction Plan
 
-### T1: Extract shared renderlib (small)
-- Extract grid parsing, box detection, SVG primitives from boxrender.py into renderlib.py
-- boxrender.py becomes thin wrapper calling renderlib
-- All tests still pass
-- **Commit:** `refactor: Extract shared renderlib from boxrender`
+### T1: Extract shared renderlib (DONE)
+- ✅ Extracted grid parsing, box detection, SVG primitives into `renderlib.py`
+- ✅ `boxrender.py` is now a thin wrapper calling renderlib
+- **Commit:** `97126f7`
 
-### T2: Arrow detection + flow renderer (medium)
-- Implement arrow path tracing in renderlib (horizontal, vertical, right-angle)
-- Build flowrender.py: detect boxes + arrows, render as connected diagram
-- Wire into diagrams.py routing (before box renderer in priority)
-- Test with real Claude Code flowchart output
-- **Commit:** `feat: Add flow diagram renderer (boxes + arrows)`
+### T2: Arrow detection + flow renderer (DONE)
+- ✅ Arrow path tracing in renderlib (horizontal, vertical)
+- ✅ `flowrender.py` detects boxes + arrows, renders connected diagrams
+- ✅ Auto-rotating SVG arrowhead markers (`orient="auto-start-reverse"`)
+- **Commit:** `97126f7` (combined with T1), fix: `8033ecf`
 
-### T3: Table renderer (medium)
-- Implement grid intersection detection in renderlib
-- Build tablerender.py: detect table structure, extract cells, render
-- Handle both Unicode and ASCII table borders
-- Test with real LLM table output
-- **Commit:** `feat: Add table renderer`
+### T3: Table renderer (DONE)
+- ✅ Grid intersection detection in `tablerender.py`
+- ✅ Unicode and ASCII table borders
+- ✅ Header detection and cell extraction
+- **Commit:** `b6e1012`
 
-### T4: Sequence diagram renderer (medium-large)
-- Implement vertical lane detection
-- Build sequencerender.py: lanes, horizontal messages, activation boxes
-- Test with real API/protocol sequence diagrams
-- **Commit:** `feat: Add sequence diagram renderer`
+### T4: Sequence diagram renderer (DONE)
+- ✅ Vertical lane detection with actor labels
+- ✅ Horizontal message arrows with labels
+- ✅ 2-4+ actors, cross-lane messages, bidirectional arrows
+- **Commit:** `2813c82`
 
-### T5: Polish + test suite (medium)
-- Comprehensive test suite with real LLM output samples
-- Edge cases: mixed diagrams, partial structures, Unicode variants
-- Performance benchmarks (should be faster than HTTP to kroki.io)
-- Update ARCHITECTURE.md
-- **Commit:** `test: Add comprehensive renderer test suite`
+### T5: Test suite + border fix (DONE)
+- ✅ 78 tests: detection, rendering, cross-type discrimination, edge cases
+- ✅ Fixed `has_horiz_border` to require 60% border chars (prevents gap false positives)
+- ✅ Updated RENDERER-EXPANSION.md status
+- **Commit:** (this commit)
 
 ### T6: Standalone package consideration
 - Evaluate extracting renderer as standalone PyPI package (`aiart2svg` or similar)
