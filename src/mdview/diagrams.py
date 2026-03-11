@@ -198,6 +198,11 @@ def render_svg(
     if diagram_type == DiagramType.MERMAID:
         return _render_mermaid(diagram, service_url)
     elif diagram_type in (DiagramType.SVGBOB, DiagramType.ASCII_AUTO):
+        # Try native box renderer for box-style diagrams (no HTTP needed)
+        if diagram_type == DiagramType.ASCII_AUTO:
+            from .boxrender import has_box_structure, render_box_svg
+            if has_box_structure(diagram):
+                return render_box_svg(diagram)
         return _render_kroki(diagram, "svgbob", service_url)
     elif diagram_type == DiagramType.DITAA:
         return _render_kroki(diagram, "ditaa", service_url)
