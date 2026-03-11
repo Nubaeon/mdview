@@ -16,6 +16,7 @@ from .boxrender import has_box_structure, render_box_svg
 from .diagrams import DiagramBlock, DiagramType, extract_diagram_blocks, render_svg
 from .flowrender import has_flow_structure, render_flow_svg
 from .renderer import render_file, render_html, render_terminal
+from .sequencerender import has_sequence_structure, render_sequence_svg
 from .server import serve
 from .tablerender import has_table_structure, render_table_svg
 
@@ -25,8 +26,10 @@ __all__ = [
     "extract_diagram_blocks",
     "has_box_structure",
     "has_flow_structure",
+    "has_sequence_structure",
     "render_box_svg",
     "render_flow_svg",
+    "render_sequence_svg",
     "render_svg",
     "render_file",
     "render_html",

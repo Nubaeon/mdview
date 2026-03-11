@@ -201,11 +201,15 @@ def render_svg(
         # Try native renderers for structure-recognized diagrams (no HTTP needed)
         if diagram_type == DiagramType.ASCII_AUTO:
             from .flowrender import has_flow_structure, render_flow_svg
+            from .sequencerender import has_sequence_structure, render_sequence_svg
             from .tablerender import has_table_structure, render_table_svg
             from .boxrender import has_box_structure, render_box_svg
             # Most specific first: flow (boxes + arrows)
             if has_flow_structure(diagram):
                 return render_flow_svg(diagram)
+            # Sequence diagrams (vertical lanes + horizontal messages)
+            if has_sequence_structure(diagram):
+                return render_sequence_svg(diagram)
             # Tables (grid intersections)
             if has_table_structure(diagram):
                 return render_table_svg(diagram)
