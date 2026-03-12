@@ -15,6 +15,7 @@ from mdview.boxrender import has_box_structure, render_box_svg
 from mdview.flowrender import has_flow_structure, render_flow_svg
 from mdview.sequencerender import has_sequence_structure, render_sequence_svg
 from mdview.tablerender import has_table_structure, render_table_svg
+from mdview.wireframerender import has_wireframe_structure, render_wireframe_svg
 from mdview.renderlib import (
     Arrow,
     Box,
@@ -690,3 +691,111 @@ class TestEdgeCases:
         assert has_flow_structure("hello") is False
         assert has_table_structure("hello") is False
         assert has_sequence_structure("hello") is False
+        assert has_wireframe_structure("hello") is False
+
+
+# ── Wireframe renderer tests ───────────────────────────────────────
+
+WIREFRAME_APP = """\
+┌──────────── My App ─────────────┐
+│ ┌─────────────────────────────┐ │
+│ │  Home   About   Settings   │ │
+│ └─────────────────────────────┘ │
+│                                 │
+│ ┌──────────┐  ┌──────────────┐  │
+│ │ > Users  │  │ User Details │  │
+│ │ > Teams  │  │              │  │
+│ │ > Roles  │  │ Name: [____] │  │
+│ │          │  │ [x] Active   │  │
+│ └──────────┘  └──────────────┘  │
+│                                 │
+│ ┌─────────────────────────────┐ │
+│ │   Status: Ready             │ │
+│ └─────────────────────────────┘ │
+└─────────────────────────────────┘"""
+
+WIREFRAME_DASHBOARD = """\
+┌──────────── Dashboard ──────────┐
+│ ┌──────────────┐ ┌────────────┐ │
+│ │ Total Users  │ │ Revenue    │ │
+│ │   1,234      │ │  $45,678   │ │
+│ └──────────────┘ └────────────┘ │
+│                                 │
+│ ┌─────────────────────────────┐ │
+│ │ (*) Weekly                  │ │
+│ │ ( ) Monthly                 │ │
+│ │ ( ) Yearly                  │ │
+│ └─────────────────────────────┘ │
+│                                 │
+│ ┌─────────────────────────────┐ │
+│ │ [x] Show charts            │ │
+│ │ [x] Include projections    │ │
+│ │ [ ] Export to CSV           │ │
+│ └─────────────────────────────┘ │
+└─────────────────────────────────┘"""
+
+
+class TestWireframeDetection:
+    """Tests for wireframe structure detection."""
+
+    def test_detects_nested_boxes(self):
+        assert has_wireframe_structure(WIREFRAME_APP) is True
+
+    def test_detects_dashboard_wireframe(self):
+        assert has_wireframe_structure(WIREFRAME_DASHBOARD) is True
+
+    def test_rejects_simple_box(self):
+        """A single box is not a wireframe."""
+        assert has_wireframe_structure(SIMPLE_BOX) is False
+
+    def test_rejects_non_nested_boxes(self):
+        """Side-by-side boxes without nesting are not wireframes."""
+        assert has_wireframe_structure(MULTI_BOX) is False
+
+    def test_rejects_flow_diagram(self):
+        """Flow diagrams have boxes + arrows, not nesting."""
+        assert has_wireframe_structure(HORIZONTAL_FLOW) is False
+
+
+class TestWireframeRendering:
+    """Tests for wireframe SVG rendering."""
+
+    def test_svg_has_wireframe_boxes(self):
+        svg = render_wireframe_svg(WIREFRAME_APP)
+        assert 'class="wf-box' in svg
+        # Should have 5 boxes: outer + nav + sidebar + content + status
+        assert svg.count('class="wf-box') == 5
+
+    def test_svg_has_title(self):
+        svg = render_wireframe_svg(WIREFRAME_APP)
+        assert "My App" in svg
+        assert 'class="wf-title"' in svg
+
+    def test_svg_has_form_elements(self):
+        svg = render_wireframe_svg(WIREFRAME_APP)
+        assert 'class="wf-input"' in svg  # [____]
+        assert 'class="wf-checkbox"' in svg  # [x]
+
+    def test_svg_has_list_items(self):
+        svg = render_wireframe_svg(WIREFRAME_APP)
+        assert 'class="wf-bullet"' in svg
+
+    def test_dashboard_has_radio_buttons(self):
+        svg = render_wireframe_svg(WIREFRAME_DASHBOARD)
+        assert 'class="wf-radio"' in svg
+        assert 'class="wf-radio-fill"' in svg  # (*) filled
+
+    def test_dashboard_has_checkboxes(self):
+        svg = render_wireframe_svg(WIREFRAME_DASHBOARD)
+        assert 'class="wf-checkbox"' in svg
+        assert 'class="wf-check"' in svg  # [x] checked
+
+    def test_depth_classes(self):
+        svg = render_wireframe_svg(WIREFRAME_APP)
+        assert 'wf-depth-0' in svg  # outer box
+        assert 'wf-depth-1' in svg  # inner boxes
+
+    def test_wireframe_css(self):
+        svg = render_wireframe_svg(WIREFRAME_APP)
+        assert '.wf-box' in svg
+        assert 'prefers-color-scheme: light' in svg

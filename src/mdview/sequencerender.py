@@ -21,6 +21,7 @@ from __future__ import annotations
 import html as html_mod
 
 from . import renderlib as rl
+from .themes import DEFAULT_THEME
 
 
 def has_sequence_structure(source: str) -> bool:
@@ -33,11 +34,6 @@ def has_sequence_structure(source: str) -> bool:
     """
     grid, width, height = rl.parse_grid(source)
     if width == 0 or height < 4:
-        return False
-
-    # Must NOT have boxes — that's a flow diagram
-    boxes = rl.find_boxes(grid)
-    if boxes:
         return False
 
     lanes = _detect_lanes(grid, width, height)
@@ -121,11 +117,11 @@ def _detect_lanes(
 
     # Find the maximum count to establish threshold
     max_count = max(len(rows_list) for rows_list in col_counts.values())
-    if max_count < 2:
-        return []
+    if max_count < 3:
+        return []  # need substantial vertical runs, not just box borders
 
-    # Lanes: columns with │ count >= 40% of max_count and at least 2 occurrences
-    threshold = max(2, int(max_count * 0.4))
+    # Lanes: columns with │ count >= 40% of max_count and at least 3 occurrences
+    threshold = max(3, int(max_count * 0.4))
     lane_cols = sorted(
         c for c, rows_list in col_counts.items()
         if len(rows_list) >= threshold
@@ -410,26 +406,8 @@ def _generate_sequence_svg(
         f'class="mdview-diagram">'
     )
 
-    # Theme CSS
-    parts.append("""  <style>
-    .mdview-diagram { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', monospace; font-size: 13px; }
-    .mdview-diagram .bg { fill: #1a1b26; }
-    .mdview-diagram .actor-box { fill: #24283b; stroke: #7aa2f7; stroke-width: 1.5; }
-    .mdview-diagram .actor-text { fill: #9ece6a; font-weight: 600; text-anchor: middle; dominant-baseline: central; }
-    .mdview-diagram .lifeline { stroke: #565f89; stroke-width: 1; stroke-dasharray: 6,4; }
-    .mdview-diagram .msg-line { stroke: #bb9af7; stroke-width: 1.5; fill: none; }
-    .mdview-diagram .msg-head { fill: #bb9af7; stroke: none; }
-    .mdview-diagram .msg-label { fill: #e0af68; font-size: 12px; text-anchor: middle; }
-    @media (prefers-color-scheme: light) {
-      .mdview-diagram .bg { fill: #f8f8fc; }
-      .mdview-diagram .actor-box { fill: #e8e8f0; stroke: #2e7de9; }
-      .mdview-diagram .actor-text { fill: #587539; }
-      .mdview-diagram .lifeline { stroke: #9ca0b0; }
-      .mdview-diagram .msg-line { stroke: #7847bd; }
-      .mdview-diagram .msg-head { fill: #7847bd; }
-      .mdview-diagram .msg-label { fill: #8c6c3e; }
-    }
-  </style>""")
+    # Theme CSS (from theme system)
+    parts.append(DEFAULT_THEME.sequence_css())
 
     # Arrowhead marker
     parts.append("""  <defs>

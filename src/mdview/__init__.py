@@ -19,6 +19,7 @@ from .renderer import render_file, render_html, render_terminal
 from .sequencerender import has_sequence_structure, render_sequence_svg
 from .server import serve
 from .tablerender import has_table_structure, render_table_svg
+from .wireframerender import has_wireframe_structure, render_wireframe_svg
 
 __all__ = [
     "DiagramBlock",
@@ -27,10 +28,12 @@ __all__ = [
     "has_box_structure",
     "has_flow_structure",
     "has_sequence_structure",
+    "has_wireframe_structure",
     "render_box_svg",
     "render_flow_svg",
     "render_sequence_svg",
     "render_svg",
+    "render_wireframe_svg",
     "render_file",
     "render_html",
     "render_terminal",

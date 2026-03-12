@@ -18,7 +18,7 @@ VERT_CHARS = frozenset("│║|")
 TEE_CHARS = frozenset("├┤┬┴┼╠╣╦╩╬+")
 ARROW_HEADS_RIGHT = frozenset(">→▶")
 ARROW_HEADS_LEFT = frozenset("<←◀")
-ARROW_HEADS_DOWN = frozenset("▼↓")
+ARROW_HEADS_DOWN = frozenset("▼↓v")
 ARROW_HEADS_UP = frozenset("▲↑^")
 ALL_ARROW_HEADS = ARROW_HEADS_RIGHT | ARROW_HEADS_LEFT | ARROW_HEADS_DOWN | ARROW_HEADS_UP
 
@@ -123,7 +123,155 @@ def find_boxes(grid: list[list[str]]) -> list[Box]:
             if r + 1 >= rows or grid[r + 1][c] not in (VERT_CHARS | TEE_CHARS):
                 continue
 
-            right = _trace_horiz(grid, r, c + 1, cols)
+            bottom = _trace_vert(grid, c, r + 1, rows)
+            if bottom is None:
+                continue
+
+            # Try each possible right edge — '+' can be a corner OR a
+            # mid-border tee, so _trace_horiz may stop too early.
+            search_start = c + 1
+            while True:
+                right = _trace_horiz(grid, r, search_start, cols)
+                if right is None:
+                    break
+
+                if grid[bottom][right] not in CORNER_CHARS:
+                    search_start = right + 1
+                    continue
+                if not has_horiz_border(grid, bottom, c, right):
+                    search_start = right + 1
+                    continue
+                if not has_vert_border(grid, right, r, bottom):
+                    search_start = right + 1
+                    continue
+
+                separators = []
+                for sr in range(r + 1, bottom):
+                    if grid[sr][c] in TEE_CHARS and grid[sr][right] in TEE_CHARS:
+                        if has_horiz_border(grid, sr, c, right):
+                            separators.append(sr)
+
+                is_new = True
+                for existing in boxes:
+                    if (existing.top == r and existing.left == c and
+                            existing.bottom == bottom and existing.right == right):
+                        is_new = False
+                        break
+                if is_new:
+                    boxes.append(Box(
+                        top=r, left=c, bottom=bottom, right=right,
+                        separators=separators,
+                    ))
+                break  # found valid box for this top-left corner
+
+    return boxes
+
+
+def _trace_horiz(grid: list[list[str]], row: int, start_col: int, max_col: int) -> int | None:
+    """Trace horizontal border right, return column of corner/tee.
+
+    Allows arrowhead characters (▼, ▲, etc.) in borders — these are
+    common where arrows enter/exit a box through its border.
+    """
+    for c in range(start_col, max_col):
+        ch = grid[row][c]
+        if ch in CORNER_CHARS:
+            return c
+        if ch not in HORIZ_CHARS and ch not in TEE_CHARS and ch != ' ' and ch not in ALL_ARROW_HEADS:
+            return None
+    return None
+
+
+def _trace_vert(grid: list[list[str]], col: int, start_row: int, max_row: int) -> int | None:
+    """Trace vertical border down, return row of corner/tee.
+
+    Allows arrowhead characters in borders where arrows cross.
+    """
+    for r in range(start_row, max_row):
+        ch = grid[r][col]
+        if ch in CORNER_CHARS:
+            return r
+        if ch not in (VERT_CHARS | TEE_CHARS) and ch not in ALL_ARROW_HEADS:
+            return None
+    return None
+
+
+def has_horiz_border(grid: list[list[str]], row: int, left: int, right: int) -> bool:
+    """Check if row has a continuous horizontal border between left and right.
+
+    Requires at least 60% of characters to be actual border chars (not just spaces).
+    Arrowheads are allowed — they appear where arrows enter/exit boxes.
+    Rejects borders with gaps of 2+ consecutive spaces (separate structures).
+    """
+    span = right - left - 1
+    if span <= 0:
+        return False
+    border_count = 0
+    consecutive_spaces = 0
+    for c in range(left + 1, right):
+        ch = grid[row][c]
+        if ch in HORIZ_CHARS or ch in TEE_CHARS:
+            border_count += 1
+            consecutive_spaces = 0
+        elif ch in ALL_ARROW_HEADS:
+            border_count += 1  # arrowheads count as border chars
+            consecutive_spaces = 0
+        elif ch == ' ':
+            consecutive_spaces += 1
+            if consecutive_spaces >= 2:
+                return False
+        else:
+            return False
+    return border_count / span >= 0.6
+
+
+def has_vert_border(grid: list[list[str]], col: int, top: int, bottom: int) -> bool:
+    """Check if col has a continuous vertical border between top and bottom."""
+    for r in range(top + 1, bottom):
+        if grid[r][col] not in (VERT_CHARS | TEE_CHARS):
+            return False
+    return True
+
+
+# ── Tolerant box detection (wireframes) ────────────────────────────
+
+def _trace_horiz_tolerant(grid: list[list[str]], row: int, start_col: int, max_col: int) -> int | None:
+    """Trace horizontal border right, allowing text on borders (title-on-border pattern).
+
+    Only stops on vertical border chars. Accepts text and spaces between borders.
+    Returns column of corner/tee, or None if a vertical border interrupts.
+    """
+    for c in range(start_col, max_col):
+        ch = grid[row][c]
+        if ch in CORNER_CHARS:
+            return c
+        if ch in VERT_CHARS:
+            return None
+    return None
+
+
+def find_boxes_tolerant(grid: list[list[str]]) -> list[Box]:
+    """Find boxes allowing text on top/bottom borders (wireframe title pattern).
+
+    Like find_boxes but uses tolerant horizontal tracing and density-based
+    border validation instead of strict character-only tracing.
+    """
+    rows = len(grid)
+    cols = len(grid[0]) if grid else 0
+    boxes: list[Box] = []
+
+    for r in range(rows):
+        for c in range(cols):
+            ch = grid[r][c]
+            if ch not in CORNER_CHARS:
+                continue
+
+            # Must have vert down
+            if r + 1 >= rows or grid[r + 1][c] not in (VERT_CHARS | TEE_CHARS):
+                continue
+
+            # Tolerant horizontal trace (allows title text)
+            right = _trace_horiz_tolerant(grid, r, c + 1, cols)
             if right is None:
                 continue
 
@@ -133,9 +281,10 @@ def find_boxes(grid: list[list[str]]) -> list[Box]:
 
             if grid[bottom][right] not in CORNER_CHARS:
                 continue
-            if not has_horiz_border(grid, bottom, c, right):
+            # Bottom border must be valid (use has_horiz_border which allows text + 60% density)
+            if not _has_horiz_border_tolerant(grid, bottom, c, right):
                 continue
-            if not has_vert_border(grid, right, r, bottom):
+            if not _has_vert_border_tolerant(grid, right, r, bottom):
                 continue
 
             separators = []
@@ -159,34 +308,27 @@ def find_boxes(grid: list[list[str]]) -> list[Box]:
     return boxes
 
 
-def _trace_horiz(grid: list[list[str]], row: int, start_col: int, max_col: int) -> int | None:
-    """Trace horizontal border right, return column of corner/tee."""
-    for c in range(start_col, max_col):
-        ch = grid[row][c]
-        if ch in CORNER_CHARS:
-            return c
-        if ch not in HORIZ_CHARS and ch != ' ':
-            return None
-    return None
+def _has_vert_border_tolerant(grid: list[list[str]], col: int, top: int, bottom: int) -> bool:
+    """Tolerant vertical border check (allows short lines / missing chars).
 
-
-def _trace_vert(grid: list[list[str]], col: int, start_row: int, max_row: int) -> int | None:
-    """Trace vertical border down, return row of corner/tee."""
-    for r in range(start_row, max_row):
-        ch = grid[r][col]
-        if ch in CORNER_CHARS:
-            return r
-        if ch not in (VERT_CHARS | TEE_CHARS):
-            return None
-    return None
-
-
-def has_horiz_border(grid: list[list[str]], row: int, left: int, right: int) -> bool:
-    """Check if row has a continuous horizontal border between left and right.
-
-    Requires at least 60% of characters to be actual border chars (not just spaces).
-    This prevents gaps between separate boxes from being treated as borders.
+    Uses 50% threshold for larger spans. For very short boxes (1-2 content rows),
+    the corners themselves are sufficient evidence — common in wireframes where
+    inner content │ sits one column off from the corner position.
     """
+    span = bottom - top - 1
+    if span <= 0:
+        return False
+    if span <= 2:
+        return True  # corners already validated; short boxes get a pass
+    border_count = 0
+    for r in range(top + 1, bottom):
+        if col < len(grid[r]) and grid[r][col] in (VERT_CHARS | TEE_CHARS):
+            border_count += 1
+    return border_count / span >= 0.5
+
+
+def _has_horiz_border_tolerant(grid: list[list[str]], row: int, left: int, right: int) -> bool:
+    """Like has_horiz_border but allows any non-vertical chars (text on border)."""
     span = right - left - 1
     if span <= 0:
         return False
@@ -195,17 +337,9 @@ def has_horiz_border(grid: list[list[str]], row: int, left: int, right: int) -> 
         ch = grid[row][c]
         if ch in HORIZ_CHARS or ch in TEE_CHARS:
             border_count += 1
-        elif ch != ' ':
-            return False
-    return border_count / span >= 0.6
-
-
-def has_vert_border(grid: list[list[str]], col: int, top: int, bottom: int) -> bool:
-    """Check if col has a continuous vertical border between top and bottom."""
-    for r in range(top + 1, bottom):
-        if grid[r][col] not in (VERT_CHARS | TEE_CHARS):
-            return False
-    return True
+        elif ch in VERT_CHARS:
+            return False  # vertical border interrupts
+    return border_count / span >= 0.4  # lower threshold for tolerant mode
 
 
 # ── Text extraction ─────────────────────────────────────────────────
@@ -481,6 +615,20 @@ def _find_arrow_label_vert(
             if text and len(text) > 1:
                 return text
 
+    # Check left of arrow
+    for r in range(start_row, end_row + 1):
+        if col - 2 >= 0:
+            text = ""
+            for c in range(max(0, col - 20), col - 1):
+                ch = grid[r][c]
+                if ch in HORIZ_CHARS | VERT_CHARS | CORNER_CHARS | TEE_CHARS:
+                    text = ""  # reset — only take text after last structural char
+                    continue
+                text += ch
+            text = text.strip()
+            if text and len(text) > 1:
+                return text
+
     return None
 
 
@@ -505,18 +653,17 @@ def _extract_text_near(
 def _join_arrow_segments(
     arrows: list[Arrow], grid: list[list[str]], boxes: list[Box]
 ) -> list[Arrow]:
-    """Join adjacent arrow segments into multi-segment (L/U-shaped) arrows.
+    """Join adjacent arrow segments into multi-segment arrows.
 
-    After individual horizontal and vertical segments are detected, this function
-    finds pairs that share a corner character (└, ┘, ┌, ┐) at their endpoints
-    and merges them into a single arrow with multiple waypoints.
-
-    This handles back-edges in state machines like:
-        Active ──down──> corner ──left──> Idle
+    Two merge passes:
+    1. Corner merging: L/U-shaped arrows through corner characters (└, ┌, etc.)
+    2. Collinear merging: same-row/column segments with text gaps between them
+       (e.g., ── REST ─> becomes one arrow with label "REST")
     """
     if len(arrows) < 2:
         return arrows
 
+    # Pass 1: Corner merging (L-shaped, U-shaped)
     joined: set[int] = set()
     result: list[Arrow] = []
 
@@ -545,7 +692,194 @@ def _join_arrow_segments(
 
         result.append(current)
 
+    # Pass 2: Collinear merging — join same-row or same-column segments
+    # separated by text (inline labels like ── REST ─>)
+    result = _join_collinear_segments(result, grid, boxes)
+
     return result
+
+
+def _join_collinear_segments(
+    arrows: list[Arrow], grid: list[list[str]], boxes: list[Box]
+) -> list[Arrow]:
+    """Join collinear arrow segments separated by inline text.
+
+    Pattern: ── REST ─>  (two horizontal segments on the same row with text gap)
+    The text in the gap becomes the arrow label.
+    """
+    if len(arrows) < 2:
+        return arrows
+
+    joined: set[int] = set()
+    result: list[Arrow] = []
+
+    for i in range(len(arrows)):
+        if i in joined:
+            continue
+
+        current = arrows[i]
+        merged = True
+
+        while merged:
+            merged = False
+            for j in range(len(arrows)):
+                if j in joined or (j == i and id(arrows[j]) == id(current)):
+                    continue
+                if j in joined:
+                    continue
+
+                other = arrows[j]
+                merged_arrow = _try_collinear_merge(current, other, grid, boxes)
+                if merged_arrow:
+                    current = merged_arrow
+                    joined.add(j)
+                    merged = True
+                    break
+
+        result.append(current)
+
+    return result
+
+
+def _try_collinear_merge(
+    a: Arrow, b: Arrow, grid: list[list[str]], boxes: list[Box]
+) -> Arrow | None:
+    """Try to merge two collinear arrow segments with a text gap.
+
+    For horizontal: both on the same row, gap <= 15 chars, text in the gap.
+    For vertical: both on the same column, gap <= 10 rows, text beside the gap.
+    Does NOT merge across box borders (a box boundary in the gap blocks merging).
+    """
+    if not a.points or not b.points:
+        return None
+
+    a_row_set = {p[0] for p in a.points}
+    b_row_set = {p[0] for p in b.points}
+    a_col_set = {p[1] for p in a.points}
+    b_col_set = {p[1] for p in b.points}
+
+    # Horizontal: same single row
+    if len(a_row_set) == 1 and len(b_row_set) == 1 and a_row_set == b_row_set:
+        row = next(iter(a_row_set))
+        a_min_c = min(p[1] for p in a.points)
+        a_max_c = max(p[1] for p in a.points)
+        b_min_c = min(p[1] for p in b.points)
+        b_max_c = max(p[1] for p in b.points)
+
+        # Determine which is left and which is right
+        if a_max_c < b_min_c:
+            left_a, right_b = a, b
+            gap_start, gap_end = a_max_c + 1, b_min_c - 1
+        elif b_max_c < a_min_c:
+            left_a, right_b = b, a
+            gap_start, gap_end = b_max_c + 1, a_min_c - 1
+        else:
+            return None  # overlapping
+
+        gap = gap_end - gap_start + 1
+        if gap < 1 or gap > 15:
+            return None
+
+        # Don't merge across box borders — if any column in the gap
+        # is a box left or right edge on this row, abort
+        for box in boxes:
+            if box.top <= row <= box.bottom:
+                if gap_start <= box.left <= gap_end or gap_start <= box.right <= gap_end:
+                    return None
+
+        # Extract text from the gap
+        label_chars = []
+        for c in range(gap_start, gap_end + 1):
+            ch = grid[row][c]
+            if ch in HORIZ_CHARS | ALL_ARROW_HEADS:
+                continue
+            label_chars.append(ch)
+        label = "".join(label_chars).strip()
+
+        if not label:
+            return None
+
+        # Merge points (left to right)
+        merged_points = sorted(
+            left_a.points + right_b.points, key=lambda p: p[1]
+        )
+
+        # Determine direction from arrowhead
+        ah_end, ah_dir = _find_arrowhead_direction(grid, merged_points)
+        if ah_end == "start":
+            merged_points = list(reversed(merged_points))
+
+        from_box = _find_adjacent_box_any_side(
+            boxes, merged_points[0][0], merged_points[0][1]
+        )
+        to_box = _find_adjacent_box_any_side(
+            boxes, merged_points[-1][0], merged_points[-1][1]
+        )
+
+        return Arrow(
+            points=merged_points,
+            direction=ah_dir,
+            label=label,
+            from_box=from_box,
+            to_box=to_box,
+        )
+
+    # Vertical: same single column
+    if len(a_col_set) == 1 and len(b_col_set) == 1 and a_col_set == b_col_set:
+        col = next(iter(a_col_set))
+        a_min_r = min(p[0] for p in a.points)
+        a_max_r = max(p[0] for p in a.points)
+        b_min_r = min(p[0] for p in b.points)
+        b_max_r = max(p[0] for p in b.points)
+
+        if a_max_r < b_min_r:
+            top_a, bot_b = a, b
+            gap_start, gap_end = a_max_r + 1, b_min_r - 1
+        elif b_max_r < a_min_r:
+            top_a, bot_b = b, a
+            gap_start, gap_end = b_max_r + 1, a_min_r - 1
+        else:
+            return None
+
+        gap = gap_end - gap_start + 1
+        if gap < 1 or gap > 10:
+            return None
+
+        # Don't merge across box borders — if any row in the gap
+        # is a box top or bottom edge at this column, abort
+        for box in boxes:
+            if box.left <= col <= box.right:
+                if gap_start <= box.top <= gap_end or gap_start <= box.bottom <= gap_end:
+                    return None
+
+        # Look for label text to the right of the gap rows
+        label = _find_arrow_label_vert(grid, col, gap_start, gap_end)
+
+        # Merge points (top to bottom)
+        merged_points = sorted(
+            top_a.points + bot_b.points, key=lambda p: p[0]
+        )
+
+        ah_end, ah_dir = _find_arrowhead_direction(grid, merged_points)
+        if ah_end == "start":
+            merged_points = list(reversed(merged_points))
+
+        from_box = _find_adjacent_box_any_side(
+            boxes, merged_points[0][0], merged_points[0][1]
+        )
+        to_box = _find_adjacent_box_any_side(
+            boxes, merged_points[-1][0], merged_points[-1][1]
+        )
+
+        return Arrow(
+            points=merged_points,
+            direction=ah_dir,
+            label=label or top_a.label or bot_b.label,
+            from_box=from_box,
+            to_box=to_box,
+        )
+
+    return None
 
 
 def _find_arrowhead_direction(grid: list[list[str]], points: list[tuple[int, int]]) -> tuple[str | None, str]:
@@ -668,31 +1002,9 @@ CHAR_H = 16
 PAD_X = 12
 PAD_Y = 8
 
-# Theme CSS — shared across all renderers
-THEME_CSS = """
-  <style>
-    .mdview-diagram { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', monospace; font-size: 13px; }
-    .mdview-diagram .box-border { stroke: #7aa2f7; stroke-width: 1.5; fill: none; }
-    .mdview-diagram .box-separator { stroke: #7aa2f7; stroke-width: 1; }
-    .mdview-diagram .box-text { fill: #a9b1d6; white-space: pre; }
-    .mdview-diagram .box-header { fill: #9ece6a; font-weight: 600; }
-    .mdview-diagram .arrow-line { stroke: #bb9af7; stroke-width: 1.5; fill: none; }
-    .mdview-diagram .arrow-head { fill: #bb9af7; stroke: none; }
-    .mdview-diagram .arrow-label { fill: #e0af68; font-size: 12px; text-anchor: middle; }
-    .mdview-diagram .arrow-label-bg { fill: #1a1b26; fill-opacity: 0.85; rx: 3; }
-    .mdview-diagram .bg { fill: #1a1b26; }
-    @media (prefers-color-scheme: light) {
-      .mdview-diagram .box-border { stroke: #2e7de9; }
-      .mdview-diagram .box-separator { stroke: #2e7de9; }
-      .mdview-diagram .box-text { fill: #343b58; }
-      .mdview-diagram .box-header { fill: #587539; }
-      .mdview-diagram .arrow-line { stroke: #7847bd; }
-      .mdview-diagram .arrow-head { fill: #7847bd; }
-      .mdview-diagram .arrow-label { fill: #8c6c3e; }
-      .mdview-diagram .arrow-label-bg { fill: #f8f8fc; fill-opacity: 0.85; }
-      .mdview-diagram .bg { fill: #f8f8fc; }
-    }
-  </style>"""
+# Theme CSS — generated from default theme, shared across all renderers
+from .themes import DEFAULT_THEME
+THEME_CSS = DEFAULT_THEME.svg_css()
 
 
 def classify_headers(texts: list[TextSpan], boxes: list[Box]) -> set[int]:
@@ -946,11 +1258,11 @@ def svg_arrow(arrow: Arrow, boxes: list[Box] | None = None) -> list[str]:
             f'  <polyline class="arrow-line" points="{points_str}"{marker}/>'
         )
 
-    # Render label if present
+    # Render label if present — centered ON the arrow line with transparent bg
     if arrow.label:
         if len(svg_pts) <= 2:
             mid_x = (svg_pts[0][0] + svg_pts[1][0]) / 2
-            mid_y = (svg_pts[0][1] + svg_pts[1][1]) / 2 - 6
+            mid_y = (svg_pts[0][1] + svg_pts[1][1]) / 2
         else:
             # Find longest segment and place label at its midpoint
             best_len = 0.0
@@ -963,7 +1275,6 @@ def svg_arrow(arrow: Arrow, boxes: list[Box] | None = None) -> list[str]:
                     best_len = seg_len
                     best_mid = ((sx + ex) / 2, (sy + ey) / 2)
             mid_x, mid_y = best_mid
-            mid_y -= 4
         escaped = html.escape(arrow.label)
         # Semi-transparent background pill behind label
         label_w = len(arrow.label) * 7.2 + 8  # ~7.2px per char at 12px mono + padding
@@ -974,7 +1285,7 @@ def svg_arrow(arrow: Arrow, boxes: list[Box] | None = None) -> list[str]:
             f'width="{label_w:.1f}" height="{label_h:.1f}" rx="3"/>'
         )
         parts.append(
-            f'  <text class="arrow-label" x="{mid_x:.1f}" y="{mid_y:.1f}">{escaped}</text>'
+            f'  <text class="arrow-label" x="{mid_x:.1f}" y="{mid_y:.1f}" dominant-baseline="central">{escaped}</text>'
         )
 
     return parts

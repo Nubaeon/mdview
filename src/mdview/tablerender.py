@@ -15,6 +15,7 @@ Structure-first: find grid intersections, trace borders, extract cells.
 from __future__ import annotations
 
 from . import renderlib as rl
+from .themes import DEFAULT_THEME
 
 
 def has_table_structure(source: str) -> bool:
@@ -148,7 +149,7 @@ def _detect_table(
         if has_border:
             valid_rows.append(r)
 
-    if len(valid_cols) < 3 or len(valid_rows) < 2:
+    if len(valid_cols) < 3 or len(valid_rows) < 3:
         return None
 
     # Detect header separator (first internal row border)
@@ -178,20 +179,8 @@ def _generate_table_svg(
         rl.svg_background(width, height),
     ]
 
-    # Add table-specific styles
-    parts.append("""  <style>
-    .mdview-diagram .table-header-bg { fill: #24283b; }
-    .mdview-diagram .table-cell-bg { fill: none; }
-    .mdview-diagram .table-border { stroke: #7aa2f7; stroke-width: 1; fill: none; }
-    .mdview-diagram .table-header-text { fill: #9ece6a; font-weight: 600; white-space: pre; }
-    .mdview-diagram .table-cell-text { fill: #a9b1d6; white-space: pre; }
-    @media (prefers-color-scheme: light) {
-      .mdview-diagram .table-header-bg { fill: #e8e8f0; }
-      .mdview-diagram .table-border { stroke: #2e7de9; }
-      .mdview-diagram .table-header-text { fill: #587539; }
-      .mdview-diagram .table-cell-text { fill: #343b58; }
-    }
-  </style>""")
+    # Add table-specific styles (from theme)
+    parts.append(DEFAULT_THEME.table_css())
 
     cols = table.col_positions
     tbl_rows = table.row_positions
@@ -245,12 +234,16 @@ def _generate_table_svg(
             c_left = cols[c_idx]
             c_right = cols[c_idx + 1]
 
-            # Extract cell content
+            # Extract cell content (filter out border chars)
             for r in range(r_top + 1, r_bot):
                 content = ""
                 for c in range(c_left + 1, c_right):
                     if c < len(grid[r]):
-                        content += grid[r][c]
+                        ch = grid[r][c]
+                        if ch in rl.VERT_CHARS or ch in rl.CORNER_CHARS or ch in rl.TEE_CHARS:
+                            content += " "
+                        else:
+                            content += ch
                 content = content.strip()
                 if content:
                     tx = rl.PAD_X + (c_left + 1) * rl.CHAR_W + 2
