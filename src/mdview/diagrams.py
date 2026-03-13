@@ -2,6 +2,10 @@
 
 Zero local dependencies — HTTP calls to mermaid.ink and kroki.io.
 Configurable via MDVIEW_DIAGRAM_SERVICE env var for local kroki.
+
+AI-driven rendering: When an AI provider is configured (mdview.yaml),
+ASCII art is interpreted to a DiagramSpec, then rendered to themed SVG.
+Falls back to heuristic routing when no AI is available.
 """
 
 from __future__ import annotations
@@ -180,6 +184,49 @@ def _looks_like_ascii_art(source: str) -> bool:
     return diagram_ratio > 0.45
 
 
+def render_from_spec(
+    source: str,
+    spec_json: str | None = None,
+) -> str | None:
+    """Render ASCII art via spec-based pipeline.
+
+    Two paths:
+    1. If spec_json is provided, use it directly (generating AI embedded the spec).
+    2. Otherwise, use configured AI provider to interpret the ASCII art.
+
+    Returns SVG string, or None if no AI is configured or interpretation fails.
+    """
+    from .spec import DiagramSpec
+    from .specrender import render_spec_svg
+
+    # Path 1: Direct spec (AI that generated the ASCII also emitted spec)
+    if spec_json:
+        try:
+            spec = DiagramSpec.from_json(spec_json)
+            return render_spec_svg(spec)
+        except Exception as e:
+            logger.warning(f"Failed to render from provided spec: {e}")
+            return None
+
+    # Path 2: Use configured AI provider to interpret
+    from .config import MdviewConfig
+    from .providers import create_provider
+
+    config = MdviewConfig.load()
+    if not config.ai.is_configured:
+        return None
+
+    provider = create_provider(config.ai)
+    if provider is None:
+        return None
+
+    spec = provider.interpret(source)
+    if spec is None:
+        return None
+
+    return render_spec_svg(spec)
+
+
 def render_svg(
     diagram: str,
     diagram_type: DiagramType = DiagramType.MERMAID,
@@ -198,8 +245,12 @@ def render_svg(
     if diagram_type == DiagramType.MERMAID:
         return _render_mermaid(diagram, service_url)
     elif diagram_type in (DiagramType.SVGBOB, DiagramType.ASCII_AUTO):
-        # Try native renderers via confidence-scored routing (no HTTP needed)
         if diagram_type == DiagramType.ASCII_AUTO:
+            # Path 1: Try spec-based rendering (AI-driven or direct spec)
+            svg = render_from_spec(diagram)
+            if svg is not None:
+                return svg
+            # Path 2: Heuristic fallback (confidence-scored routing)
             from .routing import route_diagram
             svg = route_diagram(diagram)
             if svg is not None:
