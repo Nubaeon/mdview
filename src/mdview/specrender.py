@@ -608,6 +608,209 @@ def _render_box(spec: DiagramSpec, theme: Theme) -> str:
 
 # ── Shared SVG helpers ─────────────────────────────────────────────
 
+# ── State machine renderer ─────────────────────────────────────────
+
+def _render_state_machine(spec: DiagramSpec, theme: Theme) -> str:
+    """Render state machine: states with transitions, supports self-loops and back-edges."""
+    elements = spec.elements
+    connections = spec.connections
+    if not elements:
+        return _render_fallback(spec, theme)
+
+    # Layout states in a grid pattern (better for cycles than linear)
+    nodes = _layout_state_nodes(elements)
+    id_to_node = {n["id"]: n for n in nodes}
+
+    # Extra space for self-loop arcs above nodes
+    max_x = max(n["x"] + n["w"] for n in nodes) + 40
+    max_y = max(n["y"] + n["h"] for n in nodes) + 40
+    svg_w = max_x + PAD
+    svg_h = max_y + PAD
+
+    d = theme.dark
+    parts = [
+        _svg_open(svg_w, svg_h),
+        theme.svg_css(),
+        _svg_arrowhead_defs(),
+        f"""  <style>
+    .mdview-diagram .state-node {{ stroke: {d.border}; stroke-width: 2; fill: {d.bg_secondary}; rx: 20; }}
+    .mdview-diagram .state-initial {{ stroke: {d.heading}; stroke-width: 2.5; }}
+    .mdview-diagram .state-text {{ fill: {d.header_text}; font-weight: 600; }}
+    @media (prefers-color-scheme: light) {{
+      .mdview-diagram .state-node {{ stroke: {theme.light.border}; fill: {theme.light.bg_secondary}; }}
+      .mdview-diagram .state-initial {{ stroke: {theme.light.heading}; }}
+      .mdview-diagram .state-text {{ fill: {theme.light.header_text}; }}
+    }}
+  </style>""",
+        _svg_bg(svg_w, svg_h),
+    ]
+
+    # Draw states (rounded rectangles, more rounded than flow nodes)
+    for n in nodes:
+        is_initial = n.get("elem_type") in ("initial", "start")
+        css = "state-node state-initial" if is_initial else "state-node"
+        parts.append(
+            f'  <rect class="{css}" x="{n["x"]:.1f}" y="{n["y"]:.1f}" '
+            f'width="{n["w"]:.1f}" height="{n["h"]:.1f}" rx="20"/>'
+        )
+        cx = n["x"] + n["w"] / 2
+        cy = n["y"] + n["h"] / 2
+        escaped = html_mod.escape(n["label"])
+        parts.append(
+            f'  <text class="state-text" x="{cx:.1f}" y="{cy:.1f}" '
+            f'text-anchor="middle" dominant-baseline="central">{escaped}</text>'
+        )
+
+    # Draw transitions — handle self-loops, back-edges, and forward edges
+    for conn in connections:
+        src = id_to_node.get(conn.from_id)
+        dst = id_to_node.get(conn.to_id)
+        if not src or not dst:
+            continue
+
+        if conn.from_id == conn.to_id:
+            # Self-loop: arc above the node
+            parts.extend(_svg_self_loop(src, conn))
+        else:
+            # Check if this is a back-edge (dst is left/above src)
+            src_cx = src["x"] + src["w"] / 2
+            dst_cx = dst["x"] + dst["w"] / 2
+            src_cy = src["y"] + src["h"] / 2
+            dst_cy = dst["y"] + dst["h"] / 2
+
+            is_back_edge = (dst_cx < src_cx - 20) or (dst_cy < src_cy - 20)
+
+            if is_back_edge:
+                parts.extend(_svg_curved_connection(src, dst, conn))
+            else:
+                parts.extend(_svg_connection(src, dst, conn))
+
+    parts.append("</svg>")
+    return "\n".join(parts)
+
+
+def _layout_state_nodes(elements: list[Element]) -> list[dict]:
+    """Position state machine nodes in a grid layout.
+
+    Uses a 2D grid: fills rows left-to-right, wraps after ~3 nodes.
+    More natural for state machines than a single line.
+    """
+    nodes = []
+    cols_per_row = min(max(len(elements), 2), 4)
+    gap_x, gap_y = 80, 80
+
+    for i, elem in enumerate(elements):
+        label = elem.label or elem.id
+        w = max(len(label) * 9.5 + 40, 100)
+        h = BOX_H + 4  # slightly taller for rounded look
+
+        col = i % cols_per_row
+        row = i // cols_per_row
+
+        x = PAD + col * (w + gap_x)
+        y = PAD + 30 + row * (h + gap_y)  # +30 for self-loop space above
+
+        nodes.append({
+            "id": elem.id,
+            "label": label,
+            "elem_type": elem.type,
+            "x": x, "y": y,
+            "w": w, "h": h,
+        })
+
+    return nodes
+
+
+def _svg_self_loop(node: dict, conn: Connection) -> list[str]:
+    """Render a self-loop arc above a node."""
+    parts: list[str] = []
+    cx = node["x"] + node["w"] / 2
+    top_y = node["y"]
+
+    # Arc: start from top-left of node, go up, come back to top-right
+    x1 = cx - 15
+    x2 = cx + 15
+    arc_top = top_y - 30
+
+    dash = ' stroke-dasharray="6,3"' if conn.style == "dashed" else ""
+    parts.append(
+        f'  <path class="arrow-line" d="M {x1:.1f},{top_y:.1f} '
+        f'C {x1:.1f},{arc_top:.1f} {x2:.1f},{arc_top:.1f} {x2:.1f},{top_y:.1f}" '
+        f'marker-end="url(#arrowhead)"{dash}/>'
+    )
+
+    if conn.label:
+        label_x = cx
+        label_y = arc_top - 4
+        escaped = html_mod.escape(conn.label)
+        label_w = len(conn.label) * 7.2 + 8
+        parts.append(
+            f'  <rect class="arrow-label-bg" x="{label_x - label_w / 2:.1f}" '
+            f'y="{label_y - 8:.1f}" width="{label_w:.1f}" height="16" rx="3"/>'
+        )
+        parts.append(
+            f'  <text class="arrow-label" x="{label_x:.1f}" y="{label_y:.1f}" '
+            f'dominant-baseline="central">{escaped}</text>'
+        )
+
+    return parts
+
+
+def _svg_curved_connection(src: dict, dst: dict, conn: Connection) -> list[str]:
+    """Render a back-edge as a curved path (avoids overlapping forward arrows)."""
+    parts: list[str] = []
+
+    sx, sy, sw, sh = src["x"], src["y"], src["w"], src["h"]
+    dx, dy, dw, dh = dst["x"], dst["y"], dst["w"], dst["h"]
+
+    src_cx = sx + sw / 2
+    dst_cx = dx + dw / 2
+
+    # Route below for same-row back-edges, above for multi-row
+    if abs(sy - dy) < sh:
+        # Same row: curve below
+        x1, y1 = src_cx, sy + sh
+        x2, y2 = dst_cx, dy + dh
+        ctrl_y = max(y1, y2) + 50
+        ctrl_x1 = x1
+        ctrl_x2 = x2
+    else:
+        # Different rows: curve to the side
+        if dst_cx < src_cx:
+            x1, y1 = sx, sy + sh / 2
+            x2, y2 = dx, dy + dh / 2
+        else:
+            x1, y1 = sx + sw, sy + sh / 2
+            x2, y2 = dx + dw, dy + dh / 2
+        ctrl_y = (y1 + y2) / 2
+        offset = 60
+        ctrl_x1 = min(x1, x2) - offset
+        ctrl_x2 = ctrl_x1
+
+    dash = ' stroke-dasharray="6,3"' if conn.style == "dashed" else ""
+    parts.append(
+        f'  <path class="arrow-line" d="M {x1:.1f},{y1:.1f} '
+        f'C {ctrl_x1:.1f},{ctrl_y:.1f} {ctrl_x2:.1f},{ctrl_y:.1f} {x2:.1f},{y2:.1f}" '
+        f'marker-end="url(#arrowhead)"{dash}/>'
+    )
+
+    if conn.label:
+        mid_x = (x1 + x2) / 2
+        mid_y = (y1 + y2 + ctrl_y) / 3
+        escaped = html_mod.escape(conn.label)
+        label_w = len(conn.label) * 7.2 + 8
+        parts.append(
+            f'  <rect class="arrow-label-bg" x="{mid_x - label_w / 2:.1f}" '
+            f'y="{mid_y - 9:.1f}" width="{label_w:.1f}" height="16" rx="3"/>'
+        )
+        parts.append(
+            f'  <text class="arrow-label" x="{mid_x:.1f}" y="{mid_y:.1f}" '
+            f'dominant-baseline="central">{escaped}</text>'
+        )
+
+    return parts
+
+
 def _svg_open(w: float, h: float) -> str:
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" '
@@ -740,4 +943,5 @@ _RENDERERS = {
     "wireframe": _render_wireframe,
     "table": _render_table,
     "box": _render_box,
+    "state_machine": _render_state_machine,
 }

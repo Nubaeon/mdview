@@ -133,7 +133,7 @@ class DiagramSpec:
 
 # ── Validation ────────────────────────────────────────────────────
 
-VALID_TYPES = {"flow", "sequence", "wireframe", "table", "box"}
+VALID_TYPES = {"flow", "sequence", "wireframe", "table", "box", "state_machine"}
 VALID_LAYOUTS = {"auto", "horizontal", "vertical", "grid", "nested", "sequence"}
 
 
