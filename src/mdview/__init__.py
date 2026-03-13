@@ -10,7 +10,7 @@ Usage:
     mdview serve SPEC.md --watch    # Live reload server
 """
 
-__version__ = "0.1.0"
+__version__ = "0.2.0"
 
 from .boxrender import has_box_structure, render_box_svg
 from .diagrams import DiagramBlock, DiagramType, extract_diagram_blocks, render_svg, render_from_spec

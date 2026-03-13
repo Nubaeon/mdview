@@ -4,15 +4,15 @@ build-backend = "hatchling.build"
 
 [project]
 name = "mdview"
-version = "0.1.0"
-description = "Lightweight markdown + multi-diagram viewer with interactive pan/zoom"
+version = "0.2.0"
+description = "Markdown + diagram viewer — 6 diagram types, spec-based rendering, dark/light themes"
 readme = "README.md"
 license = "MIT"
 requires-python = ">=3.10"
 authors = [
     { name = "Nubaeon", email = "hello@nubaeon.com" },
 ]
-keywords = ["markdown", "mermaid", "diagram", "viewer", "svgbob", "ditaa", "ascii-art"]
+keywords = ["markdown", "diagram", "svg", "flowchart", "sequence-diagram", "state-machine", "wireframe", "ascii-art", "mermaid", "viewer"]
 classifiers = [
     "Development Status :: 3 - Alpha",
     "Environment :: Console",
