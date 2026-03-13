@@ -247,12 +247,20 @@ def _extract_box_contents(
             child_regions.append((child.top, child.bottom, child.left, child.right))
 
         sep_set = set(box.separators)
+        first_sep = min(box.separators) if box.separators else box.bottom
         for r in range(box.top + 1, box.bottom):
             if r in sep_set:
                 continue
 
+            # Rows above the first separator are header/title rows —
+            # use full box width, don't split by column dividers
+            if dividers and r < first_sep:
+                use_panels = [(box.left + 1, box.right)]
+            else:
+                use_panels = list(zip(panel_starts, panel_ends))
+
             # Process each panel (column region) separately
-            for ps, pe in zip(panel_starts, panel_ends):
+            for ps, pe in use_panels:
                 # Skip if this panel region overlaps a child box on this row
                 skip = False
                 for ct, cb, cl, cr in child_regions:
@@ -263,7 +271,14 @@ def _extract_box_contents(
                     continue
 
                 row_text = ""
-                for c in range(ps, pe):
+                # Include right edge column if it has content (not structural)
+                # This handles text like [ John Doe ] where ] sits at box border
+                end_col = pe
+                if pe < len(grid[r]):
+                    edge_ch = grid[r][pe]
+                    if edge_ch not in (rl.VERT_CHARS | rl.CORNER_CHARS | rl.TEE_CHARS | rl.HORIZ_CHARS):
+                        end_col = pe + 1
+                for c in range(ps, end_col):
                     ch = grid[r][c]
                     if ch in rl.VERT_CHARS or ch in rl.CORNER_CHARS or ch in rl.TEE_CHARS:
                         row_text += " "
@@ -322,10 +337,10 @@ def _parse_content_row(
                 inner = text[i + 1:end]
                 # Classic blank input: [____]
                 is_blank_input = inner.replace("_", "").strip() == "" and "_" in inner
-                # Placeholder input: [ Search...     ] — text with trailing spaces, total width > 5
+                # Placeholder input: [ John Doe ] — text with padding, total width > 5
                 is_placeholder = (
                     end - i > 5 and inner.strip() and
-                    len(inner) - len(inner.rstrip()) >= 2  # trailing padding
+                    (inner[0] == " " or inner[-1] == " ")  # has leading or trailing padding
                 )
                 if is_blank_input or is_placeholder:
                     items.append(_ContentItem(

@@ -168,62 +168,71 @@ def _extract_lane_label(
 ) -> str:
     """Extract the actor label above a lane's lifeline.
 
-    Scans the header row(s) above the first │ to find text centered
-    on or near the lane's column position.
+    Scans header rows above the first │ to find text centered
+    on or near the lane's column position. Skips rows that contain
+    only box-drawing characters (borders).
     """
     if first_bar_row == 0:
         return f"Actor {col}"
 
-    # Check the row just above the first │
-    header_row = first_bar_row - 1
-    if header_row < 0:
-        return f"Actor {col}"
+    # Structural characters to ignore when looking for label text
+    structural = rl.HORIZ_CHARS | rl.VERT_CHARS | rl.CORNER_CHARS | rl.TEE_CHARS
 
-    # Find the word/phrase nearest to this column
-    row_text = "".join(grid[header_row])
+    # Scan upward from first_bar_row to find a row with actual text
+    for header_row in range(first_bar_row - 1, -1, -1):
+        row_text = "".join(grid[header_row])
 
-    # Find text segments (non-whitespace runs)
-    segments: list[tuple[int, int, str]] = []
-    i = 0
-    while i < len(row_text):
-        if row_text[i] != ' ':
-            start = i
-            # Collect the full label (may contain spaces between words)
-            # Look for runs of text separated by 1-2 spaces
-            end = i
-            while end < len(row_text):
-                if row_text[end] == ' ':
-                    # Check if there's more text after 1-2 spaces
-                    next_char = end
-                    while next_char < len(row_text) and row_text[next_char] == ' ':
-                        next_char += 1
-                    if next_char < len(row_text) and next_char - end <= 2 and row_text[next_char] not in rl.VERT_CHARS:
-                        end = next_char
-                    else:
-                        break
-                else:
-                    end += 1
-            segments.append((start, end, row_text[start:end].strip()))
-            i = end
-        else:
-            i += 1
-
-    if not segments:
-        return f"Actor {col}"
-
-    # Find the segment whose center is closest to the lane column
-    best_segment = None
-    best_dist = float('inf')
-    for start, end, text in segments:
-        if not text or text in ('│', '|', '║'):
+        # Skip rows that are all structural chars or whitespace
+        stripped = row_text.strip()
+        if not stripped:
             continue
-        center = (start + end) / 2
-        dist = abs(center - col)
-        if dist < best_dist:
-            best_dist = dist
-            best_segment = text
+        if all(ch in structural or ch == ' ' for ch in stripped):
+            continue
 
-    return best_segment or f"Actor {col}"
+        # This row has actual text — extract segments
+        segments: list[tuple[int, int, str]] = []
+        i = 0
+        while i < len(row_text):
+            if row_text[i] != ' ' and row_text[i] not in structural:
+                start = i
+                end = i
+                while end < len(row_text):
+                    if row_text[end] == ' ':
+                        next_char = end
+                        while next_char < len(row_text) and row_text[next_char] == ' ':
+                            next_char += 1
+                        if next_char < len(row_text) and next_char - end <= 2 and row_text[next_char] not in (rl.VERT_CHARS | structural):
+                            end = next_char
+                        else:
+                            break
+                    elif row_text[end] in structural:
+                        break
+                    else:
+                        end += 1
+                text = row_text[start:end].strip()
+                if text:
+                    segments.append((start, end, text))
+                i = end
+            else:
+                i += 1
+
+        if not segments:
+            continue
+
+        # Find the segment whose center is closest to the lane column
+        best_segment = None
+        best_dist = float('inf')
+        for start, end, text in segments:
+            center = (start + end) / 2
+            dist = abs(center - col)
+            if dist < best_dist:
+                best_dist = dist
+                best_segment = text
+
+        if best_segment:
+            return best_segment
+
+    return f"Actor {col}"
 
 
 def _detect_messages(
@@ -343,8 +352,11 @@ def _extract_message_label(
 ) -> str:
     """Extract the text label from a message arrow.
 
-    The label is the text between horizontal line/arrow characters.
+    First checks the arrow row itself for inline labels, then checks
+    the row above (common in sequence diagrams where the label sits
+    above the arrow line).
     """
+    # Check on the arrow row itself
     text_chars: list[str] = []
     for c in range(start, end + 1):
         ch = grid[row][c]
@@ -352,7 +364,22 @@ def _extract_message_label(
             continue
         text_chars.append(ch)
 
-    return "".join(text_chars).strip()
+    label = "".join(text_chars).strip()
+    if label:
+        return label
+
+    # Check the row above for label text (common in sequence diagrams)
+    if row > 0:
+        above_chars: list[str] = []
+        for c in range(start, end + 1):
+            if c < len(grid[row - 1]):
+                ch = grid[row - 1][c]
+                if ch in rl.HORIZ_CHARS or ch in rl.ALL_ARROW_HEADS or ch in rl.VERT_CHARS:
+                    continue
+                above_chars.append(ch)
+        label = "".join(above_chars).strip()
+
+    return label
 
 
 # ── SVG generation ──────────────────────────────────────────────────

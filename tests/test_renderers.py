@@ -799,3 +799,114 @@ class TestWireframeRendering:
         svg = render_wireframe_svg(WIREFRAME_APP)
         assert '.wf-box' in svg
         assert 'prefers-color-scheme: light' in svg
+
+
+# ── Confidence-Scored Routing Tests ──────────────────────────────────
+
+from mdview.routing import score_all, score_sequence, score_flow, score_wireframe, score_table, score_box, route_diagram, MIN_SCORE
+
+
+class TestRoutingScores:
+    """Each diagram type should score highest for its intended renderer."""
+
+    def test_box_routes_to_box(self):
+        scores = score_all(SIMPLE_BOX)
+        assert scores[0].name == "box"
+
+    def test_multi_box_routes_to_box(self):
+        scores = score_all(MULTI_BOX)
+        assert scores[0].name == "box"
+
+    def test_flow_routes_to_flow(self):
+        scores = score_all(HORIZONTAL_FLOW)
+        assert scores[0].name == "flow"
+
+    def test_vertical_flow_routes_to_flow(self):
+        scores = score_all(VERTICAL_FLOW)
+        assert scores[0].name == "flow"
+
+    def test_table_routes_to_table(self):
+        scores = score_all(UNICODE_TABLE)
+        assert scores[0].name == "table"
+
+    def test_ascii_table_routes_to_table(self):
+        scores = score_all(ASCII_TABLE)
+        assert scores[0].name == "table"
+
+    def test_sequence_routes_to_sequence(self):
+        scores = score_all(SEQUENCE_3_ACTOR)
+        assert scores[0].name == "sequence"
+
+    def test_two_actor_sequence_routes_to_sequence(self):
+        scores = score_all(SEQUENCE_2_ACTOR)
+        assert scores[0].name == "sequence"
+
+    def test_wireframe_routes_to_wireframe(self):
+        scores = score_all(WIREFRAME_APP)
+        assert scores[0].name == "wireframe"
+
+    def test_state_machine_routes_to_flow(self):
+        scores = score_all(STATE_MACHINE)
+        assert scores[0].name == "flow"
+
+
+class TestRoutingMargins:
+    """Winner should have meaningful margin over runner-up."""
+
+    def test_table_margin(self):
+        scores = score_all(UNICODE_TABLE)
+        assert scores[0].name == "table"
+        assert scores[0].score - scores[1].score >= 0.10
+
+    def test_sequence_margin(self):
+        scores = score_all(SEQUENCE_3_ACTOR)
+        assert scores[0].name == "sequence"
+        assert scores[0].score - scores[1].score >= 0.10
+
+
+class TestRoutingFallback:
+    """Non-diagram inputs should fall below MIN_SCORE."""
+
+    def test_file_tree_no_match(self):
+        scores = score_all(FILE_TREE)
+        assert scores[0].score < MIN_SCORE
+
+    def test_code_no_match(self):
+        scores = score_all(CODE_BLOCK)
+        assert scores[0].score < MIN_SCORE
+
+    def test_empty_no_match(self):
+        scores = score_all("")
+        assert scores[0].score < MIN_SCORE
+
+    def test_route_returns_none_for_code(self):
+        assert route_diagram(CODE_BLOCK) is None
+
+
+class TestRouteProducesSvg:
+    """route_diagram should produce valid SVG for known diagram types."""
+
+    def test_box_svg(self):
+        svg = route_diagram(SIMPLE_BOX)
+        assert svg is not None
+        assert "<svg" in svg
+
+    def test_flow_svg(self):
+        svg = route_diagram(HORIZONTAL_FLOW)
+        assert svg is not None
+        assert "<svg" in svg
+
+    def test_table_svg(self):
+        svg = route_diagram(UNICODE_TABLE)
+        assert svg is not None
+        assert "<svg" in svg
+
+    def test_sequence_svg(self):
+        svg = route_diagram(SEQUENCE_3_ACTOR)
+        assert svg is not None
+        assert "<svg" in svg
+
+    def test_wireframe_svg(self):
+        svg = route_diagram(WIREFRAME_APP)
+        assert svg is not None
+        assert "<svg" in svg

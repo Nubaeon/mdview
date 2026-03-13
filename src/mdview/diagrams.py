@@ -198,28 +198,12 @@ def render_svg(
     if diagram_type == DiagramType.MERMAID:
         return _render_mermaid(diagram, service_url)
     elif diagram_type in (DiagramType.SVGBOB, DiagramType.ASCII_AUTO):
-        # Try native renderers for structure-recognized diagrams (no HTTP needed)
+        # Try native renderers via confidence-scored routing (no HTTP needed)
         if diagram_type == DiagramType.ASCII_AUTO:
-            from .flowrender import has_flow_structure, render_flow_svg
-            from .sequencerender import has_sequence_structure, render_sequence_svg
-            from .tablerender import has_table_structure, render_table_svg
-            from .wireframerender import has_wireframe_structure, render_wireframe_svg
-            from .boxrender import has_box_structure, render_box_svg
-            # Sequence first: vertical lifelines + horizontal messages
-            if has_sequence_structure(diagram):
-                return render_sequence_svg(diagram)
-            # Flow diagrams: boxes + arrows connecting them
-            if has_flow_structure(diagram):
-                return render_flow_svg(diagram)
-            # Wireframes (nested boxes with form elements — before table)
-            if has_wireframe_structure(diagram):
-                return render_wireframe_svg(diagram)
-            # Tables (grid intersections)
-            if has_table_structure(diagram):
-                return render_table_svg(diagram)
-            # Plain boxes (most permissive structural match)
-            if has_box_structure(diagram):
-                return render_box_svg(diagram)
+            from .routing import route_diagram
+            svg = route_diagram(diagram)
+            if svg is not None:
+                return svg
         return _render_kroki(diagram, "svgbob", service_url)
     elif diagram_type == DiagramType.DITAA:
         return _render_kroki(diagram, "ditaa", service_url)

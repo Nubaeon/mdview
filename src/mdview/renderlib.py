@@ -484,12 +484,19 @@ def _trace_horiz_arrow(
     if len(points) < 2:
         return None
 
-    # Find connected boxes
-    from_box = _find_adjacent_box(boxes, row, points[0][1], "left")
-    to_box = _find_adjacent_box(boxes, row, points[-1][1], "right")
+    # Find connected boxes — assignment depends on arrow direction
+    if direction == "left":
+        # Left-pointing: source is on the right, target on the left
+        # Reverse points so they go source→target for consistent marker-end
+        points = list(reversed(points))
+        from_box = _find_adjacent_box(boxes, row, points[0][1], "right")
+        to_box = _find_adjacent_box(boxes, row, points[-1][1], "left")
+    else:
+        from_box = _find_adjacent_box(boxes, row, points[0][1], "left")
+        to_box = _find_adjacent_box(boxes, row, points[-1][1], "right")
 
     # Extract label: text above or below the arrow
-    label = _find_arrow_label(grid, row, points[0][1], points[-1][1])
+    label = _find_arrow_label(grid, row, min(p[1] for p in points), max(p[1] for p in points))
 
     return Arrow(
         points=points,

@@ -135,8 +135,10 @@ def _extract_free_text(
 
             ch = grid[r][c]
             # Skip structural characters that aren't text
+            # Note: ALL_ARROW_HEADS excluded — chars like 'v' can be text.
+            # Actual arrow chars are already in the 'used' set from detection.
             if ch in (rl.HORIZ_CHARS | rl.VERT_CHARS | rl.CORNER_CHARS
-                      | rl.TEE_CHARS | rl.ALL_ARROW_HEADS):
+                      | rl.TEE_CHARS):
                 if run_text.strip():
                     texts.append(rl.TextSpan(
                         row=r,
