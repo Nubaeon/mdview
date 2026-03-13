@@ -69,12 +69,12 @@ A typical GitHub Actions pipeline with lint, test, build gates and manual approv
   <polygon class="box-border" points="229.5,120.0 282.5,140.0 229.5,160.0 176.5,140.0"/>
   <rect class="box-fill" x="342.5" y="120.0" width="125.0" height="40.0" rx="6"/>
   <rect class="box-border" x="342.5" y="120.0" width="125.0" height="40.0" rx="6"/>
-  <rect class="arrow-label-bg" x="100.8" y="31.0" width="58.4" height="16.0" rx="3"/>
-  <text class="arrow-label" x="130.0" y="40.0" dominant-baseline="central">trigger</text>
-  <rect class="arrow-label-bg" x="333.4" y="81.0" width="29.6" height="16.0" rx="3"/>
-  <text class="arrow-label" x="348.2" y="90.0" dominant-baseline="central">yes</text>
-  <rect class="arrow-label-bg" x="297.7" y="131.0" width="29.6" height="16.0" rx="3"/>
-  <text class="arrow-label" x="312.5" y="140.0" dominant-baseline="central">yes</text>
+  <rect class="arrow-label-bg" x="88.8" y="31.0" width="58.4" height="16.0" rx="3"/>
+  <text class="arrow-label" x="118.0" y="40.0" dominant-baseline="central">trigger</text>
+  <rect class="arrow-label-bg" x="426.2" y="61.0" width="29.6" height="16.0" rx="3"/>
+  <text class="arrow-label" x="441.0" y="70.0" dominant-baseline="central">yes</text>
+  <rect class="arrow-label-bg" x="285.7" y="131.0" width="29.6" height="16.0" rx="3"/>
+  <text class="arrow-label" x="300.5" y="140.0" dominant-baseline="central">yes</text>
   <text class="box-header" x="60.0" y="40.0" text-anchor="middle" dominant-baseline="central">Push</text>
   <text class="box-text" x="200.0" y="40.0" text-anchor="middle" dominant-baseline="central">Lint</text>
   <text class="box-text" x="340.0" y="40.0" text-anchor="middle" dominant-baseline="central">Test</text>
@@ -151,12 +151,12 @@ Retrieval-Augmented Generation flow — from user query to LLM response.
   <rect class="box-border" x="24.8" y="520.0" width="144.0" height="40.0" rx="6"/>
   <rect class="box-fill" x="43.8" y="620.0" width="106.0" height="40.0" rx="6"/>
   <rect class="box-border" x="43.8" y="620.0" width="106.0" height="40.0" rx="6"/>
-  <rect class="arrow-label-bg" x="78.3" y="181.0" width="36.8" height="16.0" rx="3"/>
-  <text class="arrow-label" x="96.8" y="190.0" dominant-baseline="central">k-NN</text>
-  <rect class="arrow-label-bg" x="74.8" y="381.0" width="44.0" height="16.0" rx="3"/>
-  <text class="arrow-label" x="96.8" y="390.0" dominant-baseline="central">top-k</text>
-  <rect class="arrow-label-bg" x="71.2" y="481.0" width="51.2" height="16.0" rx="3"/>
-  <text class="arrow-label" x="96.8" y="490.0" dominant-baseline="central">prompt</text>
+  <rect class="arrow-label-bg" x="78.3" y="169.0" width="36.8" height="16.0" rx="3"/>
+  <text class="arrow-label" x="96.8" y="178.0" dominant-baseline="central">k-NN</text>
+  <rect class="arrow-label-bg" x="74.8" y="369.0" width="44.0" height="16.0" rx="3"/>
+  <text class="arrow-label" x="96.8" y="378.0" dominant-baseline="central">top-k</text>
+  <rect class="arrow-label-bg" x="71.2" y="469.0" width="51.2" height="16.0" rx="3"/>
+  <text class="arrow-label" x="96.8" y="478.0" dominant-baseline="central">prompt</text>
   <text class="box-header" x="96.8" y="40.0" text-anchor="middle" dominant-baseline="central">User Query</text>
   <text class="box-text" x="96.8" y="140.0" text-anchor="middle" dominant-baseline="central">Embed Query</text>
   <text class="box-text" x="96.8" y="240.0" text-anchor="middle" dominant-baseline="central">Vector Search</text>
@@ -432,10 +432,10 @@ Service decomposition with API gateway, domain services, and data stores.
   </g>
   <rect class="arrow-label-bg" x="178.6" y="68.0" width="36.8" height="16" rx="3"/>
   <text class="arrow-label" x="197.0" y="77.0" dominant-baseline="central">REST</text>
-  <rect class="arrow-label-bg" x="267.6" y="307.0" width="36.8" height="16" rx="3"/>
-  <text class="arrow-label" x="286.0" y="316.0" dominant-baseline="central">REST</text>
-  <rect class="arrow-label-bg" x="271.6" y="307.0" width="51.2" height="16" rx="3"/>
-  <text class="arrow-label" x="297.2" y="316.0" dominant-baseline="central">events</text>
+  <rect class="arrow-label-bg" x="267.6" y="293.0" width="36.8" height="16" rx="3"/>
+  <text class="arrow-label" x="286.0" y="302.0" dominant-baseline="central">REST</text>
+  <rect class="arrow-label-bg" x="271.6" y="293.0" width="51.2" height="16" rx="3"/>
+  <text class="arrow-label" x="297.2" y="302.0" dominant-baseline="central">events</text>
 </svg>
 
 <em>Microservice Architecture</em>
@@ -509,22 +509,22 @@ State machine showing deployment progression with rollback and retry paths.
   <rect class="state-node" x="182.8" y="174.0" width="116.0" height="44.0" rx="20"/>
   <rect class="state-node" x="358.8" y="174.0" width="116.0" height="44.0" rx="20"/>
   <rect class="state-node" x="534.8" y="174.0" width="116.0" height="44.0" rx="20"/>
-  <rect class="arrow-label-bg" x="306.8" y="63.0" width="44.0" height="16.0" rx="3"/>
-  <text class="arrow-label" x="328.8" y="72.0" dominant-baseline="central">start</text>
-  <rect class="arrow-label-bg" x="482.8" y="63.0" width="44.0" height="16.0" rx="3"/>
-  <text class="arrow-label" x="504.8" y="72.0" dominant-baseline="central">built</text>
-  <rect class="arrow-label-bg" x="655.2" y="63.0" width="51.2" height="16.0" rx="3"/>
-  <text class="arrow-label" x="680.8" y="72.0" dominant-baseline="central">passed</text>
-  <rect class="arrow-label-bg" x="567.2" y="125.0" width="51.2" height="16.0" rx="3"/>
-  <text class="arrow-label" x="592.8" y="134.0" dominant-baseline="central">failed</text>
-  <rect class="arrow-label-bg" x="475.6" y="125.0" width="58.4" height="16.0" rx="3"/>
-  <text class="arrow-label" x="504.8" y="134.0" dominant-baseline="central">promote</text>
-  <rect class="arrow-label-bg" x="306.8" y="187.0" width="44.0" height="16.0" rx="3"/>
-  <text class="arrow-label" x="328.8" y="196.0" dominant-baseline="central">issue</text>
-  <rect class="arrow-label-bg" x="183.2" y="125.0" width="65.6" height="16" rx="3"/>
-  <text class="arrow-label" x="216.0" y="134.0" dominant-baseline="central">reverted</text>
-  <rect class="arrow-label-bg" x="18.0" y="125.0" width="44.0" height="16" rx="3"/>
-  <text class="arrow-label" x="40.0" y="134.0" dominant-baseline="central">retry</text>
+  <rect class="arrow-label-bg" x="294.8" y="63.0" width="44.0" height="16.0" rx="3"/>
+  <text class="arrow-label" x="316.8" y="72.0" dominant-baseline="central">start</text>
+  <rect class="arrow-label-bg" x="470.8" y="63.0" width="44.0" height="16.0" rx="3"/>
+  <text class="arrow-label" x="492.8" y="72.0" dominant-baseline="central">built</text>
+  <rect class="arrow-label-bg" x="643.2" y="63.0" width="51.2" height="16.0" rx="3"/>
+  <text class="arrow-label" x="668.8" y="72.0" dominant-baseline="central">passed</text>
+  <rect class="arrow-label-bg" x="567.2" y="109.0" width="51.2" height="16.0" rx="3"/>
+  <text class="arrow-label" x="592.8" y="118.0" dominant-baseline="central">failed</text>
+  <rect class="arrow-label-bg" x="558.0" y="100.2" width="58.4" height="16.0" rx="3"/>
+  <text class="arrow-label" x="587.2" y="109.2" dominant-baseline="central">promote</text>
+  <rect class="arrow-label-bg" x="294.8" y="187.0" width="44.0" height="16.0" rx="3"/>
+  <text class="arrow-label" x="316.8" y="196.0" dominant-baseline="central">issue</text>
+  <rect class="arrow-label-bg" x="262.9" y="125.0" width="65.6" height="16" rx="3"/>
+  <text class="arrow-label" x="295.7" y="134.0" dominant-baseline="central">reverted</text>
+  <rect class="arrow-label-bg" x="97.7" y="125.0" width="44.0" height="16" rx="3"/>
+  <text class="arrow-label" x="119.7" y="134.0" dominant-baseline="central">retry</text>
   <text class="state-text" x="240.8" y="72.0" text-anchor="middle" dominant-baseline="central">Pending</text>
   <text class="state-text" x="416.8" y="72.0" text-anchor="middle" dominant-baseline="central">Building</text>
   <text class="state-text" x="592.8" y="72.0" text-anchor="middle" dominant-baseline="central">Testing</text>
@@ -691,16 +691,16 @@ Think-Act-Observe cycle with self-loop reasoning and iteration back-edges.
   <rect class="state-node" x="383.0" y="50.0" width="106.5" height="44.0" rx="20"/>
   <rect class="state-node" x="549.5" y="50.0" width="106.5" height="44.0" rx="20"/>
   <rect class="state-node" x="50.0" y="174.0" width="106.5" height="44.0" rx="20"/>
-  <rect class="arrow-label-bg" x="168.1" y="63.0" width="36.8" height="16.0" rx="3"/>
-  <text class="arrow-label" x="186.5" y="72.0" dominant-baseline="central">task</text>
-  <rect class="arrow-label-bg" x="334.6" y="63.0" width="36.8" height="16.0" rx="3"/>
-  <text class="arrow-label" x="353.0" y="72.0" dominant-baseline="central">plan</text>
-  <rect class="arrow-label-bg" x="490.3" y="63.0" width="58.4" height="16.0" rx="3"/>
-  <text class="arrow-label" x="519.5" y="72.0" dominant-baseline="central">execute</text>
-  <rect class="arrow-label-bg" x="407.1" y="135.0" width="58.4" height="16" rx="3"/>
-  <text class="arrow-label" x="436.2" y="144.0" dominant-baseline="central">iterate</text>
-  <rect class="arrow-label-bg" x="320.2" y="125.0" width="65.6" height="16.0" rx="3"/>
-  <text class="arrow-label" x="353.0" y="134.0" dominant-baseline="central">complete</text>
+  <rect class="arrow-label-bg" x="156.1" y="63.0" width="36.8" height="16.0" rx="3"/>
+  <text class="arrow-label" x="174.5" y="72.0" dominant-baseline="central">task</text>
+  <rect class="arrow-label-bg" x="322.6" y="63.0" width="36.8" height="16.0" rx="3"/>
+  <text class="arrow-label" x="341.0" y="72.0" dominant-baseline="central">plan</text>
+  <rect class="arrow-label-bg" x="478.3" y="63.0" width="58.4" height="16.0" rx="3"/>
+  <text class="arrow-label" x="507.5" y="72.0" dominant-baseline="central">execute</text>
+  <rect class="arrow-label-bg" x="407.1" y="122.5" width="58.4" height="16" rx="3"/>
+  <text class="arrow-label" x="436.2" y="131.5" dominant-baseline="central">iterate</text>
+  <rect class="arrow-label-bg" x="398.8" y="100.2" width="65.6" height="16.0" rx="3"/>
+  <text class="arrow-label" x="431.6" y="109.2" dominant-baseline="central">complete</text>
   <rect class="arrow-label-bg" x="244.2" y="8.0" width="51.2" height="16" rx="3"/>
   <text class="arrow-label" x="269.8" y="16.0" dominant-baseline="central">reason</text>
   <text class="state-text" x="103.2" y="72.0" text-anchor="middle" dominant-baseline="central">Idle</text>
@@ -884,8 +884,8 @@ Infrastructure as boxes showing ingress, services, and data layer with replicas.
     <text class="box-text" x="521.0" y="118.0">PVC: 100Gi</text>
     <text class="box-text" x="521.0" y="134.0">Backup: hourly</text>
   </g>
-  <rect class="arrow-label-bg" x="247.3" y="159.0" width="36.8" height="16" rx="3"/>
-  <text class="arrow-label" x="265.8" y="168.0" dominant-baseline="central">/api</text>
+  <rect class="arrow-label-bg" x="247.3" y="145.0" width="36.8" height="16" rx="3"/>
+  <text class="arrow-label" x="265.8" y="154.0" dominant-baseline="central">/api</text>
 </svg>
 
 <em>Kubernetes Deployment</em>

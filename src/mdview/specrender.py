@@ -991,8 +991,12 @@ def _svg_curved_connection_layered(
     )
 
     if conn.label:
-        mid_x = (ctrl_x1 + ctrl_x2) / 2
-        mid_y = ctrl_y
+        # Place label at t=0.5 on the cubic bezier, not at the control point
+        t = 0.5
+        mid_x = ((1 - t) ** 3 * x1 + 3 * (1 - t) ** 2 * t * ctrl_x1
+                 + 3 * (1 - t) * t ** 2 * ctrl_x2 + t ** 3 * x2)
+        mid_y = ((1 - t) ** 3 * y1 + 3 * (1 - t) ** 2 * t * ctrl_y
+                 + 3 * (1 - t) * t ** 2 * ctrl_y + t ** 3 * y2)
         escaped = html_mod.escape(conn.label)
         label_w = len(conn.label) * 7.2 + 8
         labels.append(

@@ -69,10 +69,10 @@ guessing — the AI that drew the diagram already knows what it is.
   <rect class="box-border" x="20.0" y="120.0" width="115.5" height="40.0" rx="6"/>
   <rect class="box-fill" x="195.5" y="120.0" width="80.0" height="40.0" rx="6"/>
   <rect class="box-border" x="195.5" y="120.0" width="80.0" height="40.0" rx="6"/>
-  <rect class="arrow-label-bg" x="507.8" y="31.0" width="22.4" height="16.0" rx="3"/>
-  <text class="arrow-label" x="519.0" y="40.0" dominant-baseline="central">AI</text>
-  <rect class="arrow-label-bg" x="239.4" y="81.0" width="65.6" height="16.0" rx="3"/>
-  <text class="arrow-label" x="272.2" y="90.0" dominant-baseline="central">fallback</text>
+  <rect class="arrow-label-bg" x="495.8" y="31.0" width="22.4" height="16.0" rx="3"/>
+  <text class="arrow-label" x="507.0" y="40.0" dominant-baseline="central">AI</text>
+  <rect class="arrow-label-bg" x="294.1" y="61.0" width="65.6" height="16.0" rx="3"/>
+  <text class="arrow-label" x="326.9" y="70.0" dominant-baseline="central">fallback</text>
   <text class="box-header" x="73.0" y="40.0" text-anchor="middle" dominant-baseline="central">Markdown</text>
   <text class="box-text" x="267.5" y="40.0" text-anchor="middle" dominant-baseline="central">Extract Blocks</text>
   <text class="box-text" x="449.0" y="40.0" text-anchor="middle" dominant-baseline="central">Route</text>
@@ -159,14 +159,14 @@ The spec pipeline is the core architectural innovation. It separates
   <rect class="box-border" x="20.0" y="320.0" width="153.5" height="40.0" rx="6"/>
   <rect class="box-fill" x="34.2" y="420.0" width="125.0" height="40.0" rx="6"/>
   <rect class="box-border" x="34.2" y="420.0" width="125.0" height="40.0" rx="6"/>
-  <rect class="arrow-label-bg" x="60.4" y="81.0" width="72.8" height="16.0" rx="3"/>
-  <text class="arrow-label" x="96.8" y="90.0" dominant-baseline="central">interpret</text>
-  <rect class="arrow-label-bg" x="78.3" y="181.0" width="36.8" height="16.0" rx="3"/>
-  <text class="arrow-label" x="96.8" y="190.0" dominant-baseline="central">JSON</text>
-  <rect class="arrow-label-bg" x="64.0" y="281.0" width="65.6" height="16.0" rx="3"/>
-  <text class="arrow-label" x="96.8" y="290.0" dominant-baseline="central">dispatch</text>
-  <rect class="arrow-label-bg" x="71.2" y="381.0" width="51.2" height="16.0" rx="3"/>
-  <text class="arrow-label" x="96.8" y="390.0" dominant-baseline="central">render</text>
+  <rect class="arrow-label-bg" x="60.4" y="69.0" width="72.8" height="16.0" rx="3"/>
+  <text class="arrow-label" x="96.8" y="78.0" dominant-baseline="central">interpret</text>
+  <rect class="arrow-label-bg" x="78.3" y="169.0" width="36.8" height="16.0" rx="3"/>
+  <text class="arrow-label" x="96.8" y="178.0" dominant-baseline="central">JSON</text>
+  <rect class="arrow-label-bg" x="64.0" y="269.0" width="65.6" height="16.0" rx="3"/>
+  <text class="arrow-label" x="96.8" y="278.0" dominant-baseline="central">dispatch</text>
+  <rect class="arrow-label-bg" x="71.2" y="369.0" width="51.2" height="16.0" rx="3"/>
+  <text class="arrow-label" x="96.8" y="378.0" dominant-baseline="central">render</text>
   <text class="box-header" x="96.8" y="40.0" text-anchor="middle" dominant-baseline="central">ASCII Art</text>
   <text class="box-text" x="96.8" y="140.0" text-anchor="middle" dominant-baseline="central">AI Provider</text>
   <text class="box-text" x="96.8" y="240.0" text-anchor="middle" dominant-baseline="central">DiagramSpec</text>

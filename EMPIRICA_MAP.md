@@ -81,16 +81,16 @@ objective evidence.
   <text class="arrow-label" x="554.2" y="72.0" dominant-baseline="central">investigate</text>
   <rect class="arrow-label-bg" x="723.6" y="63.0" width="51.2" height="16.0" rx="3"/>
   <text class="arrow-label" x="749.2" y="72.0" dominant-baseline="central">assess</text>
-  <rect class="arrow-label-bg" x="705.6" y="135.0" width="87.2" height="16" rx="3"/>
-  <text class="arrow-label" x="749.2" y="144.0" dominant-baseline="central">investigate</text>
+  <rect class="arrow-label-bg" x="705.6" y="122.5" width="87.2" height="16" rx="3"/>
+  <text class="arrow-label" x="749.2" y="131.5" dominant-baseline="central">investigate</text>
   <rect class="arrow-label-bg" x="525.0" y="125.0" width="58.4" height="16.0" rx="3"/>
   <text class="arrow-label" x="554.2" y="134.0" dominant-baseline="central">proceed</text>
   <rect class="arrow-label-bg" x="326.4" y="187.0" width="65.6" height="16.0" rx="3"/>
   <text class="arrow-label" x="359.2" y="196.0" dominant-baseline="central">complete</text>
   <rect class="arrow-label-bg" x="528.6" y="187.0" width="51.2" height="16.0" rx="3"/>
   <text class="arrow-label" x="554.2" y="196.0" dominant-baseline="central">verify</text>
-  <rect class="arrow-label-bg" x="18.0" y="125.0" width="44.0" height="16" rx="3"/>
-  <text class="arrow-label" x="40.0" y="134.0" dominant-baseline="central">close</text>
+  <rect class="arrow-label-bg" x="105.3" y="125.0" width="44.0" height="16" rx="3"/>
+  <text class="arrow-label" x="127.3" y="134.0" dominant-baseline="central">close</text>
   <rect class="arrow-label-bg" x="618.9" y="8.0" width="65.6" height="16" rx="3"/>
   <text class="arrow-label" x="651.7" y="16.0" dominant-baseline="central">discover</text>
   <text class="state-text" x="261.7" y="72.0" text-anchor="middle" dominant-baseline="central">Idle</text>
@@ -593,8 +593,8 @@ have their confidence reduced — but never below 0.3. Lessons never fully die.
   <text class="arrow-label" x="596.4" y="134.0" dominant-baseline="central">related lessons</text>
   <rect class="arrow-label-bg" x="411.2" y="187.0" width="108.8" height="16.0" rx="3"/>
   <text class="arrow-label" x="465.6" y="196.0" dominant-baseline="central">min confidence</text>
-  <rect class="arrow-label-bg" x="-3.6" y="125.0" width="87.2" height="16" rx="3"/>
-  <text class="arrow-label" x="40.0" y="134.0" dominant-baseline="central">next lesson</text>
+  <rect class="arrow-label-bg" x="110.3" y="125.0" width="87.2" height="16" rx="3"/>
+  <text class="arrow-label" x="153.9" y="134.0" dominant-baseline="central">next lesson</text>
   <text class="state-text" x="334.9" y="72.0" text-anchor="middle" dominant-baseline="central">Finding</text>
   <text class="state-text" x="596.4" y="72.0" text-anchor="middle" dominant-baseline="central">Extract Keywords</text>
   <text class="state-text" x="857.9" y="72.0" text-anchor="middle" dominant-baseline="central">Match Lessons</text>
