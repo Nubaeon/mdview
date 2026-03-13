@@ -45,18 +45,18 @@ guessing — the AI that drew the diagram already knows what it is.
     }
   </style>
   <defs>
-    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5"
+    <marker id="d0-ah" viewBox="0 0 10 10" refX="9" refY="5"
             markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <polygon points="0,1 10,5 0,9" class="arrow-head"/>
     </marker>
   </defs>
   <rect class="bg" x="0" y="0" width="704" height="180" rx="6"/>
-  <line class="arrow-line" x1="126.0" y1="40.0" x2="186.0" y2="40.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="349.0" y1="40.0" x2="409.0" y2="40.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="489.0" y1="40.0" x2="549.0" y2="40.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="409.0" y1="40.0" x2="135.5" y2="140.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="549.0" y1="40.0" x2="275.5" y2="140.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="135.5" y1="140.0" x2="195.5" y2="140.0" marker-end="url(#arrowhead)"/>
+  <line class="arrow-line" x1="126.0" y1="40.0" x2="186.0" y2="40.0" marker-end="url(#d0-ah)"/>
+  <line class="arrow-line" x1="349.0" y1="40.0" x2="409.0" y2="40.0" marker-end="url(#d0-ah)"/>
+  <line class="arrow-line" x1="489.0" y1="40.0" x2="549.0" y2="40.0" marker-end="url(#d0-ah)"/>
+  <line class="arrow-line" x1="409.0" y1="40.0" x2="135.5" y2="140.0" marker-end="url(#d0-ah)"/>
+  <line class="arrow-line" x1="549.0" y1="40.0" x2="275.5" y2="140.0" marker-end="url(#d0-ah)"/>
+  <line class="arrow-line" x1="135.5" y1="140.0" x2="195.5" y2="140.0" marker-end="url(#d0-ah)"/>
   <rect class="box-fill" x="20.0" y="20.0" width="106.0" height="40.0" rx="6"/>
   <rect class="box-border" x="20.0" y="20.0" width="106.0" height="40.0" rx="6"/>
   <rect class="box-fill" x="186.0" y="20.0" width="163.0" height="40.0" rx="6"/>
@@ -139,16 +139,16 @@ The spec pipeline is the core architectural innovation. It separates
     }
   </style>
   <defs>
-    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5"
+    <marker id="d1-ah" viewBox="0 0 10 10" refX="9" refY="5"
             markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <polygon points="0,1 10,5 0,9" class="arrow-head"/>
     </marker>
   </defs>
   <rect class="bg" x="0" y="0" width="194" height="480" rx="6"/>
-  <line class="arrow-line" x1="96.8" y1="60.0" x2="96.8" y2="120.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="96.8" y1="160.0" x2="96.8" y2="220.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="96.8" y1="260.0" x2="96.8" y2="320.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="96.8" y1="360.0" x2="96.8" y2="420.0" marker-end="url(#arrowhead)"/>
+  <line class="arrow-line" x1="96.8" y1="60.0" x2="96.8" y2="120.0" marker-end="url(#d1-ah)"/>
+  <line class="arrow-line" x1="96.8" y1="160.0" x2="96.8" y2="220.0" marker-end="url(#d1-ah)"/>
+  <line class="arrow-line" x1="96.8" y1="260.0" x2="96.8" y2="320.0" marker-end="url(#d1-ah)"/>
+  <line class="arrow-line" x1="96.8" y1="360.0" x2="96.8" y2="420.0" marker-end="url(#d1-ah)"/>
   <rect class="box-fill" x="39.0" y="20.0" width="115.5" height="40.0" rx="6"/>
   <rect class="box-border" x="39.0" y="20.0" width="115.5" height="40.0" rx="6"/>
   <rect class="box-fill" x="29.5" y="120.0" width="134.5" height="40.0" rx="6"/>
@@ -240,16 +240,16 @@ The contract between interpretation and rendering:
   </style>
   <rect class="bg" x="0" y="0" width="691" height="456" rx="6"/>
   <defs>
-    <clipPath id="box-clip-0"><rect x="20.0" y="20.0" width="131.0" height="84.0" rx="6"/></clipPath>
-    <clipPath id="box-clip-1"><rect x="171.0" y="20.0" width="185.0" height="100.0" rx="6"/></clipPath>
-    <clipPath id="box-clip-2"><rect x="376.0" y="20.0" width="248.0" height="100.0" rx="6"/></clipPath>
-    <clipPath id="box-clip-3"><rect x="20.0" y="140.0" width="320.0" height="152.0" rx="6"/></clipPath>
-    <clipPath id="box-clip-4"><rect x="360.0" y="140.0" width="311.0" height="180.0" rx="6"/></clipPath>
-    <clipPath id="box-clip-5"><rect x="20.0" y="340.0" width="293.0" height="96.0" rx="6"/></clipPath>
+    <clipPath id="d2-bc0"><rect x="20.0" y="20.0" width="131.0" height="84.0" rx="6"/></clipPath>
+    <clipPath id="d2-bc1"><rect x="171.0" y="20.0" width="185.0" height="100.0" rx="6"/></clipPath>
+    <clipPath id="d2-bc2"><rect x="376.0" y="20.0" width="248.0" height="100.0" rx="6"/></clipPath>
+    <clipPath id="d2-bc3"><rect x="20.0" y="140.0" width="320.0" height="152.0" rx="6"/></clipPath>
+    <clipPath id="d2-bc4"><rect x="360.0" y="140.0" width="311.0" height="180.0" rx="6"/></clipPath>
+    <clipPath id="d2-bc5"><rect x="20.0" y="340.0" width="293.0" height="96.0" rx="6"/></clipPath>
   </defs>
   <rect class="box-fill" x="20.0" y="20.0" width="131.0" height="84.0" rx="6"/>
   <rect class="box-border" x="20.0" y="20.0" width="131.0" height="84.0" rx="6"/>
-  <g clip-path="url(#box-clip-0)">
+  <g clip-path="url(#d2-bc0)">
     <text class="box-header" x="85.5" y="40.0" text-anchor="middle" dominant-baseline="central">cli.py</text>
     <line class="box-separator" x1="20.0" y1="52.0" x2="151.0" y2="52.0"/>
     <text class="box-text" x="32.0" y="74.0">argparse</text>
@@ -257,7 +257,7 @@ The contract between interpretation and rendering:
   </g>
   <rect class="box-fill" x="171.0" y="20.0" width="185.0" height="100.0" rx="6"/>
   <rect class="box-border" x="171.0" y="20.0" width="185.0" height="100.0" rx="6"/>
-  <g clip-path="url(#box-clip-1)">
+  <g clip-path="url(#d2-bc1)">
     <text class="box-header" x="263.5" y="40.0" text-anchor="middle" dominant-baseline="central">renderer.py</text>
     <line class="box-separator" x1="171.0" y1="52.0" x2="356.0" y2="52.0"/>
     <text class="box-text" x="183.0" y="74.0">render_html()</text>
@@ -266,7 +266,7 @@ The contract between interpretation and rendering:
   </g>
   <rect class="box-fill" x="376.0" y="20.0" width="248.0" height="100.0" rx="6"/>
   <rect class="box-border" x="376.0" y="20.0" width="248.0" height="100.0" rx="6"/>
-  <g clip-path="url(#box-clip-2)">
+  <g clip-path="url(#d2-bc2)">
     <text class="box-header" x="500.0" y="40.0" text-anchor="middle" dominant-baseline="central">diagrams.py</text>
     <line class="box-separator" x1="376.0" y1="52.0" x2="624.0" y2="52.0"/>
     <text class="box-text" x="388.0" y="74.0">extract_diagram_blocks()</text>
@@ -275,7 +275,7 @@ The contract between interpretation and rendering:
   </g>
   <rect class="box-fill" x="20.0" y="140.0" width="320.0" height="152.0" rx="6"/>
   <rect class="box-border" x="20.0" y="140.0" width="320.0" height="152.0" rx="6"/>
-  <g clip-path="url(#box-clip-3)">
+  <g clip-path="url(#d2-bc3)">
     <text class="box-header" x="180.0" y="160.0" text-anchor="middle" dominant-baseline="central">Spec Pipeline</text>
     <line class="box-separator" x1="20.0" y1="172.0" x2="340.0" y2="172.0"/>
     <text class="box-text" x="32.0" y="194.0">spec.py — DiagramSpec schema</text>
@@ -288,7 +288,7 @@ The contract between interpretation and rendering:
   </g>
   <rect class="box-fill" x="360.0" y="140.0" width="311.0" height="180.0" rx="6"/>
   <rect class="box-border" x="360.0" y="140.0" width="311.0" height="180.0" rx="6"/>
-  <g clip-path="url(#box-clip-4)">
+  <g clip-path="url(#d2-bc4)">
     <text class="box-header" x="515.5" y="160.0" text-anchor="middle" dominant-baseline="central">Heuristic Renderers</text>
     <line class="box-separator" x1="360.0" y1="172.0" x2="671.0" y2="172.0"/>
     <text class="box-text" x="372.0" y="194.0">routing.py — confidence scoring</text>
@@ -303,7 +303,7 @@ The contract between interpretation and rendering:
   </g>
   <rect class="box-fill" x="20.0" y="340.0" width="293.0" height="96.0" rx="6"/>
   <rect class="box-border" x="20.0" y="340.0" width="293.0" height="96.0" rx="6"/>
-  <g clip-path="url(#box-clip-5)">
+  <g clip-path="url(#d2-bc5)">
     <text class="box-header" x="166.5" y="360.0" text-anchor="middle" dominant-baseline="central">Shared</text>
     <line class="box-separator" x1="20.0" y1="372.0" x2="313.0" y2="372.0"/>
     <text class="box-text" x="32.0" y="394.0">renderlib.py — SVG primitives</text>
@@ -363,7 +363,7 @@ but calls a different API.
     }
   </style>
   <defs>
-    <marker id="seq-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+    <marker id="d3-sa" viewBox="0 0 10 10" refX="9" refY="5"
             markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <polygon points="0,1 10,5 0,9" class="msg-head"/>
     </marker>
@@ -389,17 +389,17 @@ but calls a different API.
   <line class="lifeline" x1="328.5" y1="64" x2="328.5" y2="276"/>
   <line class="lifeline" x1="537.5" y1="64" x2="537.5" y2="276"/>
   <line class="lifeline" x1="746.5" y1="64" x2="746.5" y2="276"/>
-  <line class="msg-line" x1="119.5" y1="80.0" x2="328.5" y2="80.0" marker-end="url(#seq-arrow)"/>
+  <line class="msg-line" x1="119.5" y1="80.0" x2="328.5" y2="80.0" marker-end="url(#d3-sa)"/>
   <text class="msg-label" x="224.0" y="72.0">load()</text>
-  <line class="msg-line" x1="119.5" y1="112.0" x2="328.5" y2="112.0" stroke-dasharray="6,3" marker-start="url(#seq-arrow)"/>
+  <line class="msg-line" x1="119.5" y1="112.0" x2="328.5" y2="112.0" stroke-dasharray="6,3" marker-start="url(#d3-sa)"/>
   <text class="msg-label" x="224.0" y="104.0">AIConfig</text>
-  <line class="msg-line" x1="119.5" y1="144.0" x2="537.5" y2="144.0" marker-end="url(#seq-arrow)"/>
+  <line class="msg-line" x1="119.5" y1="144.0" x2="537.5" y2="144.0" marker-end="url(#d3-sa)"/>
   <text class="msg-label" x="328.5" y="136.0">create(config)</text>
-  <line class="msg-line" x1="119.5" y1="176.0" x2="537.5" y2="176.0" stroke-dasharray="6,3" marker-start="url(#seq-arrow)"/>
+  <line class="msg-line" x1="119.5" y1="176.0" x2="537.5" y2="176.0" stroke-dasharray="6,3" marker-start="url(#d3-sa)"/>
   <text class="msg-label" x="328.5" y="168.0">Provider</text>
-  <line class="msg-line" x1="119.5" y1="208.0" x2="746.5" y2="208.0" marker-end="url(#seq-arrow)"/>
+  <line class="msg-line" x1="119.5" y1="208.0" x2="746.5" y2="208.0" marker-end="url(#d3-sa)"/>
   <text class="msg-label" x="433.0" y="200.0">interpret(ascii)</text>
-  <line class="msg-line" x1="119.5" y1="240.0" x2="746.5" y2="240.0" stroke-dasharray="6,3" marker-start="url(#seq-arrow)"/>
+  <line class="msg-line" x1="119.5" y1="240.0" x2="746.5" y2="240.0" stroke-dasharray="6,3" marker-start="url(#d3-sa)"/>
   <text class="msg-label" x="433.0" y="232.0">DiagramSpec</text>
 </svg>
 
@@ -557,7 +557,7 @@ Six diagram types, each with a dedicated renderer in `specrender.py`:
     }
   </style>
   <defs>
-    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5"
+    <marker id="d4-ah" viewBox="0 0 10 10" refX="9" refY="5"
             markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <polygon points="0,1 10,5 0,9" class="arrow-head"/>
     </marker>
@@ -573,11 +573,11 @@ Six diagram types, each with a dedicated renderer in `specrender.py`:
     }
   </style>
   <rect class="bg" x="0" y="0" width="720" height="278" rx="6"/>
-  <line class="arrow-line" x1="213.5" y1="72.0" x2="273.5" y2="72.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="437.0" y1="72.0" x2="497.0" y2="72.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="497.0" y1="72.0" x2="213.5" y2="196.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="213.5" y1="196.0" x2="273.5" y2="196.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="437.0" y1="196.0" x2="497.0" y2="196.0" marker-end="url(#arrowhead)"/>
+  <line class="arrow-line" x1="213.5" y1="72.0" x2="273.5" y2="72.0" marker-end="url(#d4-ah)"/>
+  <line class="arrow-line" x1="437.0" y1="72.0" x2="497.0" y2="72.0" marker-end="url(#d4-ah)"/>
+  <line class="arrow-line" x1="497.0" y1="72.0" x2="213.5" y2="196.0" marker-end="url(#d4-ah)"/>
+  <line class="arrow-line" x1="213.5" y1="196.0" x2="273.5" y2="196.0" marker-end="url(#d4-ah)"/>
+  <line class="arrow-line" x1="437.0" y1="196.0" x2="497.0" y2="196.0" marker-end="url(#d4-ah)"/>
   <rect class="state-node" x="50.0" y="50.0" width="163.5" height="44.0" rx="20"/>
   <rect class="state-node" x="273.5" y="50.0" width="163.5" height="44.0" rx="20"/>
   <rect class="state-node" x="497.0" y="50.0" width="163.5" height="44.0" rx="20"/>

@@ -298,7 +298,7 @@ class TestBoxRendering:
             connections=[Connection(from_id="a", to_id="b", label="uses")],
         )
         svg = render_spec_svg(spec)
-        assert 'arrowhead' in svg
+        assert 'marker-end="url(#d' in svg  # unique arrowhead marker
         assert 'uses' in svg
 
 

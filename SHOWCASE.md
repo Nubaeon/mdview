@@ -40,19 +40,19 @@ A typical GitHub Actions pipeline with lint, test, build gates and manual approv
     }
   </style>
   <defs>
-    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5"
+    <marker id="d0-ah" viewBox="0 0 10 10" refX="9" refY="5"
             markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <polygon points="0,1 10,5 0,9" class="arrow-head"/>
     </marker>
   </defs>
   <rect class="bg" x="0" y="0" width="680" height="180" rx="6"/>
-  <line class="arrow-line" x1="100.0" y1="40.0" x2="160.0" y2="40.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="240.0" y1="40.0" x2="300.0" y2="40.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="380.0" y1="40.0" x2="440.0" y2="40.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="520.0" y1="40.0" x2="580.0" y2="40.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="580.0" y1="40.0" x2="116.5" y2="140.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="116.5" y1="140.0" x2="176.5" y2="140.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="282.5" y1="140.0" x2="342.5" y2="140.0" marker-end="url(#arrowhead)"/>
+  <line class="arrow-line" x1="100.0" y1="40.0" x2="160.0" y2="40.0" marker-end="url(#d0-ah)"/>
+  <line class="arrow-line" x1="240.0" y1="40.0" x2="300.0" y2="40.0" marker-end="url(#d0-ah)"/>
+  <line class="arrow-line" x1="380.0" y1="40.0" x2="440.0" y2="40.0" marker-end="url(#d0-ah)"/>
+  <line class="arrow-line" x1="520.0" y1="40.0" x2="580.0" y2="40.0" marker-end="url(#d0-ah)"/>
+  <line class="arrow-line" x1="580.0" y1="40.0" x2="116.5" y2="140.0" marker-end="url(#d0-ah)"/>
+  <line class="arrow-line" x1="116.5" y1="140.0" x2="176.5" y2="140.0" marker-end="url(#d0-ah)"/>
+  <line class="arrow-line" x1="282.5" y1="140.0" x2="342.5" y2="140.0" marker-end="url(#d0-ah)"/>
   <rect class="box-fill" x="20.0" y="20.0" width="80.0" height="40.0" rx="6"/>
   <rect class="box-border" x="20.0" y="20.0" width="80.0" height="40.0" rx="6"/>
   <rect class="box-fill" x="160.0" y="20.0" width="80.0" height="40.0" rx="6"/>
@@ -125,18 +125,18 @@ Retrieval-Augmented Generation flow — from user query to LLM response.
     }
   </style>
   <defs>
-    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5"
+    <marker id="d1-ah" viewBox="0 0 10 10" refX="9" refY="5"
             markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <polygon points="0,1 10,5 0,9" class="arrow-head"/>
     </marker>
   </defs>
   <rect class="bg" x="0" y="0" width="194" height="680" rx="6"/>
-  <line class="arrow-line" x1="96.8" y1="60.0" x2="96.8" y2="120.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="96.8" y1="160.0" x2="96.8" y2="220.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="96.8" y1="260.0" x2="96.8" y2="320.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="96.8" y1="360.0" x2="96.8" y2="420.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="96.8" y1="460.0" x2="96.8" y2="520.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="96.8" y1="560.0" x2="96.8" y2="620.0" marker-end="url(#arrowhead)"/>
+  <line class="arrow-line" x1="96.8" y1="60.0" x2="96.8" y2="120.0" marker-end="url(#d1-ah)"/>
+  <line class="arrow-line" x1="96.8" y1="160.0" x2="96.8" y2="220.0" marker-end="url(#d1-ah)"/>
+  <line class="arrow-line" x1="96.8" y1="260.0" x2="96.8" y2="320.0" marker-end="url(#d1-ah)"/>
+  <line class="arrow-line" x1="96.8" y1="360.0" x2="96.8" y2="420.0" marker-end="url(#d1-ah)"/>
+  <line class="arrow-line" x1="96.8" y1="460.0" x2="96.8" y2="520.0" marker-end="url(#d1-ah)"/>
+  <line class="arrow-line" x1="96.8" y1="560.0" x2="96.8" y2="620.0" marker-end="url(#d1-ah)"/>
   <rect class="box-fill" x="34.2" y="20.0" width="125.0" height="40.0" rx="6"/>
   <rect class="box-border" x="34.2" y="20.0" width="125.0" height="40.0" rx="6"/>
   <rect class="box-fill" x="29.5" y="120.0" width="134.5" height="40.0" rx="6"/>
@@ -199,7 +199,7 @@ Full OAuth2 authorization code flow with browser, app server, auth provider, and
     }
   </style>
   <defs>
-    <marker id="seq-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+    <marker id="d2-sa" viewBox="0 0 10 10" refX="9" refY="5"
             markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <polygon points="0,1 10,5 0,9" class="msg-head"/>
     </marker>
@@ -225,25 +225,25 @@ Full OAuth2 authorization code flow with browser, app server, auth provider, and
   <line class="lifeline" x1="301.5" y1="64" x2="301.5" y2="404"/>
   <line class="lifeline" x1="492.5" y1="64" x2="492.5" y2="404"/>
   <line class="lifeline" x1="683.5" y1="64" x2="683.5" y2="404"/>
-  <line class="msg-line" x1="110.5" y1="80.0" x2="301.5" y2="80.0" marker-end="url(#seq-arrow)"/>
+  <line class="msg-line" x1="110.5" y1="80.0" x2="301.5" y2="80.0" marker-end="url(#d2-sa)"/>
   <text class="msg-label" x="206.0" y="72.0">GET /login</text>
-  <line class="msg-line" x1="110.5" y1="112.0" x2="301.5" y2="112.0" stroke-dasharray="6,3" marker-start="url(#seq-arrow)"/>
+  <line class="msg-line" x1="110.5" y1="112.0" x2="301.5" y2="112.0" stroke-dasharray="6,3" marker-start="url(#d2-sa)"/>
   <text class="msg-label" x="206.0" y="104.0">redirect to auth</text>
-  <line class="msg-line" x1="110.5" y1="144.0" x2="492.5" y2="144.0" marker-end="url(#seq-arrow)"/>
+  <line class="msg-line" x1="110.5" y1="144.0" x2="492.5" y2="144.0" marker-end="url(#d2-sa)"/>
   <text class="msg-label" x="301.5" y="136.0">authorize</text>
-  <line class="msg-line" x1="110.5" y1="176.0" x2="492.5" y2="176.0" stroke-dasharray="6,3" marker-start="url(#seq-arrow)"/>
+  <line class="msg-line" x1="110.5" y1="176.0" x2="492.5" y2="176.0" stroke-dasharray="6,3" marker-start="url(#d2-sa)"/>
   <text class="msg-label" x="301.5" y="168.0">code</text>
-  <line class="msg-line" x1="110.5" y1="208.0" x2="301.5" y2="208.0" marker-end="url(#seq-arrow)"/>
+  <line class="msg-line" x1="110.5" y1="208.0" x2="301.5" y2="208.0" marker-end="url(#d2-sa)"/>
   <text class="msg-label" x="206.0" y="200.0">callback + code</text>
-  <line class="msg-line" x1="301.5" y1="240.0" x2="492.5" y2="240.0" marker-end="url(#seq-arrow)"/>
+  <line class="msg-line" x1="301.5" y1="240.0" x2="492.5" y2="240.0" marker-end="url(#d2-sa)"/>
   <text class="msg-label" x="397.0" y="232.0">exchange code</text>
-  <line class="msg-line" x1="301.5" y1="272.0" x2="492.5" y2="272.0" stroke-dasharray="6,3" marker-start="url(#seq-arrow)"/>
+  <line class="msg-line" x1="301.5" y1="272.0" x2="492.5" y2="272.0" stroke-dasharray="6,3" marker-start="url(#d2-sa)"/>
   <text class="msg-label" x="397.0" y="264.0">access_token</text>
-  <line class="msg-line" x1="301.5" y1="304.0" x2="683.5" y2="304.0" marker-end="url(#seq-arrow)"/>
+  <line class="msg-line" x1="301.5" y1="304.0" x2="683.5" y2="304.0" marker-end="url(#d2-sa)"/>
   <text class="msg-label" x="492.5" y="296.0">GET /data + token</text>
-  <line class="msg-line" x1="301.5" y1="336.0" x2="683.5" y2="336.0" stroke-dasharray="6,3" marker-start="url(#seq-arrow)"/>
+  <line class="msg-line" x1="301.5" y1="336.0" x2="683.5" y2="336.0" stroke-dasharray="6,3" marker-start="url(#d2-sa)"/>
   <text class="msg-label" x="492.5" y="328.0">JSON response</text>
-  <line class="msg-line" x1="110.5" y1="368.0" x2="301.5" y2="368.0" stroke-dasharray="6,3" marker-start="url(#seq-arrow)"/>
+  <line class="msg-line" x1="110.5" y1="368.0" x2="301.5" y2="368.0" stroke-dasharray="6,3" marker-start="url(#d2-sa)"/>
   <text class="msg-label" x="206.0" y="360.0">render page</text>
 </svg>
 
@@ -375,23 +375,23 @@ Service decomposition with API gateway, domain services, and data stores.
   </style>
   <rect class="bg" x="0" y="0" width="572" height="356" rx="6"/>
   <defs>
-    <clipPath id="box-clip-0"><rect x="20.0" y="20.0" width="167.0" height="100.0" rx="6"/></clipPath>
-    <clipPath id="box-clip-1"><rect x="207.0" y="20.0" width="158.0" height="128.0" rx="6"/></clipPath>
-    <clipPath id="box-clip-2"><rect x="385.0" y="20.0" width="167.0" height="112.0" rx="6"/></clipPath>
-    <clipPath id="box-clip-3"><rect x="20.0" y="168.0" width="212.0" height="128.0" rx="6"/></clipPath>
+    <clipPath id="d3-bc0"><rect x="20.0" y="20.0" width="167.0" height="100.0" rx="6"/></clipPath>
+    <clipPath id="d3-bc1"><rect x="207.0" y="20.0" width="158.0" height="128.0" rx="6"/></clipPath>
+    <clipPath id="d3-bc2"><rect x="385.0" y="20.0" width="167.0" height="112.0" rx="6"/></clipPath>
+    <clipPath id="d3-bc3"><rect x="20.0" y="168.0" width="212.0" height="128.0" rx="6"/></clipPath>
   </defs>
   <defs>
-    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5"
+    <marker id="d3-ah" viewBox="0 0 10 10" refX="9" refY="5"
             markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <polygon points="0,1 10,5 0,9" class="arrow-head"/>
     </marker>
   </defs>
-  <line class="arrow-line" x1="187.0" y1="70.0" x2="207.0" y2="84.0" marker-end="url(#arrowhead)"/>
-  <path class="arrow-line" d="M 103.5,120.0 L 103.5,316.0 L 468.5,316.0 L 468.5,132.0"  marker-end="url(#arrowhead)"/>
-  <path class="arrow-line" d="M 468.5,132.0 L 468.5,316.0 L 126.0,316.0 L 126.0,296.0"  marker-end="url(#arrowhead)"/>
+  <line class="arrow-line" x1="187.0" y1="70.0" x2="207.0" y2="84.0" marker-end="url(#d3-ah)"/>
+  <path class="arrow-line" d="M 103.5,120.0 L 103.5,316.0 L 468.5,316.0 L 468.5,132.0"  marker-end="url(#d3-ah)"/>
+  <path class="arrow-line" d="M 468.5,132.0 L 468.5,316.0 L 126.0,316.0 L 126.0,296.0"  marker-end="url(#d3-ah)"/>
   <rect class="box-fill" x="20.0" y="20.0" width="167.0" height="100.0" rx="6"/>
   <rect class="box-border" x="20.0" y="20.0" width="167.0" height="100.0" rx="6"/>
-  <g clip-path="url(#box-clip-0)">
+  <g clip-path="url(#d3-bc0)">
     <text class="box-header" x="103.5" y="40.0" text-anchor="middle" dominant-baseline="central">API Gateway</text>
     <line class="box-separator" x1="20.0" y1="52.0" x2="187.0" y2="52.0"/>
     <text class="box-text" x="32.0" y="74.0">Rate limiting</text>
@@ -400,7 +400,7 @@ Service decomposition with API gateway, domain services, and data stores.
   </g>
   <rect class="box-fill" x="207.0" y="20.0" width="158.0" height="128.0" rx="6"/>
   <rect class="box-border" x="207.0" y="20.0" width="158.0" height="128.0" rx="6"/>
-  <g clip-path="url(#box-clip-1)">
+  <g clip-path="url(#d3-bc1)">
     <text class="box-header" x="286.0" y="40.0" text-anchor="middle" dominant-baseline="central">User Service</text>
     <line class="box-separator" x1="207.0" y1="52.0" x2="365.0" y2="52.0"/>
     <text class="box-text" x="219.0" y="74.0">GET /users</text>
@@ -411,7 +411,7 @@ Service decomposition with API gateway, domain services, and data stores.
   </g>
   <rect class="box-fill" x="385.0" y="20.0" width="167.0" height="112.0" rx="6"/>
   <rect class="box-border" x="385.0" y="20.0" width="167.0" height="112.0" rx="6"/>
-  <g clip-path="url(#box-clip-2)">
+  <g clip-path="url(#d3-bc2)">
     <text class="box-header" x="468.5" y="40.0" text-anchor="middle" dominant-baseline="central">Order Service</text>
     <line class="box-separator" x1="385.0" y1="52.0" x2="552.0" y2="52.0"/>
     <text class="box-text" x="397.0" y="74.0">POST /orders</text>
@@ -421,7 +421,7 @@ Service decomposition with API gateway, domain services, and data stores.
   </g>
   <rect class="box-fill" x="20.0" y="168.0" width="212.0" height="128.0" rx="6"/>
   <rect class="box-border" x="20.0" y="168.0" width="212.0" height="128.0" rx="6"/>
-  <g clip-path="url(#box-clip-3)">
+  <g clip-path="url(#d3-bc3)">
     <text class="box-header" x="126.0" y="188.0" text-anchor="middle" dominant-baseline="central">Notification Service</text>
     <line class="box-separator" x1="20.0" y1="200.0" x2="232.0" y2="200.0"/>
     <text class="box-text" x="32.0" y="222.0">Email</text>
@@ -478,7 +478,7 @@ State machine showing deployment progression with rollback and retry paths.
     }
   </style>
   <defs>
-    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5"
+    <marker id="d4-ah" viewBox="0 0 10 10" refX="9" refY="5"
             markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <polygon points="0,1 10,5 0,9" class="arrow-head"/>
     </marker>
@@ -494,14 +494,14 @@ State machine showing deployment progression with rollback and retry paths.
     }
   </style>
   <rect class="bg" x="0" y="0" width="887" height="278" rx="6"/>
-  <line class="arrow-line" x1="298.8" y1="72.0" x2="358.8" y2="72.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="474.8" y1="72.0" x2="534.8" y2="72.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="650.8" y1="72.0" x2="710.8" y2="72.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="592.8" y1="94.0" x2="592.8" y2="174.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="710.8" y1="72.0" x2="298.8" y2="196.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="298.8" y1="196.0" x2="358.8" y2="196.0" marker-end="url(#arrowhead)"/>
-  <path class="arrow-line" d="M 358.8,196.0 C 216.0,134.0 216.0,134.0 710.8,72.0" marker-end="url(#arrowhead)" stroke-dasharray="6,3"/>
-  <path class="arrow-line" d="M 534.8,196.0 C 40.0,134.0 40.0,134.0 182.8,72.0" marker-end="url(#arrowhead)" stroke-dasharray="6,3"/>
+  <line class="arrow-line" x1="298.8" y1="72.0" x2="358.8" y2="72.0" marker-end="url(#d4-ah)"/>
+  <line class="arrow-line" x1="474.8" y1="72.0" x2="534.8" y2="72.0" marker-end="url(#d4-ah)"/>
+  <line class="arrow-line" x1="650.8" y1="72.0" x2="710.8" y2="72.0" marker-end="url(#d4-ah)"/>
+  <line class="arrow-line" x1="592.8" y1="94.0" x2="592.8" y2="174.0" marker-end="url(#d4-ah)"/>
+  <line class="arrow-line" x1="710.8" y1="72.0" x2="298.8" y2="196.0" marker-end="url(#d4-ah)"/>
+  <line class="arrow-line" x1="298.8" y1="196.0" x2="358.8" y2="196.0" marker-end="url(#d4-ah)"/>
+  <path class="arrow-line" d="M 358.8,196.0 C 216.0,134.0 216.0,134.0 710.8,72.0" marker-end="url(#d4-ah)" stroke-dasharray="6,3"/>
+  <path class="arrow-line" d="M 534.8,196.0 C 40.0,134.0 40.0,134.0 182.8,72.0" marker-end="url(#d4-ah)" stroke-dasharray="6,3"/>
   <rect class="state-node state-initial" x="182.8" y="50.0" width="116.0" height="44.0" rx="20"/>
   <rect class="state-node" x="358.8" y="50.0" width="116.0" height="44.0" rx="20"/>
   <rect class="state-node" x="534.8" y="50.0" width="116.0" height="44.0" rx="20"/>
@@ -664,7 +664,7 @@ Think-Act-Observe cycle with self-loop reasoning and iteration back-edges.
     }
   </style>
   <defs>
-    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5"
+    <marker id="d5-ah" viewBox="0 0 10 10" refX="9" refY="5"
             markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <polygon points="0,1 10,5 0,9" class="arrow-head"/>
     </marker>
@@ -680,12 +680,12 @@ Think-Act-Observe cycle with self-loop reasoning and iteration back-edges.
     }
   </style>
   <rect class="bg" x="0" y="0" width="716" height="278" rx="6"/>
-  <line class="arrow-line" x1="156.5" y1="72.0" x2="216.5" y2="72.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="323.0" y1="72.0" x2="383.0" y2="72.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="489.5" y1="72.0" x2="549.5" y2="72.0" marker-end="url(#arrowhead)"/>
-  <path class="arrow-line" d="M 602.8,94.0 C 602.8,144.0 269.8,144.0 269.8,94.0" marker-end="url(#arrowhead)" stroke-dasharray="6,3"/>
-  <line class="arrow-line" x1="549.5" y1="72.0" x2="156.5" y2="196.0" marker-end="url(#arrowhead)"/>
-  <path class="arrow-line" d="M 254.8,50.0 C 254.8,20.0 284.8,20.0 284.8,50.0" marker-end="url(#arrowhead)"/>
+  <line class="arrow-line" x1="156.5" y1="72.0" x2="216.5" y2="72.0" marker-end="url(#d5-ah)"/>
+  <line class="arrow-line" x1="323.0" y1="72.0" x2="383.0" y2="72.0" marker-end="url(#d5-ah)"/>
+  <line class="arrow-line" x1="489.5" y1="72.0" x2="549.5" y2="72.0" marker-end="url(#d5-ah)"/>
+  <path class="arrow-line" d="M 602.8,94.0 C 602.8,144.0 269.8,144.0 269.8,94.0" marker-end="url(#d5-ah)" stroke-dasharray="6,3"/>
+  <line class="arrow-line" x1="549.5" y1="72.0" x2="156.5" y2="196.0" marker-end="url(#d5-ah)"/>
+  <path class="arrow-line" d="M 254.8,50.0 C 254.8,20.0 284.8,20.0 284.8,50.0" marker-end="url(#d5-ah)"/>
   <rect class="state-node state-initial" x="50.0" y="50.0" width="106.5" height="44.0" rx="20"/>
   <rect class="state-node" x="216.5" y="50.0" width="106.5" height="44.0" rx="20"/>
   <rect class="state-node" x="383.0" y="50.0" width="106.5" height="44.0" rx="20"/>
@@ -829,23 +829,23 @@ Infrastructure as boxes showing ingress, services, and data layer with replicas.
   </style>
   <rect class="bg" x="0" y="0" width="687" height="208" rx="6"/>
   <defs>
-    <clipPath id="box-clip-0"><rect x="20.0" y="20.0" width="176.0" height="112.0" rx="6"/></clipPath>
-    <clipPath id="box-clip-1"><rect x="216.0" y="20.0" width="122.0" height="112.0" rx="6"/></clipPath>
-    <clipPath id="box-clip-2"><rect x="358.0" y="20.0" width="131.0" height="112.0" rx="6"/></clipPath>
-    <clipPath id="box-clip-3"><rect x="509.0" y="20.0" width="158.0" height="128.0" rx="6"/></clipPath>
+    <clipPath id="d6-bc0"><rect x="20.0" y="20.0" width="176.0" height="112.0" rx="6"/></clipPath>
+    <clipPath id="d6-bc1"><rect x="216.0" y="20.0" width="122.0" height="112.0" rx="6"/></clipPath>
+    <clipPath id="d6-bc2"><rect x="358.0" y="20.0" width="131.0" height="112.0" rx="6"/></clipPath>
+    <clipPath id="d6-bc3"><rect x="509.0" y="20.0" width="158.0" height="128.0" rx="6"/></clipPath>
   </defs>
   <defs>
-    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5"
+    <marker id="d6-ah" viewBox="0 0 10 10" refX="9" refY="5"
             markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <polygon points="0,1 10,5 0,9" class="arrow-head"/>
     </marker>
   </defs>
-  <line class="arrow-line" x1="196.0" y1="76.0" x2="216.0" y2="76.0" marker-end="url(#arrowhead)"/>
-  <path class="arrow-line" d="M 108.0,132.0 L 108.0,168.0 L 423.5,168.0 L 423.5,132.0"  marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="489.0" y1="76.0" x2="509.0" y2="84.0" marker-end="url(#arrowhead)"/>
+  <line class="arrow-line" x1="196.0" y1="76.0" x2="216.0" y2="76.0" marker-end="url(#d6-ah)"/>
+  <path class="arrow-line" d="M 108.0,132.0 L 108.0,168.0 L 423.5,168.0 L 423.5,132.0"  marker-end="url(#d6-ah)"/>
+  <line class="arrow-line" x1="489.0" y1="76.0" x2="509.0" y2="84.0" marker-end="url(#d6-ah)"/>
   <rect class="box-fill" x="20.0" y="20.0" width="176.0" height="112.0" rx="6"/>
   <rect class="box-border" x="20.0" y="20.0" width="176.0" height="112.0" rx="6"/>
-  <g clip-path="url(#box-clip-0)">
+  <g clip-path="url(#d6-bc0)">
     <text class="box-header" x="108.0" y="40.0" text-anchor="middle" dominant-baseline="central">Ingress</text>
     <line class="box-separator" x1="20.0" y1="52.0" x2="196.0" y2="52.0"/>
     <text class="box-text" x="32.0" y="74.0">nginx controller</text>
@@ -855,7 +855,7 @@ Infrastructure as boxes showing ingress, services, and data layer with replicas.
   </g>
   <rect class="box-fill" x="216.0" y="20.0" width="122.0" height="112.0" rx="6"/>
   <rect class="box-border" x="216.0" y="20.0" width="122.0" height="112.0" rx="6"/>
-  <g clip-path="url(#box-clip-1)">
+  <g clip-path="url(#d6-bc1)">
     <text class="box-header" x="277.0" y="40.0" text-anchor="middle" dominant-baseline="central">Frontend</text>
     <line class="box-separator" x1="216.0" y1="52.0" x2="338.0" y2="52.0"/>
     <text class="box-text" x="228.0" y="74.0">React SPA</text>
@@ -865,7 +865,7 @@ Infrastructure as boxes showing ingress, services, and data layer with replicas.
   </g>
   <rect class="box-fill" x="358.0" y="20.0" width="131.0" height="112.0" rx="6"/>
   <rect class="box-border" x="358.0" y="20.0" width="131.0" height="112.0" rx="6"/>
-  <g clip-path="url(#box-clip-2)">
+  <g clip-path="url(#d6-bc2)">
     <text class="box-header" x="423.5" y="40.0" text-anchor="middle" dominant-baseline="central">Backend API</text>
     <line class="box-separator" x1="358.0" y1="52.0" x2="489.0" y2="52.0"/>
     <text class="box-text" x="370.0" y="74.0">FastAPI</text>
@@ -875,7 +875,7 @@ Infrastructure as boxes showing ingress, services, and data layer with replicas.
   </g>
   <rect class="box-fill" x="509.0" y="20.0" width="158.0" height="128.0" rx="6"/>
   <rect class="box-border" x="509.0" y="20.0" width="158.0" height="128.0" rx="6"/>
-  <g clip-path="url(#box-clip-3)">
+  <g clip-path="url(#d6-bc3)">
     <text class="box-header" x="588.0" y="40.0" text-anchor="middle" dominant-baseline="central">Data Layer</text>
     <line class="box-separator" x1="509.0" y1="52.0" x2="667.0" y2="52.0"/>
     <text class="box-text" x="521.0" y="74.0">PostgreSQL 15</text>

@@ -119,7 +119,7 @@ class TestStateMachineE2E:
         for label in ["checkout", "pay", "timeout", "ship", "deliver", "retry"]:
             assert label in svg
         # Has arrowhead markers
-        assert 'arrowhead' in svg
+        assert 'marker-end="url(#d' in svg
 
 
 # ── Flow E2E ───────────────────────────────────────────────────────
@@ -149,7 +149,7 @@ class TestFlowE2E:
         assert _count_elements(svg, "box-border") >= 4  # rects
         assert 'polygon' in svg  # decision diamond
         assert 'trigger' in svg
-        assert 'arrowhead' in svg
+        assert 'marker-end="url(#d' in svg
 
 
 # ── Sequence E2E ───────────────────────────────────────────────────

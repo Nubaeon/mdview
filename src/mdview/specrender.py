@@ -10,12 +10,22 @@ Supported types: flow, sequence, wireframe, table, box.
 from __future__ import annotations
 
 import html as html_mod
+import itertools
 import logging
 
 from .spec import DiagramSpec, Element, Connection
 from .themes import DEFAULT_THEME, Theme
 
 logger = logging.getLogger(__name__)
+
+# Unique ID counter — prevents duplicate SVG element IDs when multiple
+# diagrams are embedded in the same HTML page.
+_svg_id_counter = itertools.count()
+
+
+def _uid() -> str:
+    """Return a unique prefix for SVG element IDs within this process."""
+    return f"d{next(_svg_id_counter)}"
 
 # Layout constants (px)
 PAD = 20         # outer padding
@@ -46,6 +56,7 @@ def _render_flow(spec: DiagramSpec, theme: Theme) -> str:
     if not elements:
         return _render_fallback(spec, theme)
 
+    uid = _uid()
     horizontal = spec.layout in ("horizontal", "auto")
 
     # Measure node sizes
@@ -61,7 +72,7 @@ def _render_flow(spec: DiagramSpec, theme: Theme) -> str:
     parts = [
         _svg_open(svg_w, svg_h),
         theme.svg_css(),
-        _svg_arrowhead_defs(),
+        _svg_arrowhead_defs(uid),
         _svg_bg(svg_w, svg_h),
     ]
 
@@ -72,7 +83,7 @@ def _render_flow(spec: DiagramSpec, theme: Theme) -> str:
         dst = id_to_node.get(conn.to_id)
         if not src or not dst:
             continue
-        line_parts, label_parts = _svg_connection_layered(src, dst, conn)
+        line_parts, label_parts = _svg_connection_layered(src, dst, conn, uid)
         parts.extend(line_parts)
         conn_labels.extend(label_parts)
 
@@ -165,6 +176,8 @@ def _render_sequence(spec: DiagramSpec, theme: Theme) -> str:
     if len(actors) < 2:
         return _render_fallback(spec, theme)
 
+    uid = _uid()
+
     # Sort connections by order property
     ordered_conns = sorted(
         spec.connections,
@@ -194,7 +207,7 @@ def _render_sequence(spec: DiagramSpec, theme: Theme) -> str:
     parts = [
         _svg_open(svg_w, svg_h),
         theme.sequence_css(),
-        _svg_seq_arrowhead_defs(),
+        _svg_seq_arrowhead_defs(uid),
         _svg_bg(svg_w, svg_h),
     ]
 
@@ -234,9 +247,9 @@ def _render_sequence(spec: DiagramSpec, theme: Theme) -> str:
         dash_attr = ' stroke-dasharray="6,3"' if is_dashed else ""
 
         if to_x > from_x:
-            marker = ' marker-end="url(#seq-arrow)"'
+            marker = f' marker-end="url(#{uid}-sa)"'
         else:
-            marker = ' marker-start="url(#seq-arrow)"'
+            marker = f' marker-start="url(#{uid}-sa)"'
             from_x, to_x = to_x, from_x
 
         parts.append(
@@ -581,6 +594,7 @@ def _render_box(spec: DiagramSpec, theme: Theme) -> str:
     if not spec.elements:
         return _render_fallback(spec, theme)
 
+    uid = _uid()
     MAX_ROW_W = 800  # wrap to next row if exceeding this width
 
     nodes: list[dict] = []
@@ -648,7 +662,7 @@ def _render_box(spec: DiagramSpec, theme: Theme) -> str:
     defs = ['  <defs>']
     for i, n in enumerate(nodes):
         defs.append(
-            f'    <clipPath id="box-clip-{i}"><rect x="{n["x"]:.1f}" y="{n["y"]:.1f}" '
+            f'    <clipPath id="{uid}-bc{i}"><rect x="{n["x"]:.1f}" y="{n["y"]:.1f}" '
             f'width="{n["w"]:.1f}" height="{n["h"]:.1f}" rx="{BOX_RX}"/></clipPath>'
         )
     defs.append('  </defs>')
@@ -657,13 +671,13 @@ def _render_box(spec: DiagramSpec, theme: Theme) -> str:
     # Layer 1: connection lines (underneath boxes)
     conn_labels: list[str] = []
     if spec.connections:
-        parts.append(_svg_arrowhead_defs())
+        parts.append(_svg_arrowhead_defs(uid))
         for conn in spec.connections:
             src = id_to_node.get(conn.from_id)
             dst = id_to_node.get(conn.to_id)
             if src and dst:
                 line_parts, label_parts = _svg_box_connection_layered(
-                    src, dst, conn, nodes
+                    src, dst, conn, nodes, uid
                 )
                 parts.extend(line_parts)
                 conn_labels.extend(label_parts)
@@ -685,7 +699,7 @@ def _render_box(spec: DiagramSpec, theme: Theme) -> str:
         )
 
         # Clipped group for all text content
-        parts.append(f'  <g clip-path="url(#box-clip-{i})">')
+        parts.append(f'  <g clip-path="url(#{uid}-bc{i})">')
 
         # Header text
         header_y = y + 20
@@ -782,11 +796,12 @@ def _render_state_machine(spec: DiagramSpec, theme: Theme) -> str:
     svg_w = max_x + PAD
     svg_h = max_y + PAD
 
+    uid = _uid()
     d = theme.dark
     parts = [
         _svg_open(svg_w, svg_h),
         theme.svg_css(),
-        _svg_arrowhead_defs(),
+        _svg_arrowhead_defs(uid),
         f"""  <style>
     .mdview-diagram .state-node {{ stroke: {d.border}; stroke-width: 2; fill: {d.bg_secondary}; rx: 20; }}
     .mdview-diagram .state-initial {{ stroke: {d.heading}; stroke-width: 2.5; }}
@@ -809,7 +824,7 @@ def _render_state_machine(spec: DiagramSpec, theme: Theme) -> str:
             continue
 
         if conn.from_id == conn.to_id:
-            line_parts, label_parts = _svg_self_loop_layered(src, conn)
+            line_parts, label_parts = _svg_self_loop_layered(src, conn, uid)
         else:
             # Back-edge detection: goes upward OR goes leftward on the same row
             # Grid wrapping (left + down) is a forward edge, NOT a back-edge
@@ -823,9 +838,9 @@ def _render_state_machine(spec: DiagramSpec, theme: Theme) -> str:
             is_back_edge = goes_up or same_row_left
 
             if is_back_edge:
-                line_parts, label_parts = _svg_curved_connection_layered(src, dst, conn)
+                line_parts, label_parts = _svg_curved_connection_layered(src, dst, conn, uid)
             else:
-                line_parts, label_parts = _svg_connection_layered(src, dst, conn)
+                line_parts, label_parts = _svg_connection_layered(src, dst, conn, uid)
         parts.extend(line_parts)
         conn_labels.extend(label_parts)
 
@@ -901,7 +916,7 @@ def _layout_state_nodes(elements: list[Element]) -> list[dict]:
 
 
 def _svg_self_loop_layered(
-    node: dict, conn: Connection
+    node: dict, conn: Connection, uid: str
 ) -> tuple[list[str], list[str]]:
     """Render a self-loop arc above a node. Returns (lines, labels)."""
     lines: list[str] = []
@@ -917,7 +932,7 @@ def _svg_self_loop_layered(
     lines.append(
         f'  <path class="arrow-line" d="M {x1:.1f},{top_y:.1f} '
         f'C {x1:.1f},{arc_top:.1f} {x2:.1f},{arc_top:.1f} {x2:.1f},{top_y:.1f}" '
-        f'marker-end="url(#arrowhead)"{dash}/>'
+        f'marker-end="url(#{uid}-ah)"{dash}/>'
     )
 
     if conn.label:
@@ -938,7 +953,7 @@ def _svg_self_loop_layered(
 
 
 def _svg_curved_connection_layered(
-    src: dict, dst: dict, conn: Connection
+    src: dict, dst: dict, conn: Connection, uid: str
 ) -> tuple[list[str], list[str]]:
     """Render a back-edge as a curved path. Returns (lines, labels)."""
     lines: list[str] = []
@@ -972,7 +987,7 @@ def _svg_curved_connection_layered(
     lines.append(
         f'  <path class="arrow-line" d="M {x1:.1f},{y1:.1f} '
         f'C {ctrl_x1:.1f},{ctrl_y:.1f} {ctrl_x2:.1f},{ctrl_y:.1f} {x2:.1f},{y2:.1f}" '
-        f'marker-end="url(#arrowhead)"{dash}/>'
+        f'marker-end="url(#{uid}-ah)"{dash}/>'
     )
 
     if conn.label:
@@ -1005,18 +1020,18 @@ def _svg_bg(w: float, h: float) -> str:
     return f'  <rect class="bg" x="0" y="0" width="{w:.0f}" height="{h:.0f}" rx="6"/>'
 
 
-def _svg_arrowhead_defs() -> str:
-    return """  <defs>
-    <marker id="arrowhead" viewBox="0 0 10 10" refX="9" refY="5"
+def _svg_arrowhead_defs(uid: str) -> str:
+    return f"""  <defs>
+    <marker id="{uid}-ah" viewBox="0 0 10 10" refX="9" refY="5"
             markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <polygon points="0,1 10,5 0,9" class="arrow-head"/>
     </marker>
   </defs>"""
 
 
-def _svg_seq_arrowhead_defs() -> str:
-    return """  <defs>
-    <marker id="seq-arrow" viewBox="0 0 10 10" refX="9" refY="5"
+def _svg_seq_arrowhead_defs(uid: str) -> str:
+    return f"""  <defs>
+    <marker id="{uid}-sa" viewBox="0 0 10 10" refX="9" refY="5"
             markerWidth="8" markerHeight="8" orient="auto-start-reverse">
       <polygon points="0,1 10,5 0,9" class="msg-head"/>
     </marker>
@@ -1093,7 +1108,7 @@ def _compute_connection_endpoints(
 
 
 def _svg_connection_layered(
-    src: dict, dst: dict, conn: Connection
+    src: dict, dst: dict, conn: Connection, uid: str
 ) -> tuple[list[str], list[str]]:
     """Draw arrow between nodes. Returns (line_parts, label_parts) for z-ordering."""
     lines: list[str] = []
@@ -1102,7 +1117,7 @@ def _svg_connection_layered(
     x1, y1, x2, y2 = _compute_connection_endpoints(src, dst)
 
     dash = ' stroke-dasharray="6,3"' if conn.style == "dashed" else ""
-    marker = ' marker-end="url(#arrowhead)"'
+    marker = f' marker-end="url(#{uid}-ah)"'
 
     lines.append(
         f'  <line class="arrow-line" x1="{x1:.1f}" y1="{y1:.1f}" '
@@ -1129,7 +1144,7 @@ def _svg_connection_layered(
 
 
 def _svg_box_connection_layered(
-    src: dict, dst: dict, conn: Connection, all_nodes: list[dict]
+    src: dict, dst: dict, conn: Connection, all_nodes: list[dict], uid: str
 ) -> tuple[list[str], list[str]]:
     """Draw arrow between box nodes, routing below if intermediate boxes exist."""
     lines: list[str] = []
@@ -1154,7 +1169,7 @@ def _svg_box_connection_layered(
                 break
 
     dash = ' stroke-dasharray="6,3"' if conn.style == "dashed" else ""
-    marker = ' marker-end="url(#arrowhead)"'
+    marker = f' marker-end="url(#{uid}-ah)"'
 
     if has_blocker:
         # Route below all boxes
