@@ -506,8 +506,8 @@ diverge, Track 2 wins.
   <text class="arrow-label" x="153.8" y="190.0" dominant-baseline="central">assess</text>
   <rect class="arrow-label-bg" x="131.8" y="381.0" width="44.0" height="16.0" rx="3"/>
   <text class="arrow-label" x="153.8" y="390.0" dominant-baseline="central">delta</text>
-  <rect class="arrow-label-bg" x="121.0" y="431.0" width="65.6" height="16.0" rx="3"/>
-  <text class="arrow-label" x="153.8" y="440.0" dominant-baseline="central">evidence</text>
+  <rect class="arrow-label-bg" x="295.5" y="431.0" width="65.6" height="16.0" rx="3"/>
+  <text class="arrow-label" x="328.3" y="440.0" dominant-baseline="central">evidence</text>
   <text class="box-header" x="153.8" y="40.0" text-anchor="middle" dominant-baseline="central">PREFLIGHT Vectors</text>
   <text class="box-text" x="153.8" y="140.0" text-anchor="middle" dominant-baseline="central">Noetic + Praxic Work</text>
   <text class="box-text" x="153.8" y="240.0" text-anchor="middle" dominant-baseline="central">POSTFLIGHT Vectors</text>
@@ -786,8 +786,8 @@ with `proceed` — preventing action before sufficient understanding.
   <rect class="box-border" x="160.0" y="120.0" width="96.5" height="40.0" rx="6"/>
   <rect class="arrow-label-bg" x="391.4" y="31.0" width="51.2" height="16.0" rx="3"/>
   <text class="arrow-label" x="417.0" y="40.0" dominant-baseline="central">noetic</text>
-  <rect class="arrow-label-bg" x="461.4" y="31.0" width="51.2" height="16.0" rx="3"/>
-  <text class="arrow-label" x="487.0" y="40.0" dominant-baseline="central">praxic</text>
+  <rect class="arrow-label-bg" x="531.0" y="31.0" width="51.2" height="16.0" rx="3"/>
+  <text class="arrow-label" x="556.6" y="40.0" dominant-baseline="central">praxic</text>
   <rect class="arrow-label-bg" x="406.9" y="81.0" width="29.6" height="16.0" rx="3"/>
   <text class="arrow-label" x="421.8" y="90.0" dominant-baseline="central">yes</text>
   <rect class="arrow-label-bg" x="332.3" y="81.0" width="22.4" height="16.0" rx="3"/>
@@ -999,7 +999,7 @@ empirica-autonomy provides remote oversight. Plugins in, knowledge out.
 
 <div align="center">
 
-<svg xmlns="http://www.w3.org/2000/svg" width="698" height="372" style="display:block;margin:auto" class="mdview-diagram">
+<svg xmlns="http://www.w3.org/2000/svg" width="698" height="412" style="display:block;margin:auto" class="mdview-diagram">
 
   <style>
     .mdview-diagram { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', monospace; font-size: 13px; }
@@ -1026,7 +1026,7 @@ empirica-autonomy provides remote oversight. Plugins in, knowledge out.
       .mdview-diagram .bg { fill: #f8f8fc; }
     }
   </style>
-  <rect class="bg" x="0" y="0" width="698" height="372" rx="6"/>
+  <rect class="bg" x="0" y="0" width="698" height="412" rx="6"/>
   <defs>
     <clipPath id="d7-bc0"><rect x="20.0" y="20.0" width="221.0" height="128.0" rx="6"/></clipPath>
     <clipPath id="d7-bc1"><rect x="261.0" y="20.0" width="212.0" height="144.0" rx="6"/></clipPath>
@@ -1041,8 +1041,8 @@ empirica-autonomy provides remote oversight. Plugins in, knowledge out.
   </defs>
   <line class="arrow-line" x1="241.0" y1="84.0" x2="261.0" y2="92.0" marker-end="url(#d7-ah)"/>
   <path class="arrow-line" d="M 130.5,148.0 L 130.5,332.0 L 585.5,332.0 L 585.5,148.0"  marker-end="url(#d7-ah)"/>
-  <path class="arrow-line" d="M 112.5,312.0 L 112.5,332.0 L 585.5,332.0 L 585.5,148.0"  marker-end="url(#d7-ah)"/>
-  <path class="arrow-line" d="M 367.0,164.0 L 367.0,332.0 L 112.5,332.0 L 112.5,312.0"  marker-end="url(#d7-ah)"/>
+  <path class="arrow-line" d="M 112.5,312.0 L 112.5,352.0 L 585.5,352.0 L 585.5,148.0"  marker-end="url(#d7-ah)"/>
+  <path class="arrow-line" d="M 367.0,164.0 L 367.0,372.0 L 112.5,372.0 L 112.5,312.0"  marker-end="url(#d7-ah)"/>
   <rect class="box-fill" x="20.0" y="20.0" width="221.0" height="128.0" rx="6"/>
   <rect class="box-border" x="20.0" y="20.0" width="221.0" height="128.0" rx="6"/>
   <g clip-path="url(#d7-bc0)">
@@ -1092,10 +1092,10 @@ empirica-autonomy provides remote oversight. Plugins in, knowledge out.
   <text class="arrow-label" x="251.0" y="88.0" dominant-baseline="central">hooks</text>
   <rect class="arrow-label-bg" x="339.6" y="323.0" width="36.8" height="16" rx="3"/>
   <text class="arrow-label" x="358.0" y="332.0" dominant-baseline="central">data</text>
-  <rect class="arrow-label-bg" x="323.4" y="323.0" width="51.2" height="16" rx="3"/>
-  <text class="arrow-label" x="349.0" y="332.0" dominant-baseline="central">render</text>
-  <rect class="arrow-label-bg" x="221.3" y="323.0" width="36.8" height="16" rx="3"/>
-  <text class="arrow-label" x="239.8" y="332.0" dominant-baseline="central">/map</text>
+  <rect class="arrow-label-bg" x="323.4" y="343.0" width="51.2" height="16" rx="3"/>
+  <text class="arrow-label" x="349.0" y="352.0" dominant-baseline="central">render</text>
+  <rect class="arrow-label-bg" x="221.3" y="363.0" width="36.8" height="16" rx="3"/>
+  <text class="arrow-label" x="239.8" y="372.0" dominant-baseline="central">/map</text>
 </svg>
 
 <em>Empirica Ecosystem</em>

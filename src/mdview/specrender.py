@@ -83,7 +83,7 @@ def _render_flow(spec: DiagramSpec, theme: Theme) -> str:
         dst = id_to_node.get(conn.to_id)
         if not src or not dst:
             continue
-        line_parts, label_parts = _svg_connection_layered(src, dst, conn, uid)
+        line_parts, label_parts = _svg_connection_layered(src, dst, conn, uid, nodes)
         parts.extend(line_parts)
         conn_labels.extend(label_parts)
 
@@ -645,9 +645,9 @@ def _render_box(spec: DiagramSpec, theme: Theme) -> str:
             id_to_node[elem.id] = nodes[i]
 
     # Check if any connections need routing below boxes (extra height)
-    has_routed = _box_has_routed_connections(spec, id_to_node, nodes)
-    if has_routed:
-        max_y += 40
+    num_routed = _box_count_routed_connections(spec, id_to_node, nodes)
+    if num_routed:
+        max_y += 40 + (num_routed - 1) * 20
 
     svg_w = max_x + PAD
     svg_h = max_y + PAD
@@ -670,6 +670,7 @@ def _render_box(spec: DiagramSpec, theme: Theme) -> str:
 
     # Layer 1: connection lines (underneath boxes)
     conn_labels: list[str] = []
+    route_idx = 0
     if spec.connections:
         parts.append(_svg_arrowhead_defs(uid))
         for conn in spec.connections:
@@ -677,8 +678,11 @@ def _render_box(spec: DiagramSpec, theme: Theme) -> str:
             dst = id_to_node.get(conn.to_id)
             if src and dst:
                 line_parts, label_parts = _svg_box_connection_layered(
-                    src, dst, conn, nodes, uid
+                    src, dst, conn, nodes, uid, route_idx
                 )
+                # Track how many connections got routed (they use route_index)
+                if any('path' in p for p in line_parts):
+                    route_idx += 1
                 parts.extend(line_parts)
                 conn_labels.extend(label_parts)
 
@@ -840,7 +844,7 @@ def _render_state_machine(spec: DiagramSpec, theme: Theme) -> str:
             if is_back_edge:
                 line_parts, label_parts = _svg_curved_connection_layered(src, dst, conn, uid)
             else:
-                line_parts, label_parts = _svg_connection_layered(src, dst, conn, uid)
+                line_parts, label_parts = _svg_connection_layered(src, dst, conn, uid, nodes)
         parts.extend(line_parts)
         conn_labels.extend(label_parts)
 
@@ -1042,12 +1046,13 @@ def _svg_seq_arrowhead_defs(uid: str) -> str:
   </defs>"""
 
 
-def _box_has_routed_connections(
+def _box_count_routed_connections(
     spec: DiagramSpec, id_to_node: dict, nodes: list[dict]
-) -> bool:
-    """Check if any box connections need routing around intermediate boxes."""
+) -> int:
+    """Count box connections that need routing around intermediate boxes."""
     if not spec.connections:
-        return False
+        return 0
+    count = 0
     for conn in spec.connections:
         src = id_to_node.get(conn.from_id)
         dst = id_to_node.get(conn.to_id)
@@ -1063,8 +1068,9 @@ def _box_has_routed_connections(
                 arrow_y_min = min(y1, y2) - 10
                 arrow_y_max = max(y1, y2) + 10
                 if n["y"] < arrow_y_max and n["y"] + n["h"] > arrow_y_min:
-                    return True
-    return False
+                    count += 1
+                    break
+    return count
 
 
 def _svg_diamond_fill(x: float, y: float, w: float, h: float) -> str:
@@ -1112,7 +1118,8 @@ def _compute_connection_endpoints(
 
 
 def _svg_connection_layered(
-    src: dict, dst: dict, conn: Connection, uid: str
+    src: dict, dst: dict, conn: Connection, uid: str,
+    all_nodes: list[dict] | None = None,
 ) -> tuple[list[str], list[str]]:
     """Draw arrow between nodes. Returns (line_parts, label_parts) for z-ordering."""
     lines: list[str] = []
@@ -1131,6 +1138,31 @@ def _svg_connection_layered(
     if conn.label:
         mid_x = (x1 + x2) / 2
         mid_y = (y1 + y2) / 2
+
+        # Nudge label if midpoint falls inside an intermediate node
+        if all_nodes:
+            label_w = len(conn.label) * 7.2 + 8
+            label_h = 16
+            for n in all_nodes:
+                if n is src or n is dst:
+                    continue
+                # Check if label center is inside this node's bounding box
+                if (n["x"] <= mid_x <= n["x"] + n["w"]
+                        and n["y"] <= mid_y <= n["y"] + n["h"]):
+                    # Place label just outside the overlapping node
+                    # along the arrow direction
+                    if abs(x2 - x1) > abs(y2 - y1):
+                        # Mostly horizontal arrow — nudge label past the node
+                        if x2 > x1:
+                            mid_x = n["x"] + n["w"] + label_w / 2 + 4
+                        else:
+                            mid_x = n["x"] - label_w / 2 - 4
+                    else:
+                        # Mostly vertical arrow — nudge label beside the arrow
+                        mid_x = n["x"] + n["w"] + label_w / 2 + 8
+                        mid_y = (n["y"] + n["y"] + n["h"]) / 2
+                    break
+
         escaped = html_mod.escape(conn.label)
         label_w = len(conn.label) * 7.2 + 8
         label_h = 16
@@ -1148,7 +1180,8 @@ def _svg_connection_layered(
 
 
 def _svg_box_connection_layered(
-    src: dict, dst: dict, conn: Connection, all_nodes: list[dict], uid: str
+    src: dict, dst: dict, conn: Connection, all_nodes: list[dict], uid: str,
+    route_index: int = 0,
 ) -> tuple[list[str], list[str]]:
     """Draw arrow between box nodes, routing below if intermediate boxes exist."""
     lines: list[str] = []
@@ -1176,8 +1209,10 @@ def _svg_box_connection_layered(
     marker = f' marker-end="url(#{uid}-ah)"'
 
     if has_blocker:
-        # Route below all boxes
-        bottom_y = max(n["y"] + n["h"] for n in all_nodes) + 20
+        # Route below all boxes. Offset each routed connection so
+        # multiple routes don't share the same horizontal line.
+        base_bottom = max(n["y"] + n["h"] for n in all_nodes) + 20
+        bottom_y = base_bottom + route_index * 20
         # Start from bottom of src, end at bottom of dst, curve below
         sx = src["x"] + src["w"] / 2
         sy = src["y"] + src["h"]
@@ -1190,16 +1225,28 @@ def _svg_box_connection_layered(
             f'{marker}{dash}/>'
         )
         if conn.label:
-            mid_x = (sx + dx) / 2
-            mid_y = bottom_y
+            # Place label at the midpoint of the horizontal segment,
+            # which sits on this connection's own unique bottom_y line.
+            lbl_x = (sx + dx) / 2
+            lbl_y = bottom_y
             escaped = html_mod.escape(conn.label)
             label_w = len(conn.label) * 7.2 + 8
+
+            # Check if label overlaps any box; if so, nudge to right of box
+            for n in all_nodes:
+                if n is src or n is dst:
+                    continue
+                if (n["x"] <= lbl_x <= n["x"] + n["w"]
+                        and n["y"] <= lbl_y <= n["y"] + n["h"]):
+                    lbl_x = n["x"] + n["w"] + label_w / 2 + 4
+                    break
+
             labels.append(
-                f'  <rect class="arrow-label-bg" x="{mid_x - label_w / 2:.1f}" '
-                f'y="{mid_y - 9:.1f}" width="{label_w:.1f}" height="16" rx="3"/>'
+                f'  <rect class="arrow-label-bg" x="{lbl_x - label_w / 2:.1f}" '
+                f'y="{lbl_y - 9:.1f}" width="{label_w:.1f}" height="16" rx="3"/>'
             )
             labels.append(
-                f'  <text class="arrow-label" x="{mid_x:.1f}" y="{mid_y:.1f}" '
+                f'  <text class="arrow-label" x="{lbl_x:.1f}" y="{lbl_y:.1f}" '
                 f'dominant-baseline="central">{escaped}</text>'
             )
     else:
