@@ -76,12 +76,18 @@ def _render_flow(spec: DiagramSpec, theme: Theme) -> str:
         parts.extend(line_parts)
         conn_labels.extend(label_parts)
 
-    # Layer 2: node shapes (on top of arrows)
+    # Layer 2: node shapes (opaque fill + border, on top of arrows)
     for n in nodes:
         is_decision = n.get("elem_type") == "decision"
         if is_decision:
+            parts.append(_svg_diamond_fill(n["x"], n["y"], n["w"], n["h"]))
             parts.append(_svg_diamond(n["x"], n["y"], n["w"], n["h"]))
         else:
+            # Opaque fill rect first, then border rect
+            parts.append(
+                f'  <rect class="box-fill" x="{n["x"]:.1f}" y="{n["y"]:.1f}" '
+                f'width="{n["w"]:.1f}" height="{n["h"]:.1f}" rx="{BOX_RX}"/>'
+            )
             parts.append(
                 f'  <rect class="box-border" x="{n["x"]:.1f}" y="{n["y"]:.1f}" '
                 f'width="{n["w"]:.1f}" height="{n["h"]:.1f}" rx="{BOX_RX}"/>'
@@ -109,14 +115,22 @@ def _layout_flow_nodes(
     elements: list[Element], horizontal: bool
 ) -> list[dict]:
     """Position flow nodes. Returns list of {id, label, x, y, w, h, elem_type}."""
+    MAX_ROW_W = 800
     nodes = []
     x, y = PAD, PAD
     gap = 60
+    row_max_h = 0.0
 
     for i, elem in enumerate(elements):
         label = elem.label or elem.id
         w = max(len(label) * 9.5 + 30, 80)
         h = BOX_H
+
+        # Row wrapping for horizontal layout
+        if horizontal and nodes and x + w + PAD > MAX_ROW_W:
+            x = PAD
+            y += row_max_h + gap
+            row_max_h = 0.0
 
         nodes.append({
             "id": elem.id,
@@ -128,9 +142,17 @@ def _layout_flow_nodes(
         })
 
         if horizontal:
+            row_max_h = max(row_max_h, h)
             x += w + gap
         else:
             y += h + gap
+
+    # Center nodes horizontally in vertical layout
+    if not horizontal and nodes:
+        max_w = max(n["w"] for n in nodes)
+        center_x = PAD + max_w / 2
+        for n in nodes:
+            n["x"] = center_x - n["w"] / 2
 
     return nodes
 
@@ -152,11 +174,16 @@ def _render_sequence(spec: DiagramSpec, theme: Theme) -> str:
     num_actors = len(actors)
     actor_idx = {a.id: i for i, a in enumerate(actors)}
 
-    # Layout
+    # Layout — dynamic actor box width based on widest label
+    actor_box_w = max(
+        max(len(a.label or a.id) * 9.0 + 24 for a in actors),
+        ACTOR_BOX_W,
+    )
+    lane_spacing = max(actor_box_w + 50, LANE_SPACING)
     side_pad = 40
     actor_y = PAD
-    lane_xs = [side_pad + ACTOR_BOX_W / 2 + i * LANE_SPACING for i in range(num_actors)]
-    svg_w = side_pad * 2 + (num_actors - 1) * LANE_SPACING + ACTOR_BOX_W
+    lane_xs = [side_pad + actor_box_w / 2 + i * lane_spacing for i in range(num_actors)]
+    svg_w = side_pad * 2 + (num_actors - 1) * lane_spacing + actor_box_w
 
     lifeline_top = actor_y + ACTOR_BOX_H + 12
     num_msgs = max(len(ordered_conns), 1)
@@ -173,12 +200,12 @@ def _render_sequence(spec: DiagramSpec, theme: Theme) -> str:
 
     # Actor boxes (top + bottom)
     for i, actor in enumerate(actors):
-        x = lane_xs[i] - ACTOR_BOX_W / 2
+        x = lane_xs[i] - actor_box_w / 2
         label = html_mod.escape(actor.label or actor.id)
         for ay in (actor_y, bottom_actor_y):
             parts.append(
                 f'  <rect class="actor-box" x="{x:.1f}" y="{ay}" '
-                f'width="{ACTOR_BOX_W}" height="{ACTOR_BOX_H}" rx="4"/>'
+                f'width="{actor_box_w:.1f}" height="{ACTOR_BOX_H}" rx="4"/>'
             )
             parts.append(
                 f'  <text class="actor-text" x="{lane_xs[i]:.1f}" '
@@ -541,10 +568,9 @@ def _render_box(spec: DiagramSpec, theme: Theme) -> str:
                 max_text_len = max(max_text_len, len(line))
         w = max(max_text_len * 9.0 + 32, 100)
 
-        # Height: header + sections
-        section_lines = sum(len(sec) for sec in sections)
-        content_rows = 1 + section_lines  # header + section lines
-        h = max(content_rows * 22 + 16, BOX_H)
+        # Height: 32px header area + per-section (12px overhead + lines*16px) + bottom pad
+        section_h = sum(12 + len(sec) * 16 for sec in sections)
+        h = max(32 + section_h + 8, BOX_H)
 
         # Row wrapping for horizontal layout
         if horizontal and nodes and x + w + PAD > MAX_ROW_W:
@@ -574,7 +600,17 @@ def _render_box(spec: DiagramSpec, theme: Theme) -> str:
         _svg_bg(svg_w, svg_h),
     ]
 
-    for n in nodes:
+    # ClipPath defs for text bounding
+    clip_defs = ['  <defs>']
+    for i, n in enumerate(nodes):
+        clip_defs.append(
+            f'    <clipPath id="box-clip-{i}"><rect x="{n["x"]:.1f}" y="{n["y"]:.1f}" '
+            f'width="{n["w"]:.1f}" height="{n["h"]:.1f}" rx="{BOX_RX}"/></clipPath>'
+        )
+    clip_defs.append('  </defs>')
+    parts.extend(clip_defs)
+
+    for i, n in enumerate(nodes):
         x, y, w, h = n["x"], n["y"], n["w"], n["h"]
 
         # Box border
@@ -583,11 +619,14 @@ def _render_box(spec: DiagramSpec, theme: Theme) -> str:
             f'width="{w:.1f}" height="{h:.1f}" rx="{BOX_RX}"/>'
         )
 
+        # Clipped group for all text content
+        parts.append(f'  <g clip-path="url(#box-clip-{i})">')
+
         # Header text
         header_y = y + 20
         escaped = html_mod.escape(n["label"])
         parts.append(
-            f'  <text class="box-header" x="{x + w / 2:.1f}" y="{header_y:.1f}" '
+            f'    <text class="box-header" x="{x + w / 2:.1f}" y="{header_y:.1f}" '
             f'text-anchor="middle" dominant-baseline="central">{escaped}</text>'
         )
 
@@ -596,7 +635,7 @@ def _render_box(spec: DiagramSpec, theme: Theme) -> str:
         for sec in n["sections"]:
             # Separator line before section
             parts.append(
-                f'  <line class="box-separator" x1="{x:.1f}" y1="{sec_y:.1f}" '
+                f'    <line class="box-separator" x1="{x:.1f}" y1="{sec_y:.1f}" '
                 f'x2="{x + w:.1f}" y2="{sec_y:.1f}"/>'
             )
             sec_y += 6
@@ -604,9 +643,11 @@ def _render_box(spec: DiagramSpec, theme: Theme) -> str:
                 sec_y += 16
                 escaped = html_mod.escape(line)
                 parts.append(
-                    f'  <text class="box-text" x="{x + 12:.1f}" y="{sec_y:.1f}">{escaped}</text>'
+                    f'    <text class="box-text" x="{x + 12:.1f}" y="{sec_y:.1f}">{escaped}</text>'
                 )
             sec_y += 6
+
+        parts.append('  </g>')
 
     # Draw connections if any
     if spec.connections:
@@ -722,10 +763,10 @@ def _render_state_machine(spec: DiagramSpec, theme: Theme) -> str:
 def _layout_state_nodes(elements: list[Element]) -> list[dict]:
     """Position state machine nodes in a grid layout.
 
-    Uses a 2D grid: fills rows left-to-right, wraps after ~4 nodes.
+    Uses a 2D grid: fills rows left-to-right, wraps to fit ~800px max width.
     Consistent column widths so arrows align cleanly.
     """
-    cols_per_row = min(max(len(elements), 2), 4)
+    MAX_W = 800
     gap_x, gap_y = 60, 80
 
     # First pass: measure all nodes to find uniform width
@@ -738,6 +779,10 @@ def _layout_state_nodes(elements: list[Element]) -> list[dict]:
 
     # Cell size (uniform for grid alignment)
     cell_w = uniform_w + gap_x
+
+    # Determine cols_per_row: fit within MAX_W
+    cols_per_row = max(1, int((MAX_W - 2 * PAD + gap_x) / cell_w))
+    cols_per_row = min(cols_per_row, len(elements))
 
     nodes = []
     for i, elem in enumerate(elements):
@@ -856,6 +901,7 @@ def _svg_open(w: float, h: float) -> str:
     return (
         f'<svg xmlns="http://www.w3.org/2000/svg" '
         f'width="{w:.0f}" height="{h:.0f}" '
+        f'style="display:block;margin:auto" '
         f'class="mdview-diagram">'
     )
 
@@ -880,6 +926,14 @@ def _svg_seq_arrowhead_defs() -> str:
       <polygon points="0,1 10,5 0,9" class="msg-head"/>
     </marker>
   </defs>"""
+
+
+def _svg_diamond_fill(x: float, y: float, w: float, h: float) -> str:
+    """Render opaque fill for a diamond decision node."""
+    cx, cy = x + w / 2, y + h / 2
+    hw, hh = w / 2, h / 2
+    points = f"{cx},{cy - hh} {cx + hw},{cy} {cx},{cy + hh} {cx - hw},{cy}"
+    return f'  <polygon class="box-fill" points="{points}"/>'
 
 
 def _svg_diamond(x: float, y: float, w: float, h: float) -> str:

@@ -64,6 +64,7 @@ class Theme:
         return f"""
   <style>
     .mdview-diagram {{ font-family: {self.font_family}; font-size: {self.font_size}; }}
+    .mdview-diagram .box-fill {{ fill: {d.bg}; stroke: none; }}
     .mdview-diagram .box-border {{ stroke: {d.border}; stroke-width: 1.5; fill: none; }}
     .mdview-diagram .box-separator {{ stroke: {d.border}; stroke-width: 1; }}
     .mdview-diagram .box-text {{ fill: {d.fg}; white-space: pre; }}
@@ -74,6 +75,7 @@ class Theme:
     .mdview-diagram .arrow-label-bg {{ fill: {d.bg}; fill-opacity: 0.85; rx: 3; }}
     .mdview-diagram .bg {{ fill: {d.bg}; }}
     @media (prefers-color-scheme: light) {{
+      .mdview-diagram .box-fill {{ fill: {l.bg}; }}
       .mdview-diagram .box-border {{ stroke: {l.border}; }}
       .mdview-diagram .box-separator {{ stroke: {l.border}; }}
       .mdview-diagram .box-text {{ fill: {l.fg}; }}
