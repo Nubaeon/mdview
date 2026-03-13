@@ -65,7 +65,18 @@ def _render_flow(spec: DiagramSpec, theme: Theme) -> str:
         _svg_bg(svg_w, svg_h),
     ]
 
-    # Draw nodes
+    # Layer 1: connection lines (underneath)
+    conn_labels: list[str] = []
+    for conn in connections:
+        src = id_to_node.get(conn.from_id)
+        dst = id_to_node.get(conn.to_id)
+        if not src or not dst:
+            continue
+        line_parts, label_parts = _svg_connection_layered(src, dst, conn)
+        parts.extend(line_parts)
+        conn_labels.extend(label_parts)
+
+    # Layer 2: node shapes (on top of arrows)
     for n in nodes:
         is_decision = n.get("elem_type") == "decision"
         if is_decision:
@@ -75,6 +86,12 @@ def _render_flow(spec: DiagramSpec, theme: Theme) -> str:
                 f'  <rect class="box-border" x="{n["x"]:.1f}" y="{n["y"]:.1f}" '
                 f'width="{n["w"]:.1f}" height="{n["h"]:.1f}" rx="{BOX_RX}"/>'
             )
+
+    # Layer 3: connection labels (on top of shapes)
+    parts.extend(conn_labels)
+
+    # Layer 4: node text (topmost)
+    for n in nodes:
         cx = n["x"] + n["w"] / 2
         cy = n["y"] + n["h"] / 2
         escaped = html_mod.escape(n["label"])
@@ -83,14 +100,6 @@ def _render_flow(spec: DiagramSpec, theme: Theme) -> str:
             f'  <text class="{css}" x="{cx:.1f}" y="{cy:.1f}" '
             f'text-anchor="middle" dominant-baseline="central">{escaped}</text>'
         )
-
-    # Draw connections
-    for conn in connections:
-        src = id_to_node.get(conn.from_id)
-        dst = id_to_node.get(conn.to_id)
-        if not src or not dst:
-            continue
-        parts.extend(_svg_connection(src, dst, conn))
 
     parts.append("</svg>")
     return "\n".join(parts)
@@ -513,26 +522,35 @@ def _render_box(spec: DiagramSpec, theme: Theme) -> str:
     if not spec.elements:
         return _render_fallback(spec, theme)
 
+    MAX_ROW_W = 800  # wrap to next row if exceeding this width
+
     nodes: list[dict] = []
     x, y = PAD, PAD
     gap = 20
     horizontal = spec.layout in ("horizontal", "auto")
+    row_max_h = 0.0  # tallest box in current row
 
     for elem in spec.elements:
         label = elem.label or elem.id
         sections = elem.properties.get("sections", [])
 
-        # Width based on widest content
+        # Width based on widest content (wider char estimate for special chars)
         max_text_len = len(label)
         for sec in sections:
             for line in sec:
                 max_text_len = max(max_text_len, len(line))
-        w = max(max_text_len * 8.4 + 24, 100)
+        w = max(max_text_len * 9.0 + 32, 100)
 
         # Height: header + sections
         section_lines = sum(len(sec) for sec in sections)
         content_rows = 1 + section_lines  # header + section lines
         h = max(content_rows * 22 + 16, BOX_H)
+
+        # Row wrapping for horizontal layout
+        if horizontal and nodes and x + w + PAD > MAX_ROW_W:
+            x = PAD
+            y += row_max_h + gap
+            row_max_h = 0.0
 
         nodes.append({
             "x": x, "y": y, "w": w, "h": h,
@@ -540,6 +558,7 @@ def _render_box(spec: DiagramSpec, theme: Theme) -> str:
         })
 
         if horizontal:
+            row_max_h = max(row_max_h, h)
             x += w + gap
         else:
             y += h + gap
@@ -645,7 +664,36 @@ def _render_state_machine(spec: DiagramSpec, theme: Theme) -> str:
         _svg_bg(svg_w, svg_h),
     ]
 
-    # Draw states (rounded rectangles, more rounded than flow nodes)
+    # Layer 1: transition lines (underneath)
+    conn_labels: list[str] = []
+    for conn in connections:
+        src = id_to_node.get(conn.from_id)
+        dst = id_to_node.get(conn.to_id)
+        if not src or not dst:
+            continue
+
+        if conn.from_id == conn.to_id:
+            line_parts, label_parts = _svg_self_loop_layered(src, conn)
+        else:
+            # Back-edge detection: goes upward OR goes leftward on the same row
+            # Grid wrapping (left + down) is a forward edge, NOT a back-edge
+            dst_cy = dst["y"] + dst["h"] / 2
+            src_cy = src["y"] + src["h"] / 2
+            goes_up = dst_cy < src_cy - 20
+            same_row_left = (
+                abs(dst_cy - src_cy) < src["h"]
+                and dst["x"] + dst["w"] < src["x"]
+            )
+            is_back_edge = goes_up or same_row_left
+
+            if is_back_edge:
+                line_parts, label_parts = _svg_curved_connection_layered(src, dst, conn)
+            else:
+                line_parts, label_parts = _svg_connection_layered(src, dst, conn)
+        parts.extend(line_parts)
+        conn_labels.extend(label_parts)
+
+    # Layer 2: state shapes (on top of arrows)
     for n in nodes:
         is_initial = n.get("elem_type") in ("initial", "start")
         css = "state-node state-initial" if is_initial else "state-node"
@@ -653,6 +701,12 @@ def _render_state_machine(spec: DiagramSpec, theme: Theme) -> str:
             f'  <rect class="{css}" x="{n["x"]:.1f}" y="{n["y"]:.1f}" '
             f'width="{n["w"]:.1f}" height="{n["h"]:.1f}" rx="20"/>'
         )
+
+    # Layer 3: transition labels (on top of shapes)
+    parts.extend(conn_labels)
+
+    # Layer 4: state text (topmost)
+    for n in nodes:
         cx = n["x"] + n["w"] / 2
         cy = n["y"] + n["h"] / 2
         escaped = html_mod.escape(n["label"])
@@ -661,30 +715,6 @@ def _render_state_machine(spec: DiagramSpec, theme: Theme) -> str:
             f'text-anchor="middle" dominant-baseline="central">{escaped}</text>'
         )
 
-    # Draw transitions — handle self-loops, back-edges, and forward edges
-    for conn in connections:
-        src = id_to_node.get(conn.from_id)
-        dst = id_to_node.get(conn.to_id)
-        if not src or not dst:
-            continue
-
-        if conn.from_id == conn.to_id:
-            # Self-loop: arc above the node
-            parts.extend(_svg_self_loop(src, conn))
-        else:
-            # Check if this is a back-edge (dst is left/above src)
-            src_cx = src["x"] + src["w"] / 2
-            dst_cx = dst["x"] + dst["w"] / 2
-            src_cy = src["y"] + src["h"] / 2
-            dst_cy = dst["y"] + dst["h"] / 2
-
-            is_back_edge = (dst_cx < src_cx - 20) or (dst_cy < src_cy - 20)
-
-            if is_back_edge:
-                parts.extend(_svg_curved_connection(src, dst, conn))
-            else:
-                parts.extend(_svg_connection(src, dst, conn))
-
     parts.append("</svg>")
     return "\n".join(parts)
 
@@ -692,48 +722,59 @@ def _render_state_machine(spec: DiagramSpec, theme: Theme) -> str:
 def _layout_state_nodes(elements: list[Element]) -> list[dict]:
     """Position state machine nodes in a grid layout.
 
-    Uses a 2D grid: fills rows left-to-right, wraps after ~3 nodes.
-    More natural for state machines than a single line.
+    Uses a 2D grid: fills rows left-to-right, wraps after ~4 nodes.
+    Consistent column widths so arrows align cleanly.
     """
-    nodes = []
     cols_per_row = min(max(len(elements), 2), 4)
-    gap_x, gap_y = 80, 80
+    gap_x, gap_y = 60, 80
 
+    # First pass: measure all nodes to find uniform width
+    raw_widths = []
+    for elem in elements:
+        label = elem.label or elem.id
+        raw_widths.append(max(len(label) * 9.5 + 40, 100))
+    uniform_w = max(raw_widths) if raw_widths else 120
+    h = BOX_H + 4
+
+    # Cell size (uniform for grid alignment)
+    cell_w = uniform_w + gap_x
+
+    nodes = []
     for i, elem in enumerate(elements):
         label = elem.label or elem.id
-        w = max(len(label) * 9.5 + 40, 100)
-        h = BOX_H + 4  # slightly taller for rounded look
-
         col = i % cols_per_row
         row = i // cols_per_row
 
-        x = PAD + col * (w + gap_x)
-        y = PAD + 30 + row * (h + gap_y)  # +30 for self-loop space above
+        # Center node within its grid cell
+        x = PAD + col * cell_w + (cell_w - uniform_w) / 2
+        y = PAD + 30 + row * (h + gap_y)
 
         nodes.append({
             "id": elem.id,
             "label": label,
             "elem_type": elem.type,
             "x": x, "y": y,
-            "w": w, "h": h,
+            "w": uniform_w, "h": h,
         })
 
     return nodes
 
 
-def _svg_self_loop(node: dict, conn: Connection) -> list[str]:
-    """Render a self-loop arc above a node."""
-    parts: list[str] = []
+def _svg_self_loop_layered(
+    node: dict, conn: Connection
+) -> tuple[list[str], list[str]]:
+    """Render a self-loop arc above a node. Returns (lines, labels)."""
+    lines: list[str] = []
+    labels: list[str] = []
     cx = node["x"] + node["w"] / 2
     top_y = node["y"]
 
-    # Arc: start from top-left of node, go up, come back to top-right
     x1 = cx - 15
     x2 = cx + 15
     arc_top = top_y - 30
 
     dash = ' stroke-dasharray="6,3"' if conn.style == "dashed" else ""
-    parts.append(
+    lines.append(
         f'  <path class="arrow-line" d="M {x1:.1f},{top_y:.1f} '
         f'C {x1:.1f},{arc_top:.1f} {x2:.1f},{arc_top:.1f} {x2:.1f},{top_y:.1f}" '
         f'marker-end="url(#arrowhead)"{dash}/>'
@@ -744,21 +785,24 @@ def _svg_self_loop(node: dict, conn: Connection) -> list[str]:
         label_y = arc_top - 4
         escaped = html_mod.escape(conn.label)
         label_w = len(conn.label) * 7.2 + 8
-        parts.append(
+        labels.append(
             f'  <rect class="arrow-label-bg" x="{label_x - label_w / 2:.1f}" '
             f'y="{label_y - 8:.1f}" width="{label_w:.1f}" height="16" rx="3"/>'
         )
-        parts.append(
+        labels.append(
             f'  <text class="arrow-label" x="{label_x:.1f}" y="{label_y:.1f}" '
             f'dominant-baseline="central">{escaped}</text>'
         )
 
-    return parts
+    return lines, labels
 
 
-def _svg_curved_connection(src: dict, dst: dict, conn: Connection) -> list[str]:
-    """Render a back-edge as a curved path (avoids overlapping forward arrows)."""
-    parts: list[str] = []
+def _svg_curved_connection_layered(
+    src: dict, dst: dict, conn: Connection
+) -> tuple[list[str], list[str]]:
+    """Render a back-edge as a curved path. Returns (lines, labels)."""
+    lines: list[str] = []
+    labels: list[str] = []
 
     sx, sy, sw, sh = src["x"], src["y"], src["w"], src["h"]
     dx, dy, dw, dh = dst["x"], dst["y"], dst["w"], dst["h"]
@@ -766,49 +810,46 @@ def _svg_curved_connection(src: dict, dst: dict, conn: Connection) -> list[str]:
     src_cx = sx + sw / 2
     dst_cx = dx + dw / 2
 
-    # Route below for same-row back-edges, above for multi-row
+    # Route below for same-row back-edges, wide curve for multi-row
     if abs(sy - dy) < sh:
-        # Same row: curve below
         x1, y1 = src_cx, sy + sh
         x2, y2 = dst_cx, dy + dh
         ctrl_y = max(y1, y2) + 50
         ctrl_x1 = x1
         ctrl_x2 = x2
     else:
-        # Different rows: curve to the side
-        if dst_cx < src_cx:
-            x1, y1 = sx, sy + sh / 2
-            x2, y2 = dx, dy + dh / 2
-        else:
-            x1, y1 = sx + sw, sy + sh / 2
-            x2, y2 = dx + dw, dy + dh / 2
+        # Different rows: curve wide to the left to avoid overlapping content
+        x1, y1 = sx, sy + sh / 2
+        x2, y2 = dx, dy + dh / 2
         ctrl_y = (y1 + y2) / 2
-        offset = 60
+        # Wider offset proportional to distance between nodes
+        dist = abs(src_cx - dst_cx) + abs(sy - dy)
+        offset = max(80, dist * 0.3)
         ctrl_x1 = min(x1, x2) - offset
         ctrl_x2 = ctrl_x1
 
     dash = ' stroke-dasharray="6,3"' if conn.style == "dashed" else ""
-    parts.append(
+    lines.append(
         f'  <path class="arrow-line" d="M {x1:.1f},{y1:.1f} '
         f'C {ctrl_x1:.1f},{ctrl_y:.1f} {ctrl_x2:.1f},{ctrl_y:.1f} {x2:.1f},{y2:.1f}" '
         f'marker-end="url(#arrowhead)"{dash}/>'
     )
 
     if conn.label:
-        mid_x = (x1 + x2) / 2
-        mid_y = (y1 + y2 + ctrl_y) / 3
+        mid_x = (ctrl_x1 + ctrl_x2) / 2
+        mid_y = ctrl_y
         escaped = html_mod.escape(conn.label)
         label_w = len(conn.label) * 7.2 + 8
-        parts.append(
+        labels.append(
             f'  <rect class="arrow-label-bg" x="{mid_x - label_w / 2:.1f}" '
             f'y="{mid_y - 9:.1f}" width="{label_w:.1f}" height="16" rx="3"/>'
         )
-        parts.append(
+        labels.append(
             f'  <text class="arrow-label" x="{mid_x:.1f}" y="{mid_y:.1f}" '
             f'dominant-baseline="central">{escaped}</text>'
         )
 
-    return parts
+    return lines, labels
 
 
 def _svg_open(w: float, h: float) -> str:
@@ -849,20 +890,17 @@ def _svg_diamond(x: float, y: float, w: float, h: float) -> str:
     return f'  <polygon class="box-border" points="{points}"/>'
 
 
-def _svg_connection(src: dict, dst: dict, conn: Connection) -> list[str]:
-    """Draw an arrow between two positioned nodes."""
-    parts: list[str] = []
-
-    # Determine exit/entry sides
+def _compute_connection_endpoints(
+    src: dict, dst: dict
+) -> tuple[float, float, float, float]:
+    """Compute arrow start/end points between two nodes."""
     sx, sy, sw, sh = src["x"], src["y"], src["w"], src["h"]
     dx, dy, dw, dh = dst["x"], dst["y"], dst["w"], dst["h"]
 
     src_cx, src_cy = sx + sw / 2, sy + sh / 2
     dst_cx, dst_cy = dx + dw / 2, dy + dh / 2
 
-    # Pick edge midpoints based on relative position
     if abs(dst_cx - src_cx) > abs(dst_cy - src_cy):
-        # Horizontal: exit right/left
         if dst_cx > src_cx:
             x1, y1 = sx + sw, src_cy
             x2, y2 = dx, dst_cy
@@ -870,7 +908,6 @@ def _svg_connection(src: dict, dst: dict, conn: Connection) -> list[str]:
             x1, y1 = sx, src_cy
             x2, y2 = dx + dw, dst_cy
     else:
-        # Vertical: exit bottom/top
         if dst_cy > src_cy:
             x1, y1 = src_cx, sy + sh
             x2, y2 = dst_cx, dy
@@ -878,32 +915,49 @@ def _svg_connection(src: dict, dst: dict, conn: Connection) -> list[str]:
             x1, y1 = src_cx, sy
             x2, y2 = dst_cx, dy + dh
 
+    return x1, y1, x2, y2
+
+
+def _svg_connection_layered(
+    src: dict, dst: dict, conn: Connection
+) -> tuple[list[str], list[str]]:
+    """Draw arrow between nodes. Returns (line_parts, label_parts) for z-ordering."""
+    lines: list[str] = []
+    labels: list[str] = []
+
+    x1, y1, x2, y2 = _compute_connection_endpoints(src, dst)
+
     dash = ' stroke-dasharray="6,3"' if conn.style == "dashed" else ""
     marker = ' marker-end="url(#arrowhead)"'
 
-    parts.append(
+    lines.append(
         f'  <line class="arrow-line" x1="{x1:.1f}" y1="{y1:.1f}" '
         f'x2="{x2:.1f}" y2="{y2:.1f}"{dash}{marker}/>'
     )
 
-    # Label
     if conn.label:
         mid_x = (x1 + x2) / 2
         mid_y = (y1 + y2) / 2
         escaped = html_mod.escape(conn.label)
         label_w = len(conn.label) * 7.2 + 8
         label_h = 16
-        parts.append(
+        labels.append(
             f'  <rect class="arrow-label-bg" x="{mid_x - label_w / 2:.1f}" '
             f'y="{mid_y - label_h / 2 - 1:.1f}" '
             f'width="{label_w:.1f}" height="{label_h:.1f}" rx="3"/>'
         )
-        parts.append(
+        labels.append(
             f'  <text class="arrow-label" x="{mid_x:.1f}" y="{mid_y:.1f}" '
             f'dominant-baseline="central">{escaped}</text>'
         )
 
-    return parts
+    return lines, labels
+
+
+def _svg_connection(src: dict, dst: dict, conn: Connection) -> list[str]:
+    """Draw an arrow between two positioned nodes (flat list for backward compat)."""
+    lines, labels = _svg_connection_layered(src, dst, conn)
+    return lines + labels
 
 
 def _render_fallback(spec: DiagramSpec, theme: Theme) -> str:

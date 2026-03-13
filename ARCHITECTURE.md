@@ -49,28 +49,28 @@ guessing — the AI that drew the diagram already knows what it is.
     </marker>
   </defs>
   <rect class="bg" x="0" y="0" width="1019" height="80" rx="6"/>
-  <rect class="box-border" x="20.0" y="20.0" width="106.0" height="40.0" rx="6"/>
-  <text class="box-header" x="73.0" y="40.0" text-anchor="middle" dominant-baseline="central">Markdown</text>
-  <rect class="box-border" x="186.0" y="20.0" width="163.0" height="40.0" rx="6"/>
-  <text class="box-text" x="267.5" y="40.0" text-anchor="middle" dominant-baseline="central">Extract Blocks</text>
-  <polygon class="box-border" points="449.0,20.0 489.0,40.0 449.0,60.0 409.0,40.0"/>
-  <text class="box-text" x="449.0" y="40.0" text-anchor="middle" dominant-baseline="central">Route</text>
-  <rect class="box-border" x="549.0" y="20.0" width="134.5" height="40.0" rx="6"/>
-  <text class="box-text" x="616.2" y="40.0" text-anchor="middle" dominant-baseline="central">Spec Render</text>
-  <rect class="box-border" x="743.5" y="20.0" width="115.5" height="40.0" rx="6"/>
-  <text class="box-text" x="801.2" y="40.0" text-anchor="middle" dominant-baseline="central">Heuristic</text>
-  <rect class="box-border" x="919.0" y="20.0" width="80.0" height="40.0" rx="6"/>
-  <text class="box-text" x="959.0" y="40.0" text-anchor="middle" dominant-baseline="central">SVG</text>
   <line class="arrow-line" x1="126.0" y1="40.0" x2="186.0" y2="40.0" marker-end="url(#arrowhead)"/>
   <line class="arrow-line" x1="349.0" y1="40.0" x2="409.0" y2="40.0" marker-end="url(#arrowhead)"/>
   <line class="arrow-line" x1="489.0" y1="40.0" x2="549.0" y2="40.0" marker-end="url(#arrowhead)"/>
-  <rect class="arrow-label-bg" x="507.8" y="31.0" width="22.4" height="16.0" rx="3"/>
-  <text class="arrow-label" x="519.0" y="40.0" dominant-baseline="central">AI</text>
   <line class="arrow-line" x1="489.0" y1="40.0" x2="743.5" y2="40.0" marker-end="url(#arrowhead)"/>
-  <rect class="arrow-label-bg" x="583.5" y="31.0" width="65.6" height="16.0" rx="3"/>
-  <text class="arrow-label" x="616.2" y="40.0" dominant-baseline="central">fallback</text>
   <line class="arrow-line" x1="683.5" y1="40.0" x2="919.0" y2="40.0" marker-end="url(#arrowhead)"/>
   <line class="arrow-line" x1="859.0" y1="40.0" x2="919.0" y2="40.0" marker-end="url(#arrowhead)"/>
+  <rect class="box-border" x="20.0" y="20.0" width="106.0" height="40.0" rx="6"/>
+  <rect class="box-border" x="186.0" y="20.0" width="163.0" height="40.0" rx="6"/>
+  <polygon class="box-border" points="449.0,20.0 489.0,40.0 449.0,60.0 409.0,40.0"/>
+  <rect class="box-border" x="549.0" y="20.0" width="134.5" height="40.0" rx="6"/>
+  <rect class="box-border" x="743.5" y="20.0" width="115.5" height="40.0" rx="6"/>
+  <rect class="box-border" x="919.0" y="20.0" width="80.0" height="40.0" rx="6"/>
+  <rect class="arrow-label-bg" x="507.8" y="31.0" width="22.4" height="16.0" rx="3"/>
+  <text class="arrow-label" x="519.0" y="40.0" dominant-baseline="central">AI</text>
+  <rect class="arrow-label-bg" x="583.5" y="31.0" width="65.6" height="16.0" rx="3"/>
+  <text class="arrow-label" x="616.2" y="40.0" dominant-baseline="central">fallback</text>
+  <text class="box-header" x="73.0" y="40.0" text-anchor="middle" dominant-baseline="central">Markdown</text>
+  <text class="box-text" x="267.5" y="40.0" text-anchor="middle" dominant-baseline="central">Extract Blocks</text>
+  <text class="box-text" x="449.0" y="40.0" text-anchor="middle" dominant-baseline="central">Route</text>
+  <text class="box-text" x="616.2" y="40.0" text-anchor="middle" dominant-baseline="central">Spec Render</text>
+  <text class="box-text" x="801.2" y="40.0" text-anchor="middle" dominant-baseline="central">Heuristic</text>
+  <text class="box-text" x="959.0" y="40.0" text-anchor="middle" dominant-baseline="central">SVG</text>
 </svg>
 
 <em>Rendering Pipeline</em>
@@ -135,28 +135,28 @@ The spec pipeline is the core architectural innovation. It separates
     </marker>
   </defs>
   <rect class="bg" x="0" y="0" width="194" height="480" rx="6"/>
-  <rect class="box-border" x="20.0" y="20.0" width="115.5" height="40.0" rx="6"/>
-  <text class="box-header" x="77.8" y="40.0" text-anchor="middle" dominant-baseline="central">ASCII Art</text>
-  <rect class="box-border" x="20.0" y="120.0" width="134.5" height="40.0" rx="6"/>
-  <text class="box-text" x="87.2" y="140.0" text-anchor="middle" dominant-baseline="central">AI Provider</text>
-  <rect class="box-border" x="20.0" y="220.0" width="134.5" height="40.0" rx="6"/>
-  <text class="box-text" x="87.2" y="240.0" text-anchor="middle" dominant-baseline="central">DiagramSpec</text>
-  <rect class="box-border" x="20.0" y="320.0" width="153.5" height="40.0" rx="6"/>
-  <text class="box-text" x="96.8" y="340.0" text-anchor="middle" dominant-baseline="central">specrender.py</text>
-  <rect class="box-border" x="20.0" y="420.0" width="125.0" height="40.0" rx="6"/>
-  <text class="box-text" x="82.5" y="440.0" text-anchor="middle" dominant-baseline="central">Themed SVG</text>
   <line class="arrow-line" x1="77.8" y1="60.0" x2="87.2" y2="120.0" marker-end="url(#arrowhead)"/>
+  <line class="arrow-line" x1="87.2" y1="160.0" x2="87.2" y2="220.0" marker-end="url(#arrowhead)"/>
+  <line class="arrow-line" x1="87.2" y1="260.0" x2="96.8" y2="320.0" marker-end="url(#arrowhead)"/>
+  <line class="arrow-line" x1="96.8" y1="360.0" x2="82.5" y2="420.0" marker-end="url(#arrowhead)"/>
+  <rect class="box-border" x="20.0" y="20.0" width="115.5" height="40.0" rx="6"/>
+  <rect class="box-border" x="20.0" y="120.0" width="134.5" height="40.0" rx="6"/>
+  <rect class="box-border" x="20.0" y="220.0" width="134.5" height="40.0" rx="6"/>
+  <rect class="box-border" x="20.0" y="320.0" width="153.5" height="40.0" rx="6"/>
+  <rect class="box-border" x="20.0" y="420.0" width="125.0" height="40.0" rx="6"/>
   <rect class="arrow-label-bg" x="46.1" y="81.0" width="72.8" height="16.0" rx="3"/>
   <text class="arrow-label" x="82.5" y="90.0" dominant-baseline="central">interpret</text>
-  <line class="arrow-line" x1="87.2" y1="160.0" x2="87.2" y2="220.0" marker-end="url(#arrowhead)"/>
   <rect class="arrow-label-bg" x="68.8" y="181.0" width="36.8" height="16.0" rx="3"/>
   <text class="arrow-label" x="87.2" y="190.0" dominant-baseline="central">JSON</text>
-  <line class="arrow-line" x1="87.2" y1="260.0" x2="96.8" y2="320.0" marker-end="url(#arrowhead)"/>
   <rect class="arrow-label-bg" x="59.2" y="281.0" width="65.6" height="16.0" rx="3"/>
   <text class="arrow-label" x="92.0" y="290.0" dominant-baseline="central">dispatch</text>
-  <line class="arrow-line" x1="96.8" y1="360.0" x2="82.5" y2="420.0" marker-end="url(#arrowhead)"/>
   <rect class="arrow-label-bg" x="64.0" y="381.0" width="51.2" height="16.0" rx="3"/>
   <text class="arrow-label" x="89.6" y="390.0" dominant-baseline="central">render</text>
+  <text class="box-header" x="77.8" y="40.0" text-anchor="middle" dominant-baseline="central">ASCII Art</text>
+  <text class="box-text" x="87.2" y="140.0" text-anchor="middle" dominant-baseline="central">AI Provider</text>
+  <text class="box-text" x="87.2" y="240.0" text-anchor="middle" dominant-baseline="central">DiagramSpec</text>
+  <text class="box-text" x="96.8" y="340.0" text-anchor="middle" dominant-baseline="central">specrender.py</text>
+  <text class="box-text" x="82.5" y="440.0" text-anchor="middle" dominant-baseline="central">Themed SVG</text>
 </svg>
 
 <em>AI-Driven Spec Pipeline</em>
@@ -196,7 +196,7 @@ The contract between interpretation and rendering:
 
 <div align="center">
 
-<svg xmlns="http://www.w3.org/2000/svg" width="1494" height="188" class="mdview-diagram">
+<svg xmlns="http://www.w3.org/2000/svg" width="691" height="414" class="mdview-diagram">
 
   <style>
     .mdview-diagram { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', monospace; font-size: 13px; }
@@ -221,52 +221,52 @@ The contract between interpretation and rendering:
       .mdview-diagram .bg { fill: #f8f8fc; }
     }
   </style>
-  <rect class="bg" x="0" y="0" width="1494" height="188" rx="6"/>
-  <rect class="box-border" x="20.0" y="20.0" width="116.4" height="82.0" rx="6"/>
-  <text class="box-header" x="78.2" y="40.0" text-anchor="middle" dominant-baseline="central">cli.py</text>
-  <line class="box-separator" x1="20.0" y1="52.0" x2="136.4" y2="52.0"/>
+  <rect class="bg" x="0" y="0" width="691" height="414" rx="6"/>
+  <rect class="box-border" x="20.0" y="20.0" width="131.0" height="82.0" rx="6"/>
+  <text class="box-header" x="85.5" y="40.0" text-anchor="middle" dominant-baseline="central">cli.py</text>
+  <line class="box-separator" x1="20.0" y1="52.0" x2="151.0" y2="52.0"/>
   <text class="box-text" x="32.0" y="74.0">argparse</text>
   <text class="box-text" x="32.0" y="90.0">entry point</text>
-  <rect class="box-border" x="156.4" y="20.0" width="166.8" height="104.0" rx="6"/>
-  <text class="box-header" x="239.8" y="40.0" text-anchor="middle" dominant-baseline="central">renderer.py</text>
-  <line class="box-separator" x1="156.4" y1="52.0" x2="323.2" y2="52.0"/>
-  <text class="box-text" x="168.4" y="74.0">render_html()</text>
-  <text class="box-text" x="168.4" y="90.0">render_terminal()</text>
-  <text class="box-text" x="168.4" y="106.0">render_file()</text>
-  <rect class="box-border" x="343.2" y="20.0" width="225.6" height="104.0" rx="6"/>
-  <text class="box-header" x="456.0" y="40.0" text-anchor="middle" dominant-baseline="central">diagrams.py</text>
-  <line class="box-separator" x1="343.2" y1="52.0" x2="568.8" y2="52.0"/>
-  <text class="box-text" x="355.2" y="74.0">extract_diagram_blocks()</text>
-  <text class="box-text" x="355.2" y="90.0">render_svg()</text>
-  <text class="box-text" x="355.2" y="106.0">render_from_spec()</text>
-  <rect class="box-border" x="588.8" y="20.0" width="292.8" height="126.0" rx="6"/>
-  <text class="box-header" x="735.2" y="40.0" text-anchor="middle" dominant-baseline="central">Spec Pipeline</text>
-  <line class="box-separator" x1="588.8" y1="52.0" x2="881.6" y2="52.0"/>
-  <text class="box-text" x="600.8" y="74.0">spec.py — DiagramSpec schema</text>
-  <line class="box-separator" x1="588.8" y1="80.0" x2="881.6" y2="80.0"/>
-  <text class="box-text" x="600.8" y="102.0">config.py — mdview.yaml loader</text>
-  <line class="box-separator" x1="588.8" y1="108.0" x2="881.6" y2="108.0"/>
-  <text class="box-text" x="600.8" y="130.0">providers.py — AI backends</text>
-  <line class="box-separator" x1="588.8" y1="136.0" x2="881.6" y2="136.0"/>
-  <text class="box-text" x="600.8" y="158.0">specrender.py — 6 type renderers</text>
-  <rect class="box-border" x="901.6" y="20.0" width="284.4" height="148.0" rx="6"/>
-  <text class="box-header" x="1043.8" y="40.0" text-anchor="middle" dominant-baseline="central">Heuristic Renderers</text>
-  <line class="box-separator" x1="901.6" y1="52.0" x2="1186.0" y2="52.0"/>
-  <text class="box-text" x="913.6" y="74.0">routing.py — confidence scoring</text>
-  <line class="box-separator" x1="901.6" y1="80.0" x2="1186.0" y2="80.0"/>
-  <text class="box-text" x="913.6" y="102.0">flowrender.py</text>
-  <line class="box-separator" x1="901.6" y1="108.0" x2="1186.0" y2="108.0"/>
-  <text class="box-text" x="913.6" y="130.0">sequencerender.py</text>
-  <line class="box-separator" x1="901.6" y1="136.0" x2="1186.0" y2="136.0"/>
-  <text class="box-text" x="913.6" y="158.0">boxrender.py, tablerender.py</text>
-  <line class="box-separator" x1="901.6" y1="164.0" x2="1186.0" y2="164.0"/>
-  <text class="box-text" x="913.6" y="186.0">wireframerender.py</text>
-  <rect class="box-border" x="1206.0" y="20.0" width="267.6" height="82.0" rx="6"/>
-  <text class="box-header" x="1339.8" y="40.0" text-anchor="middle" dominant-baseline="central">Shared</text>
-  <line class="box-separator" x1="1206.0" y1="52.0" x2="1473.6" y2="52.0"/>
-  <text class="box-text" x="1218.0" y="74.0">renderlib.py — SVG primitives</text>
-  <line class="box-separator" x1="1206.0" y1="80.0" x2="1473.6" y2="80.0"/>
-  <text class="box-text" x="1218.0" y="102.0">themes.py — color system</text>
+  <rect class="box-border" x="171.0" y="20.0" width="185.0" height="104.0" rx="6"/>
+  <text class="box-header" x="263.5" y="40.0" text-anchor="middle" dominant-baseline="central">renderer.py</text>
+  <line class="box-separator" x1="171.0" y1="52.0" x2="356.0" y2="52.0"/>
+  <text class="box-text" x="183.0" y="74.0">render_html()</text>
+  <text class="box-text" x="183.0" y="90.0">render_terminal()</text>
+  <text class="box-text" x="183.0" y="106.0">render_file()</text>
+  <rect class="box-border" x="376.0" y="20.0" width="248.0" height="104.0" rx="6"/>
+  <text class="box-header" x="500.0" y="40.0" text-anchor="middle" dominant-baseline="central">diagrams.py</text>
+  <line class="box-separator" x1="376.0" y1="52.0" x2="624.0" y2="52.0"/>
+  <text class="box-text" x="388.0" y="74.0">extract_diagram_blocks()</text>
+  <text class="box-text" x="388.0" y="90.0">render_svg()</text>
+  <text class="box-text" x="388.0" y="106.0">render_from_spec()</text>
+  <rect class="box-border" x="20.0" y="144.0" width="320.0" height="126.0" rx="6"/>
+  <text class="box-header" x="180.0" y="164.0" text-anchor="middle" dominant-baseline="central">Spec Pipeline</text>
+  <line class="box-separator" x1="20.0" y1="176.0" x2="340.0" y2="176.0"/>
+  <text class="box-text" x="32.0" y="198.0">spec.py — DiagramSpec schema</text>
+  <line class="box-separator" x1="20.0" y1="204.0" x2="340.0" y2="204.0"/>
+  <text class="box-text" x="32.0" y="226.0">config.py — mdview.yaml loader</text>
+  <line class="box-separator" x1="20.0" y1="232.0" x2="340.0" y2="232.0"/>
+  <text class="box-text" x="32.0" y="254.0">providers.py — AI backends</text>
+  <line class="box-separator" x1="20.0" y1="260.0" x2="340.0" y2="260.0"/>
+  <text class="box-text" x="32.0" y="282.0">specrender.py — 6 type renderers</text>
+  <rect class="box-border" x="360.0" y="144.0" width="311.0" height="148.0" rx="6"/>
+  <text class="box-header" x="515.5" y="164.0" text-anchor="middle" dominant-baseline="central">Heuristic Renderers</text>
+  <line class="box-separator" x1="360.0" y1="176.0" x2="671.0" y2="176.0"/>
+  <text class="box-text" x="372.0" y="198.0">routing.py — confidence scoring</text>
+  <line class="box-separator" x1="360.0" y1="204.0" x2="671.0" y2="204.0"/>
+  <text class="box-text" x="372.0" y="226.0">flowrender.py</text>
+  <line class="box-separator" x1="360.0" y1="232.0" x2="671.0" y2="232.0"/>
+  <text class="box-text" x="372.0" y="254.0">sequencerender.py</text>
+  <line class="box-separator" x1="360.0" y1="260.0" x2="671.0" y2="260.0"/>
+  <text class="box-text" x="372.0" y="282.0">boxrender.py, tablerender.py</text>
+  <line class="box-separator" x1="360.0" y1="288.0" x2="671.0" y2="288.0"/>
+  <text class="box-text" x="372.0" y="310.0">wireframerender.py</text>
+  <rect class="box-border" x="20.0" y="312.0" width="293.0" height="82.0" rx="6"/>
+  <text class="box-header" x="166.5" y="332.0" text-anchor="middle" dominant-baseline="central">Shared</text>
+  <line class="box-separator" x1="20.0" y1="344.0" x2="313.0" y2="344.0"/>
+  <text class="box-text" x="32.0" y="366.0">renderlib.py — SVG primitives</text>
+  <line class="box-separator" x1="20.0" y1="372.0" x2="313.0" y2="372.0"/>
+  <text class="box-text" x="32.0" y="394.0">themes.py — color system</text>
 </svg>
 
 <em>Module Architecture</em>
@@ -484,7 +484,7 @@ Six diagram types, each with a dedicated renderer in `specrender.py`:
 
 <div align="center">
 
-<svg xmlns="http://www.w3.org/2000/svg" width="720" height="278" class="mdview-diagram">
+<svg xmlns="http://www.w3.org/2000/svg" width="944" height="278" class="mdview-diagram">
 
   <style>
     .mdview-diagram { font-family: 'JetBrains Mono', 'Fira Code', 'Cascadia Code', 'SF Mono', monospace; font-size: 13px; }
@@ -525,24 +525,24 @@ Six diagram types, each with a dedicated renderer in `specrender.py`:
       .mdview-diagram .state-text { fill: #587539; }
     }
   </style>
-  <rect class="bg" x="0" y="0" width="720" height="278" rx="6"/>
-  <rect class="state-node" x="20.0" y="50.0" width="100.0" height="44.0" rx="20"/>
-  <text class="state-text" x="70.0" y="72.0" text-anchor="middle" dominant-baseline="central">Flow</text>
-  <rect class="state-node" x="216.0" y="50.0" width="116.0" height="44.0" rx="20"/>
-  <text class="state-text" x="274.0" y="72.0" text-anchor="middle" dominant-baseline="central">Sequence</text>
-  <rect class="state-node" x="431.0" y="50.0" width="125.5" height="44.0" rx="20"/>
-  <text class="state-text" x="493.8" y="72.0" text-anchor="middle" dominant-baseline="central">Wireframe</text>
-  <rect class="state-node" x="560.0" y="50.0" width="100.0" height="44.0" rx="20"/>
-  <text class="state-text" x="610.0" y="72.0" text-anchor="middle" dominant-baseline="central">Table</text>
-  <rect class="state-node" x="20.0" y="174.0" width="125.5" height="44.0" rx="20"/>
-  <text class="state-text" x="82.8" y="196.0" text-anchor="middle" dominant-baseline="central">Box/Class</text>
-  <rect class="state-node" x="263.5" y="174.0" width="163.5" height="44.0" rx="20"/>
-  <text class="state-text" x="345.2" y="196.0" text-anchor="middle" dominant-baseline="central">State Machine</text>
-  <line class="arrow-line" x1="120.0" y1="72.0" x2="216.0" y2="72.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="332.0" y1="72.0" x2="431.0" y2="72.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="556.5" y1="72.0" x2="560.0" y2="72.0" marker-end="url(#arrowhead)"/>
-  <path class="arrow-line" d="M 560.0,72.0 C -40.0,134.0 -40.0,134.0 20.0,196.0" marker-end="url(#arrowhead)"/>
-  <line class="arrow-line" x1="145.5" y1="196.0" x2="263.5" y2="196.0" marker-end="url(#arrowhead)"/>
+  <rect class="bg" x="0" y="0" width="944" height="278" rx="6"/>
+  <line class="arrow-line" x1="213.5" y1="72.0" x2="273.5" y2="72.0" marker-end="url(#arrowhead)"/>
+  <line class="arrow-line" x1="437.0" y1="72.0" x2="497.0" y2="72.0" marker-end="url(#arrowhead)"/>
+  <line class="arrow-line" x1="660.5" y1="72.0" x2="720.5" y2="72.0" marker-end="url(#arrowhead)"/>
+  <line class="arrow-line" x1="720.5" y1="72.0" x2="213.5" y2="196.0" marker-end="url(#arrowhead)"/>
+  <line class="arrow-line" x1="213.5" y1="196.0" x2="273.5" y2="196.0" marker-end="url(#arrowhead)"/>
+  <rect class="state-node" x="50.0" y="50.0" width="163.5" height="44.0" rx="20"/>
+  <rect class="state-node" x="273.5" y="50.0" width="163.5" height="44.0" rx="20"/>
+  <rect class="state-node" x="497.0" y="50.0" width="163.5" height="44.0" rx="20"/>
+  <rect class="state-node" x="720.5" y="50.0" width="163.5" height="44.0" rx="20"/>
+  <rect class="state-node" x="50.0" y="174.0" width="163.5" height="44.0" rx="20"/>
+  <rect class="state-node" x="273.5" y="174.0" width="163.5" height="44.0" rx="20"/>
+  <text class="state-text" x="131.8" y="72.0" text-anchor="middle" dominant-baseline="central">Flow</text>
+  <text class="state-text" x="355.2" y="72.0" text-anchor="middle" dominant-baseline="central">Sequence</text>
+  <text class="state-text" x="578.8" y="72.0" text-anchor="middle" dominant-baseline="central">Wireframe</text>
+  <text class="state-text" x="802.2" y="72.0" text-anchor="middle" dominant-baseline="central">Table</text>
+  <text class="state-text" x="131.8" y="196.0" text-anchor="middle" dominant-baseline="central">Box/Class</text>
+  <text class="state-text" x="355.2" y="196.0" text-anchor="middle" dominant-baseline="central">State Machine</text>
 </svg>
 
 <em>Supported Diagram Types</em>
