@@ -376,12 +376,21 @@ def _layout_wireframe(
     depth: int,
 ) -> tuple[float, float]:
     """Recursively layout wireframe panels. Returns (total_w, total_h)."""
+    inner_pad = 12
+    title_h = 28
+
+    # Detect horizontal layout: if siblings include a sidebar + panel, lay out side-by-side
+    has_sidebar = any(
+        (id_to_elem.get(eid) or Element(id="", label="")).type == "sidebar"
+        for eid in element_ids
+    )
+    use_horizontal = has_sidebar and len(element_ids) >= 2
+
     x = start_x
     y = start_y
     max_w = 0.0
     total_h = 0.0
-    inner_pad = 8
-    title_h = 28
+    row_max_h = 0.0
 
     for eid in element_ids:
         elem = id_to_elem.get(eid)
@@ -391,6 +400,16 @@ def _layout_wireframe(
         kids = children_of.get(eid, [])
         label = elem.label or eid
 
+        # Wider min-widths for realistic wireframe appearance
+        if elem.type in ("input", "form"):
+            min_w = 200
+        elif elem.type == "sidebar":
+            min_w = 160
+        elif kids:
+            min_w = 220
+        else:
+            min_w = 150
+
         if kids:
             # Container panel — layout children inside
             child_x = x + inner_pad
@@ -399,22 +418,35 @@ def _layout_wireframe(
                 kids, id_to_elem, children_of, layout,
                 child_x, child_y, depth + 1,
             )
-            w = max(child_w + inner_pad * 2, len(label) * 8 + 30, 120)
+            w = max(child_w + inner_pad * 2, len(label) * 8 + 30, min_w)
             h = child_h + title_h + inner_pad
         else:
             # Leaf element
-            w = max(len(label) * 8 + 30, 120)
-            h = 56 if elem.type in ("input", "form") else 36
+            w = max(len(label) * 8 + 30, min_w)
+            h = 56 if elem.type in ("input", "form") else 40
 
         layout[eid] = {"x": x, "y": y, "w": w, "h": h, "depth": depth}
-        y += h + inner_pad
-        max_w = max(max_w, w)
-        total_h = y - start_y
 
-    # Equalize widths for siblings
-    for eid in element_ids:
-        if eid in layout:
-            layout[eid]["w"] = max(layout[eid]["w"], max_w)
+        if use_horizontal:
+            row_max_h = max(row_max_h, h)
+            x += w + inner_pad
+            max_w = x - start_x - inner_pad
+        else:
+            y += h + inner_pad
+            max_w = max(max_w, w)
+            total_h = y - start_y
+
+    if use_horizontal:
+        total_h = row_max_h + inner_pad
+        # Equalize heights for horizontal siblings
+        for eid in element_ids:
+            if eid in layout:
+                layout[eid]["h"] = max(layout[eid]["h"], row_max_h)
+    else:
+        # Equalize widths for vertical siblings
+        for eid in element_ids:
+            if eid in layout:
+                layout[eid]["w"] = max(layout[eid]["w"], max_w)
 
     return max_w, total_h
 
@@ -591,6 +623,18 @@ def _render_box(spec: DiagramSpec, theme: Theme) -> str:
 
     max_x = max(n["x"] + n["w"] for n in nodes)
     max_y = max(n["y"] + n["h"] for n in nodes)
+
+    # Build connection data for layered rendering
+    id_to_node = {}
+    for i, elem in enumerate(spec.elements):
+        if i < len(nodes):
+            id_to_node[elem.id] = nodes[i]
+
+    # Check if any connections need routing below boxes (extra height)
+    has_routed = _box_has_routed_connections(spec, id_to_node, nodes)
+    if has_routed:
+        max_y += 40
+
     svg_w = max_x + PAD
     svg_h = max_y + PAD
 
@@ -600,18 +644,39 @@ def _render_box(spec: DiagramSpec, theme: Theme) -> str:
         _svg_bg(svg_w, svg_h),
     ]
 
-    # ClipPath defs for text bounding
-    clip_defs = ['  <defs>']
+    # ClipPath and arrowhead defs
+    defs = ['  <defs>']
     for i, n in enumerate(nodes):
-        clip_defs.append(
+        defs.append(
             f'    <clipPath id="box-clip-{i}"><rect x="{n["x"]:.1f}" y="{n["y"]:.1f}" '
             f'width="{n["w"]:.1f}" height="{n["h"]:.1f}" rx="{BOX_RX}"/></clipPath>'
         )
-    clip_defs.append('  </defs>')
-    parts.extend(clip_defs)
+    defs.append('  </defs>')
+    parts.extend(defs)
 
+    # Layer 1: connection lines (underneath boxes)
+    conn_labels: list[str] = []
+    if spec.connections:
+        parts.append(_svg_arrowhead_defs())
+        for conn in spec.connections:
+            src = id_to_node.get(conn.from_id)
+            dst = id_to_node.get(conn.to_id)
+            if src and dst:
+                line_parts, label_parts = _svg_box_connection_layered(
+                    src, dst, conn, nodes
+                )
+                parts.extend(line_parts)
+                conn_labels.extend(label_parts)
+
+    # Layer 2: box fills + borders + clipped text (on top of arrows)
     for i, n in enumerate(nodes):
         x, y, w, h = n["x"], n["y"], n["w"], n["h"]
+
+        # Opaque fill rect
+        parts.append(
+            f'  <rect class="box-fill" x="{x:.1f}" y="{y:.1f}" '
+            f'width="{w:.1f}" height="{h:.1f}" rx="{BOX_RX}"/>'
+        )
 
         # Box border
         parts.append(
@@ -649,18 +714,8 @@ def _render_box(spec: DiagramSpec, theme: Theme) -> str:
 
         parts.append('  </g>')
 
-    # Draw connections if any
-    if spec.connections:
-        parts.append(_svg_arrowhead_defs())
-        id_to_node = {}
-        for i, elem in enumerate(spec.elements):
-            if i < len(nodes):
-                id_to_node[elem.id] = nodes[i]
-        for conn in spec.connections:
-            src = id_to_node.get(conn.from_id)
-            dst = id_to_node.get(conn.to_id)
-            if src and dst:
-                parts.extend(_svg_connection(src, dst, conn))
+    # Layer 3: connection labels (on top of boxes)
+    parts.extend(conn_labels)
 
     parts.append("</svg>")
     return "\n".join(parts)
@@ -681,9 +736,49 @@ def _render_state_machine(spec: DiagramSpec, theme: Theme) -> str:
     nodes = _layout_state_nodes(elements)
     id_to_node = {n["id"]: n for n in nodes}
 
-    # Extra space for self-loop arcs above nodes
+    # Pre-compute back-edge curve bounds to size SVG correctly
+    min_curve_x = PAD  # track leftmost curve control point
+    max_curve_y = 0.0
+    for conn in connections:
+        src = id_to_node.get(conn.from_id)
+        dst = id_to_node.get(conn.to_id)
+        if not src or not dst or conn.from_id == conn.to_id:
+            continue
+        dst_cy = dst["y"] + dst["h"] / 2
+        src_cy = src["y"] + src["h"] / 2
+        goes_up = dst_cy < src_cy - 20
+        same_row_left = (
+            abs(dst_cy - src_cy) < src["h"]
+            and dst["x"] + dst["w"] < src["x"]
+        )
+        if goes_up or same_row_left:
+            # Compute curve control points (mirrors _svg_curved_connection_layered)
+            sx, sy, sw, sh = src["x"], src["y"], src["w"], src["h"]
+            dx, dy = dst["x"], dst["y"]
+            if abs(sy - dy) < sh:
+                ctrl_y = max(sy + sh, dy + dst["h"]) + 50
+                max_curve_y = max(max_curve_y, ctrl_y)
+            else:
+                src_cx = sx + sw / 2
+                dst_cx = dx + dst["w"] / 2
+                dist = abs(src_cx - dst_cx) + abs(sy - dy)
+                offset = max(80, dist * 0.3)
+                ctrl_x = min(sx, dx) - offset
+                min_curve_x = min(min_curve_x, ctrl_x)
+
+    # Shift nodes right if curves extend past left edge
+    x_shift = 0.0
+    if min_curve_x < PAD:
+        x_shift = PAD - min_curve_x + 20  # extra margin for labels
+        for n in nodes:
+            n["x"] += x_shift
+
+    # Extra space for self-loop arcs above nodes and curves
     max_x = max(n["x"] + n["w"] for n in nodes) + 40
-    max_y = max(n["y"] + n["h"] for n in nodes) + 40
+    max_y = max(
+        max(n["y"] + n["h"] for n in nodes) + 40,
+        max_curve_y + 30 if max_curve_y > 0 else 0,
+    )
     svg_w = max_x + PAD
     svg_h = max_y + PAD
 
@@ -928,6 +1023,31 @@ def _svg_seq_arrowhead_defs() -> str:
   </defs>"""
 
 
+def _box_has_routed_connections(
+    spec: DiagramSpec, id_to_node: dict, nodes: list[dict]
+) -> bool:
+    """Check if any box connections need routing around intermediate boxes."""
+    if not spec.connections:
+        return False
+    for conn in spec.connections:
+        src = id_to_node.get(conn.from_id)
+        dst = id_to_node.get(conn.to_id)
+        if not src or not dst:
+            continue
+        _, y1, _, y2 = _compute_connection_endpoints(src, dst)
+        min_cx = min(src["x"] + src["w"], dst["x"] + dst["w"])
+        max_cx = max(src["x"], dst["x"])
+        for n in nodes:
+            if n is src or n is dst:
+                continue
+            if n["x"] < max_cx and n["x"] + n["w"] > min_cx:
+                arrow_y_min = min(y1, y2) - 10
+                arrow_y_max = max(y1, y2) + 10
+                if n["y"] < arrow_y_max and n["y"] + n["h"] > arrow_y_min:
+                    return True
+    return False
+
+
 def _svg_diamond_fill(x: float, y: float, w: float, h: float) -> str:
     """Render opaque fill for a diamond decision node."""
     cx, cy = x + w / 2, y + h / 2
@@ -1008,10 +1128,82 @@ def _svg_connection_layered(
     return lines, labels
 
 
-def _svg_connection(src: dict, dst: dict, conn: Connection) -> list[str]:
-    """Draw an arrow between two positioned nodes (flat list for backward compat)."""
-    lines, labels = _svg_connection_layered(src, dst, conn)
-    return lines + labels
+def _svg_box_connection_layered(
+    src: dict, dst: dict, conn: Connection, all_nodes: list[dict]
+) -> tuple[list[str], list[str]]:
+    """Draw arrow between box nodes, routing below if intermediate boxes exist."""
+    lines: list[str] = []
+    labels: list[str] = []
+
+    x1, y1, x2, y2 = _compute_connection_endpoints(src, dst)
+
+    # Check if any intermediate box sits between src and dst horizontally
+    min_x = min(src["x"] + src["w"], dst["x"] + dst["w"])
+    max_x = max(src["x"], dst["x"])
+    has_blocker = False
+    for n in all_nodes:
+        if n is src or n is dst:
+            continue
+        # Box overlaps the horizontal span between src and dst
+        if n["x"] < max_x and n["x"] + n["w"] > min_x:
+            # And vertically overlaps the arrow path
+            arrow_y_min = min(y1, y2) - 10
+            arrow_y_max = max(y1, y2) + 10
+            if n["y"] < arrow_y_max and n["y"] + n["h"] > arrow_y_min:
+                has_blocker = True
+                break
+
+    dash = ' stroke-dasharray="6,3"' if conn.style == "dashed" else ""
+    marker = ' marker-end="url(#arrowhead)"'
+
+    if has_blocker:
+        # Route below all boxes
+        bottom_y = max(n["y"] + n["h"] for n in all_nodes) + 20
+        # Start from bottom of src, end at bottom of dst, curve below
+        sx = src["x"] + src["w"] / 2
+        sy = src["y"] + src["h"]
+        dx = dst["x"] + dst["w"] / 2
+        dy = dst["y"] + dst["h"]
+        lines.append(
+            f'  <path class="arrow-line" d="M {sx:.1f},{sy:.1f} '
+            f'L {sx:.1f},{bottom_y:.1f} L {dx:.1f},{bottom_y:.1f} '
+            f'L {dx:.1f},{dy:.1f}" '
+            f'{marker}{dash}/>'
+        )
+        if conn.label:
+            mid_x = (sx + dx) / 2
+            mid_y = bottom_y
+            escaped = html_mod.escape(conn.label)
+            label_w = len(conn.label) * 7.2 + 8
+            labels.append(
+                f'  <rect class="arrow-label-bg" x="{mid_x - label_w / 2:.1f}" '
+                f'y="{mid_y - 9:.1f}" width="{label_w:.1f}" height="16" rx="3"/>'
+            )
+            labels.append(
+                f'  <text class="arrow-label" x="{mid_x:.1f}" y="{mid_y:.1f}" '
+                f'dominant-baseline="central">{escaped}</text>'
+            )
+    else:
+        # Direct arrow (no blockers)
+        lines.append(
+            f'  <line class="arrow-line" x1="{x1:.1f}" y1="{y1:.1f}" '
+            f'x2="{x2:.1f}" y2="{y2:.1f}"{dash}{marker}/>'
+        )
+        if conn.label:
+            mid_x = (x1 + x2) / 2
+            mid_y = (y1 + y2) / 2
+            escaped = html_mod.escape(conn.label)
+            label_w = len(conn.label) * 7.2 + 8
+            labels.append(
+                f'  <rect class="arrow-label-bg" x="{mid_x - label_w / 2:.1f}" '
+                f'y="{mid_y - 9:.1f}" width="{label_w:.1f}" height="16" rx="3"/>'
+            )
+            labels.append(
+                f'  <text class="arrow-label" x="{mid_x:.1f}" y="{mid_y:.1f}" '
+                f'dominant-baseline="central">{escaped}</text>'
+            )
+
+    return lines, labels
 
 
 def _render_fallback(spec: DiagramSpec, theme: Theme) -> str:

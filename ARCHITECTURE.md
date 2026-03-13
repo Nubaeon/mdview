@@ -247,6 +247,7 @@ The contract between interpretation and rendering:
     <clipPath id="box-clip-4"><rect x="360.0" y="140.0" width="311.0" height="180.0" rx="6"/></clipPath>
     <clipPath id="box-clip-5"><rect x="20.0" y="340.0" width="293.0" height="96.0" rx="6"/></clipPath>
   </defs>
+  <rect class="box-fill" x="20.0" y="20.0" width="131.0" height="84.0" rx="6"/>
   <rect class="box-border" x="20.0" y="20.0" width="131.0" height="84.0" rx="6"/>
   <g clip-path="url(#box-clip-0)">
     <text class="box-header" x="85.5" y="40.0" text-anchor="middle" dominant-baseline="central">cli.py</text>
@@ -254,6 +255,7 @@ The contract between interpretation and rendering:
     <text class="box-text" x="32.0" y="74.0">argparse</text>
     <text class="box-text" x="32.0" y="90.0">entry point</text>
   </g>
+  <rect class="box-fill" x="171.0" y="20.0" width="185.0" height="100.0" rx="6"/>
   <rect class="box-border" x="171.0" y="20.0" width="185.0" height="100.0" rx="6"/>
   <g clip-path="url(#box-clip-1)">
     <text class="box-header" x="263.5" y="40.0" text-anchor="middle" dominant-baseline="central">renderer.py</text>
@@ -262,6 +264,7 @@ The contract between interpretation and rendering:
     <text class="box-text" x="183.0" y="90.0">render_terminal()</text>
     <text class="box-text" x="183.0" y="106.0">render_file()</text>
   </g>
+  <rect class="box-fill" x="376.0" y="20.0" width="248.0" height="100.0" rx="6"/>
   <rect class="box-border" x="376.0" y="20.0" width="248.0" height="100.0" rx="6"/>
   <g clip-path="url(#box-clip-2)">
     <text class="box-header" x="500.0" y="40.0" text-anchor="middle" dominant-baseline="central">diagrams.py</text>
@@ -270,6 +273,7 @@ The contract between interpretation and rendering:
     <text class="box-text" x="388.0" y="90.0">render_svg()</text>
     <text class="box-text" x="388.0" y="106.0">render_from_spec()</text>
   </g>
+  <rect class="box-fill" x="20.0" y="140.0" width="320.0" height="152.0" rx="6"/>
   <rect class="box-border" x="20.0" y="140.0" width="320.0" height="152.0" rx="6"/>
   <g clip-path="url(#box-clip-3)">
     <text class="box-header" x="180.0" y="160.0" text-anchor="middle" dominant-baseline="central">Spec Pipeline</text>
@@ -282,6 +286,7 @@ The contract between interpretation and rendering:
     <line class="box-separator" x1="20.0" y1="256.0" x2="340.0" y2="256.0"/>
     <text class="box-text" x="32.0" y="278.0">specrender.py — 6 type renderers</text>
   </g>
+  <rect class="box-fill" x="360.0" y="140.0" width="311.0" height="180.0" rx="6"/>
   <rect class="box-border" x="360.0" y="140.0" width="311.0" height="180.0" rx="6"/>
   <g clip-path="url(#box-clip-4)">
     <text class="box-header" x="515.5" y="160.0" text-anchor="middle" dominant-baseline="central">Heuristic Renderers</text>
@@ -296,6 +301,7 @@ The contract between interpretation and rendering:
     <line class="box-separator" x1="360.0" y1="284.0" x2="671.0" y2="284.0"/>
     <text class="box-text" x="372.0" y="306.0">wireframerender.py</text>
   </g>
+  <rect class="box-fill" x="20.0" y="340.0" width="293.0" height="96.0" rx="6"/>
   <rect class="box-border" x="20.0" y="340.0" width="293.0" height="96.0" rx="6"/>
   <g clip-path="url(#box-clip-5)">
     <text class="box-header" x="166.5" y="360.0" text-anchor="middle" dominant-baseline="central">Shared</text>
