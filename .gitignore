@@ -13,6 +13,8 @@ venv/
 *.swo
 *~
 .DS_Store
+.pytest_cache/
+.ruff_cache/
 
 # Generated outputs
 rendered/
