@@ -13,5 +13,21 @@ venv/
 *.swo
 *~
 .DS_Store
+
+# Generated outputs
 rendered/
+svg_output/
+*.html
+ARCHITECTURE.md
+SHOWCASE.md
+EMPIRICA_MAP.md
+RENDERER-EXPANSION.md
+
+# Generator scripts (kept locally, not part of library)
+generate_*.py
+showcase.html
+
+# Empirica (development tooling)
 .empirica/
+.empirica_reflex_logs/
+.breadcrumbs.yaml

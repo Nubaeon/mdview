@@ -4,8 +4,7 @@ Each renderer scores how well a diagram matches its type (0.0-1.0).
 The router picks the highest-scoring renderer above a minimum threshold,
 eliminating the fragile boolean priority chain that caused cascading regressions.
 
-Inspired by Empirica's holistic confidence gating — don't gate on a fragile
-binary, score confidence and let the best match claim it.
+Don't gate on a fragile binary — score confidence and let the best match claim it.
 """
 
 from __future__ import annotations
