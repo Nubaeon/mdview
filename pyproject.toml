@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "mdview"
+name = "asciisvg"
 version = "0.2.0"
 description = "Markdown + diagram viewer — 6 diagram types, spec-based rendering, dark/light themes"
 readme = "README.md"

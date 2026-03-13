@@ -32,7 +32,7 @@ All diagrams support automatic dark/light theme via `prefers-color-scheme`.
 ## Install
 
 ```bash
-pip install mdview
+pip install asciisvg
 ```
 
 Or install from source:
@@ -55,7 +55,7 @@ mdview document.md
 mdview document.md -o output.html --no-open
 
 # Terminal rendering (requires rich)
-pip install mdview[rich]
+pip install asciisvg[rich]
 mdview document.md --terminal
 
 # Live reload server (watches for changes)
